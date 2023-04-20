@@ -6,6 +6,7 @@ import { PoseResults } from 'stores/MpLandmarksObserver'
 import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
 import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
+import { uiStores } from 'stores/uiStores'
 
 export const holistic = new Holistic({
   locateFile: (file) => {
@@ -47,8 +48,6 @@ export function stopMpActions() {
   isMediapipeActive = false
 }
 
-// holistic.onResults(startMpActions)
-
 export function startMpActions(): Promise<void> {
   stopMpActions()
   const promise = new Promise<void>((resolve) => {
@@ -62,7 +61,7 @@ export function startMpActions(): Promise<void> {
         videoElement.autoplay = true
 
         holistic.onResults((results) => {
-          // console.log('mediapipe is running')
+          if (uiStores.getStartTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
           if (videoElement)
             rigController.setRig(
@@ -93,34 +92,6 @@ export function startMpActions(): Promise<void> {
   })
   return promise
 }
-
-// function setRig(results: PoseResults) {
-//   const facelm = results.facelm
-//   const poselm = results.poselm
-//   const poselm3d = results.poselm3d
-//   const rightHandlm = results.rightHandlm
-//   const leftHandlm = results.leftHandlm
-//   const vrmRigs: VRMRigs = {
-//     face:
-//       facelm &&
-//       Kalidokit.Face.solve(facelm, {
-//         runtime: 'mediapipe',
-//         video: videoElement,
-//       }),
-//     pose:
-//       poselm &&
-//       poselm3d &&
-//       Kalidokit.Pose.solve(poselm3d, poselm, {
-//         runtime: 'mediapipe',
-//         video: videoElement,
-//         enableLegs: true,
-//       }),
-//     leftHand: leftHandlm && Kalidokit.Hand.solve(leftHandlm, 'Left'),
-//     rightHand: rightHandlm && Kalidokit.Hand.solve(rightHandlm, 'Right'),
-//   }
-//   // rigController.setRig = vrmRigs
-//   return vrmRigs
-// }
 
 export function DrawResults(
   results: PoseResults,
