@@ -11,19 +11,16 @@ import WifiOffIcon from '@mui/icons-material/WifiOff'
 import CircularProgress from '@mui/material/CircularProgress'
 import { autorun } from 'mobx'
 
-interface FooterProps {}
-
 type MediapipeState = 'stop' | 'loading' | 'active'
 
-const Footer: React.FC<FooterProps> = () => {
-  const Div = styled.div`
-    position: absolute;
-    width: 100%;
-    height: 123px;
-    left: 0px;
-    bottom: 0px;
-  `
-
+const Div = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 123px;
+  left: 0px;
+  bottom: 0px;
+`
+const Footer: React.FC = () => {
   const [openSettings, setOpenSettings] = React.useState<boolean>(false)
   const [startTracking, setStartTracking] =
     React.useState<MediapipeState>('stop')
@@ -61,12 +58,12 @@ const Footer: React.FC<FooterProps> = () => {
           color="secondary"
           onClick={toggleOpenSettings}
           size="small"
-          style={{ left: '49%' }}
+          style={{ left: '44%' }}
         >
           <SettingIcon />
         </Fab>
       ) : (
-        <Fab onClick={toggleOpenSettings} size="small" style={{ left: '49%' }}>
+        <Fab onClick={toggleOpenSettings} size="small" style={{ left: '44%' }}>
           <SettingIconOutlined />
         </Fab>
       )}
@@ -78,20 +75,20 @@ const Footer: React.FC<FooterProps> = () => {
             <Fab
               color="secondary"
               onClick={stopTracking}
-              style={{ left: '50%' }}
+              style={{ left: '45%' }}
             >
               <VideocamIcon />
             </Fab>
           )
         else if (startTracking === 'loading')
           return (
-            <Fab style={{ left: '50%' }}>
+            <Fab style={{ left: '45%' }}>
               <CircularProgress color="secondary" size={21} />
             </Fab>
           )
         else
           return (
-            <Fab onClick={activateTracking} style={{ left: '50%' }}>
+            <Fab onClick={activateTracking} style={{ left: '45%' }}>
               <VideocamOffIcon />
             </Fab>
           )
@@ -102,12 +99,12 @@ const Footer: React.FC<FooterProps> = () => {
         <Fab
           color="secondary"
           onClick={toggleStartSendPose}
-          style={{ left: '51%' }}
+          style={{ left: '46%' }}
         >
           <WifiIcon />
         </Fab>
       ) : (
-        <Fab onClick={toggleStartSendPose} style={{ left: '51%' }}>
+        <Fab onClick={toggleStartSendPose} style={{ left: '46%' }}>
           <WifiOffIcon />
         </Fab>
       )}

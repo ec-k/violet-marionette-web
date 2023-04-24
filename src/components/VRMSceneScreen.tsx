@@ -61,16 +61,16 @@ const createScene = (
 
 let isAddedVrm = false
 
-export const VRMSceneScreen: React.FC<{}> = () => {
+const Div = styled.div`
+  background-color: #2b2a2f;
+`
+const Canvas = styled.canvas`
+  position: 'relative';
+  display: block;
+`
+export const VRMSceneScreen: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<VRMScene | null>(null)
-  const Div = styled.div`
-    background-color: #2b2a2f;
-  `
-  const Canvas = styled.canvas`
-    position: 'relative';
-    display: block;
-  `
 
   React.useEffect(() => {
     if (!canvasRef.current) return
