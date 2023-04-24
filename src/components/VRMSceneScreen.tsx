@@ -8,12 +8,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { rigController } from 'stores/RigController'
 import { VRM } from '@pixiv/three-vrm'
 import { VRMRigs } from 'stores/RigController'
+import styled from 'styled-components'
 
 type VRMScene = {
   clock: THREE.Clock
   renderer: THREE.WebGL1Renderer
   scene: THREE.Scene
-  camera: THREE.Camera
+  camera: THREE.PerspectiveCamera
 }
 
 const createScene = (
@@ -63,6 +64,13 @@ let isAddedVrm = false
 export const VRMSceneScreen: React.FC<{}> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<VRMScene | null>(null)
+  const Div = styled.div`
+    background-color: #2b2a2f;
+  `
+  const Canvas = styled.canvas`
+    position: 'relative';
+    display: block;
+  `
 
   React.useEffect(() => {
     if (!canvasRef.current) return
@@ -95,17 +103,9 @@ export const VRMSceneScreen: React.FC<{}> = () => {
   }, [])
 
   return (
-    <canvas
-      // style={{
-      //   PointerEvent: 'none',
-      //   position: 'relative',
-      //   width: window.innerWidth,
-      //   height: window.innerHeight,
-      //   left: -window.innerWidth / 2,
-      //   top: -window.innerHeight / 2,
-      // }}
-      ref={canvasRef}
-    />
+    <Div>
+      <Canvas ref={canvasRef} />
+    </Div>
   )
 }
 

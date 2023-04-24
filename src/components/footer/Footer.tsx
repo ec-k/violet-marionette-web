@@ -16,11 +16,6 @@ interface FooterProps {}
 type MediapipeState = 'stop' | 'loading' | 'active'
 
 const Footer: React.FC<FooterProps> = () => {
-  // const VMStyleButton = styled(Button)(
-  //     { theme }=> `
-  //     background-color:${theme.palette.primary.main};
-  //     `,
-  // )
   const Div = styled.div`
     position: absolute;
     width: 100%;

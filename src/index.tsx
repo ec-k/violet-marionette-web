@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client'
-import 'index.css'
+// import 'index.css'
 import App from 'components/App'
 import reportWebVitals from 'reportWebVitals'
 import FontStyles from 'pages/Fonts'
@@ -9,9 +9,9 @@ root.render(
   // <React.StrictMode>
   <>
     <FontStyles />
-    <App />,
+    <App />
   </>,
-  // </React.StrictMode>,
+  // </React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function
