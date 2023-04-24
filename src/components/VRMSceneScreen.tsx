@@ -2,11 +2,12 @@
 
 import * as THREE from 'three'
 import React from 'react'
-import { throttle } from 'lodash'
 import { autorun, IReactionDisposer } from 'mobx'
 import { vrmAvatar } from 'stores/VRMAvatar'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { rigController } from 'stores/RigController'
+import { VRM } from '@pixiv/three-vrm'
+import { VRMRigs } from 'stores/RigController'
 
 type VRMScene = {
   clock: THREE.Clock
@@ -62,7 +63,6 @@ let isAddedVrm = false
 export const VRMSceneScreen: React.FC<{}> = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<VRMScene | null>(null)
-  const connectionTimeInterval = 300
 
   React.useEffect(() => {
     if (!canvasRef.current) return
@@ -70,7 +70,7 @@ export const VRMSceneScreen: React.FC<{}> = () => {
 
     const dispo: IReactionDisposer[] = []
 
-    const render3d = throttle((vrm, rig) => {
+    const render3d = (vrm: VRM, rig?: VRMRigs) => {
       const scene = sceneRef.current
       const glCtx = scene?.renderer?.getContext()
       if (vrm && glCtx && !glCtx.isContextLost() && scene) {
@@ -82,10 +82,10 @@ export const VRMSceneScreen: React.FC<{}> = () => {
         vrm.update(scene.clock.getDelta())
         scene.renderer.render(scene.scene, scene.camera)
       }
-    }, connectionTimeInterval)
+    }
     dispo.push(
       autorun(() => {
-        render3d(vrmAvatar.vrm, rigController.rig)
+        if (vrmAvatar.vrm) render3d(vrmAvatar.vrm, rigController.rig!)
       }),
     )
 
