@@ -1,6 +1,7 @@
 import React from 'react'
 // import { CameraScreen } from 'components/CameraScreen'
-import { Stack, FormControlLabel, TextField, Switch } from '@mui/material'
+import { Stack, FormControlLabel, Switch } from '@mui/material'
+import VM_TextField from 'components/leftwindow/VM_TextField'
 // import { trackingSettings } from 'stores/settings'
 
 // const Preview = styled.div`
@@ -21,31 +22,20 @@ const TrackingSettingWindow: React.FC = () => {
         <CameraScreen />
       </Preview> */}
       <Stack spacing={2} sx={{ height: '90%' }}>
-        <TextField
-          variant="standard"
-          color="secondary"
-          label="Height"
-          InputLabelProps={{ style: { color: '#DAC0EE' } }}
-          InputProps={{ style: { color: '#fff' } }}
-        />
-        <TextField
-          variant="standard"
-          color="secondary"
-          label="Arm Length"
-          InputLabelProps={{ style: { color: '#DAC0EE' } }}
-        />
+        <VM_TextField label="Height" />
+        <VM_TextField label="Arm Length" />
         <FormControlLabel
-          control={<Switch color="secondary" defaultChecked />}
+          control={<Switch color="primary" defaultChecked />}
           label="Face Tracking"
         />
-        <FormControlLabel
-          control={<Switch color="secondary" defaultChecked />}
+        {/* <FormControlLabel
+          control={<Switch color="primary" defaultChecked />}
           label="Hand Tracking"
         />
         <FormControlLabel
-          control={<Switch color="secondary" defaultChecked />}
+          control={<Switch color="primary" defaultChecked />}
           label="Foot Tracking"
-        />
+        /> */}
       </Stack>
     </>
   )

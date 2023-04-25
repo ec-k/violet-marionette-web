@@ -1,6 +1,6 @@
 import React from 'react'
-import { ThemeProvider } from 'styled-components'
-import theme from 'pages/theme'
+import { ThemeProvider } from '@mui/material'
+import theme from 'styles/theme'
 import LeftWindow from './leftwindow/LeftWindow'
 import { uiStores } from 'stores/uiStores'
 import { VRMSceneScreen } from 'components/VRMSceneScreen'

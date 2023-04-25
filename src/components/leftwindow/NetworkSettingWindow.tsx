@@ -1,6 +1,7 @@
 import React from 'react'
-import { Stack, TextField } from '@mui/material'
+import { Stack } from '@mui/material'
 // import { networkSettings } from 'stores/settings'
+import VM_TextField from 'components/leftwindow/VM_TextField'
 
 const NetworkSettingWindow: React.FC = () => {
   return (
@@ -9,31 +10,10 @@ const NetworkSettingWindow: React.FC = () => {
         <CameraScreen />
       </Preview> */}
       <Stack>
-        <TextField
-          variant="standard"
-          color="secondary"
-          label="User Name (NeosVR)"
-          InputLabelProps={{ style: { color: '#DAC0EE' } }}
-        />
-        <TextField
-          variant="standard"
-          color="secondary"
-          label="host"
-          InputLabelProps={{ style: { color: '#DAC0EE' } }}
-        />
-        <TextField
-          variant="standard"
-          color="secondary"
-          label="port"
-          InputLabelProps={{ style: { color: '#DAC0EE' } }}
-        />
-        <TextField
-          variant="standard"
-          color="secondary"
-          label="update rate"
-          InputLabelProps={{ style: { color: '#DAC0EE' } }}
-        />
-        {/* <TextField variant="standard" color="secondary" label="delay" InputLabelProps={{ style: { color: "#DAC0EE" } }} /> */}
+        <VM_TextField label="User Name (NeosVR)" />
+        <VM_TextField label="host" defaultValue="ws://localhost" />
+        <VM_TextField label="port" defaultValue="3000" />
+        <VM_TextField label="update rate" defaultValue="30" />
       </Stack>
     </>
   )

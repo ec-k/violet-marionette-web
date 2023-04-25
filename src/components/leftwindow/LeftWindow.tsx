@@ -21,7 +21,7 @@ const SettingPanel = styled.div`
   width: 80%;
   left: 40px;
   top: 60px;
-  color: #dac0ee;
+  color: #fff;
   position: relative;
   // height:${100 - tabPanelHeight}%;
 `
@@ -75,24 +75,24 @@ const LeftWindow: React.FC<Props> = () => {
             <Tabs
               value={settingItem}
               onChange={handleChange}
-              indicatorColor="secondary"
+              indicatorColor="primary"
               sx={{ top: '50px', height: '10%', position: 'relative' }}
               centered={true}
             >
-              <Tab label="Tracking" style={{ color: '#dd33fa' }} />
-              <Tab label="Network" style={{ color: '#dd33fa' }} />
-              <Tab label="Others" style={{ color: '#dd33fa' }} />
+              <Tab label="Tracking" style={{ color: '#fff' }} />
+              <Tab label="Network" style={{ color: '#fff' }} />
+              <Tab label="Others" style={{ color: '#fff' }} />
             </Tabs>
           </Box>
           <TabPanel value={settingItem} index={0}>
             <TrackingSettingWindow />
-            <Button variant="outlined" color="secondary">
+            <Button variant="outlined" color="primary">
               Update
             </Button>
           </TabPanel>
           <TabPanel value={settingItem} index={1}>
             <NetworkSettingWindow />
-            <Button variant="outlined" color="secondary">
+            <Button variant="outlined" color="primary">
               Update
             </Button>
           </TabPanel>

@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
       {/* Setting button */}
       {openSettings ? (
         <Fab
-          color="secondary"
+          color="primary"
           onClick={toggleOpenSettings}
           size="small"
           style={{ left: '1%' }}
@@ -72,18 +72,14 @@ const Footer: React.FC = () => {
       {(() => {
         if (startTracking === 'active')
           return (
-            <Fab
-              color="secondary"
-              onClick={stopTracking}
-              style={{ left: '45%' }}
-            >
+            <Fab color="primary" onClick={stopTracking} style={{ left: '45%' }}>
               <VideocamIcon />
             </Fab>
           )
         else if (startTracking === 'loading')
           return (
             <Fab style={{ left: '45%' }}>
-              <CircularProgress color="secondary" size={21} />
+              <CircularProgress color="primary" size={21} />
             </Fab>
           )
         else
@@ -97,7 +93,7 @@ const Footer: React.FC = () => {
       {/* Start Send Pose button */}
       {startSendingMotion ? (
         <Fab
-          color="secondary"
+          color="primary"
           onClick={toggleStartSendPose}
           style={{ left: '46%' }}
         >
