@@ -5,6 +5,7 @@ import orange from '@mui/material/colors/orange'
 declare module '@mui/material/styles' {
   interface Theme {
     palette: {
+      mode: string
       primary: {
         light: string
         main: string
@@ -21,8 +22,13 @@ declare module '@mui/material/styles' {
 
 export const theme = createTheme({
   palette: {
-    primary: orange,
-    secondary: purple,
+    mode: 'dark',
+    primary: {
+      light: purple[100],
+      main: purple[400],
+      dark: purple[500],
+    },
+    secondary: orange,
   },
 })
 

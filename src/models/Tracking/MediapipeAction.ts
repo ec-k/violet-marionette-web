@@ -2,7 +2,7 @@ import { Holistic } from '@mediapipe/holistic/'
 import { FaceMesh } from '@mediapipe/face_mesh'
 import { rigController } from 'stores/RigController'
 import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
-import { PoseResults } from 'stores/MpLandmarksObserver'
+// import { PoseResults } from 'stores/MpLandmarksObserver'
 import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
 import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
@@ -94,7 +94,8 @@ export function startMpActions(): Promise<void> {
 }
 
 export function DrawResults(
-  results: PoseResults,
+  // results: PoseResults,
+  results: any,
   guideCanvas: HTMLCanvasElement,
   videoEl: HTMLVideoElement,
 ) {

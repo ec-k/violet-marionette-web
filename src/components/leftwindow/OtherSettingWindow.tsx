@@ -11,16 +11,12 @@ const Div = styled.div`
   height: 80%;
   left: 40px;
   top: 20px;
-  color: #fff;
   position: relative;
 `
 
 const TrackingSettingWindow: React.FC = () => {
   return (
     <Div>
-      {/* <Preview>
-        <CameraScreen />
-      </Preview> */}
       <Stack></Stack>
       <p style={{ color: '#DAC0EE' }}>Under Construction...</p>
       <Button variant="outlined" color="secondary">

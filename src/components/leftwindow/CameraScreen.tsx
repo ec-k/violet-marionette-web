@@ -5,8 +5,8 @@ import { DrawResults } from 'models/Tracking/MediapipeAction'
 import styled from 'styled-components'
 
 const Video = styled.video`
-  max-width: 300px;
-  height: auto;
+  max-width: 100%;
+  position: absolute;
   transform: scale(-1, 1);
   @media only screen and (max-width: 600px) {
     video {
@@ -18,24 +18,20 @@ const Video = styled.video`
 const GuideCanvas = styled.canvas`
   display: block;
   position: absolute;
-  bottom: 0;
+  transform: scale(-1, 1);
+  top: 0;
   left: 0;
-  height: auto;
   width: 100%;
   z-index: 1;
 `
-export const CameraScreen: React.FC = () => {
+
+interface CameraScreenProps {
+  showResult: boolean
+}
+
+export const CameraScreen: React.FC<CameraScreenProps> = ({ showResult }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const videoRef = React.useRef<HTMLVideoElement>(null)
-
-  // React.useMemo(() => {
-  //   navigator.mediaDevices.getUserMedia({ video: true }).then((sm) => {
-  //     if (videoRef.current) {
-  //       videoRef.current.srcObject = sm
-  //       videoRef.current.autoplay = true
-  //     }
-  //   })
-  // }, [videoRef.current?.srcObject])
 
   React.useEffect(() => {
     if (!videoRef.current?.srcObject)
@@ -49,7 +45,7 @@ export const CameraScreen: React.FC = () => {
     const dispo: IReactionDisposer[] = []
     dispo.push(
       autorun(() => {
-        if (canvasRef.current && videoRef.current)
+        if (canvasRef.current && videoRef.current && showResult)
           DrawResults(
             mediapipeLandmarks.resultLandmarks,
             canvasRef.current,
@@ -57,13 +53,18 @@ export const CameraScreen: React.FC = () => {
           )
       }),
     )
-    for (const d of dispo) return d()
-  }, [])
+
+    return () => {
+      for (const d of dispo) return d()
+    }
+  }, [showResult])
 
   return (
     <>
       <Video ref={videoRef}></Video>
-      <GuideCanvas className="guides" ref={canvasRef}></GuideCanvas>
+      {showResult && (
+        <GuideCanvas className="guides" ref={canvasRef}></GuideCanvas>
+      )}
     </>
   )
 }

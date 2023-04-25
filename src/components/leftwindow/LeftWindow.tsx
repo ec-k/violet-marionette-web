@@ -21,7 +21,6 @@ const SettingPanel = styled.div`
   width: 80%;
   left: 40px;
   top: 60px;
-  color: #fff;
   position: relative;
   // height:${100 - tabPanelHeight}%;
 `
