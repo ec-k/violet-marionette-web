@@ -1,6 +1,0 @@
-export { default as cameraIcon } from './camera-icon.png'
-export { default as networkIcon } from './network-icon.png'
-export { default as settingIcon } from './setting-icon.png'
-// export { default as cameraIcon } from './camera-icon.svg'
-// export { default as networkIcon } from './network-icon.svg'
-// export { default as settingIcon } from './setting-icon.svg'

@@ -58,12 +58,12 @@ const Footer: React.FC = () => {
           color="secondary"
           onClick={toggleOpenSettings}
           size="small"
-          style={{ left: '44%' }}
+          style={{ left: '1%' }}
         >
           <SettingIcon />
         </Fab>
       ) : (
-        <Fab onClick={toggleOpenSettings} size="small" style={{ left: '44%' }}>
+        <Fab onClick={toggleOpenSettings} size="small" style={{ left: '1%' }}>
           <SettingIconOutlined />
         </Fab>
       )}

@@ -26,5 +26,5 @@
   },
   "include": [
     "src"
-, "NetworkHandler.ts"  ]
+, "NetworkHandler.ts", "settingItem.tsx"  ]
 }

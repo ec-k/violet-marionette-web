@@ -2,21 +2,50 @@ import React from 'react'
 import styled from 'styled-components'
 import { uiStores } from 'stores/uiStores'
 import { autorun } from 'mobx'
-import TrackingSettingWindow from './TrackingSettingWindow'
+import { Box, Tabs, Tab, Button } from '@mui/material'
+import TrackingSettingWindow from 'components/leftwindow/TrackingSettingWindow'
+import NetworkSettingWindow from 'components/leftwindow/NetworkSettingWindow'
 
+const tabPanelHeight = 10 // %
 const Div = styled.div`
   position: absolute;
   width: 400px;
   height: 100%;
   left: 0px;
-  top: 0px;
+  top: px;
   background: rgba(4, 1, 13, 0.3);
 `
+const SettingPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  left: 40px;
+  top: 60px;
+  color: #dac0ee;
+  position: relative;
+  // height:${100 - tabPanelHeight}%;
+`
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index } = props
+
+  return (
+    <SettingPanel hidden={value !== index}>
+      {value === index && <>{children}</>}
+    </SettingPanel>
+  )
+}
+
 interface Props {
   open: boolean
 }
 const LeftWindow: React.FC<Props> = () => {
   const [open, setOpen] = React.useState<boolean>(false)
+  const [settingItem, setSettingItem] = React.useState<number>(0)
   React.useEffect(() => {
     autorun(() => {
       if (uiStores.getOpenLeftWindow) setOpen(true)
@@ -24,11 +53,49 @@ const LeftWindow: React.FC<Props> = () => {
     })
   })
 
+  function handleChange(event: React.SyntheticEvent, newValue: number) {
+    // Fixme: 引数を入れるために使わない引数eventを定義している．これを使わないとデバッグ時に怒られるのでしかたなく
+    //        Console.log(event) としている．別の手があれば，そうしたい．
+    console.log(event)
+    setSettingItem(newValue)
+  }
+
   return (
     <>
       {open && (
         <Div>
-          <TrackingSettingWindow />
+          <Box
+            sx={{
+              left: '40px',
+              width: '80%',
+              height: `${tabPanelHeight}%`,
+              position: 'relative',
+            }}
+          >
+            <Tabs
+              value={settingItem}
+              onChange={handleChange}
+              indicatorColor="secondary"
+              sx={{ top: '50px', height: '10%', position: 'relative' }}
+              centered={true}
+            >
+              <Tab label="Tracking" style={{ color: '#dd33fa' }} />
+              <Tab label="Network" style={{ color: '#dd33fa' }} />
+              <Tab label="Others" style={{ color: '#dd33fa' }} />
+            </Tabs>
+          </Box>
+          <TabPanel value={settingItem} index={0}>
+            <TrackingSettingWindow />
+            <Button variant="outlined" color="secondary">
+              Update
+            </Button>
+          </TabPanel>
+          <TabPanel value={settingItem} index={1}>
+            <NetworkSettingWindow />
+            <Button variant="outlined" color="secondary">
+              Update
+            </Button>
+          </TabPanel>
         </Div>
       )}
     </>

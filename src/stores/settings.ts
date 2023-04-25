@@ -5,13 +5,13 @@ class NetworkSettings {
   isBloadcastActive: boolean = false
   host: string = 'localhost'
   port: number = 50505
-  updateRage: number = 30
+  updateRate: number = 30
   delay: number = 0
 
   constructor() {
     makeObservable(this, {
       isBloadcastActive: observable,
-      updateRage: observable,
+      updateRate: observable,
       delay: observable,
     })
   }
@@ -36,6 +36,10 @@ class TrackingSettings {
 
   setTrackingCoef() {
     this.trackingCoef = this.userHeight * 0.2
+  }
+
+  toggleFaceTrackingState() {
+    this.isFacetrackingActive = !this.isFacetrackingActive
   }
 }
 

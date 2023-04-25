@@ -5,7 +5,7 @@ import LeftWindow from './leftwindow/LeftWindow'
 import { uiStores } from 'stores/uiStores'
 import { VRMSceneScreen } from 'components/VRMSceneScreen'
 import { startMpActions, stopMpActions } from 'models/Tracking/MediapipeAction'
-import Footer from 'components/footer/Footer'
+import Footer from 'components/Footer'
 import { autorun } from 'mobx'
 
 const App: React.FC = () => {
