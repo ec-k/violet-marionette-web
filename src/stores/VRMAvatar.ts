@@ -4,29 +4,39 @@ import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 class VRMAvatar {
   vrm: VRM | null = null
+  avatarSrc: string | null = null
+
   constructor(url: string) {
     makeObservable(this, {
-      vrm: observable.deep,
+      vrm: observable.ref,
+      avatarSrc: observable,
       setVRM: action,
+      setAvatarSrc: action,
     })
-    this.loadVRM(url)
+    this.setAvatarSrc(url)
+    // if (this.avatarSrc)
+    //   this.loadVRM(this.avatarSrc)
   }
-  get gotVRM() {
+  get getVRM() {
     return this.vrm
+  }
+  setAvatarSrc(url: string) {
+    this.avatarSrc = url
   }
   setVRM(gotVRM: VRM) {
     this.vrm = gotVRM
   }
 
-  loadVRM(url: string): Promise<void> {
+  loadVRM(url: string, scene?: THREE.Scene): Promise<void> {
     const loader = new GLTFLoader()
     return new Promise((resolve: (_: GLTF) => void) =>
       loader.load(url, resolve),
     ).then((gltf) => {
-      // if (vrm) scene.remove(vrm.scene)
+      this.vrm?.scene.removeFromParent()
       VRMUtils.removeUnnecessaryJoints(gltf.scene)
       VRM.from(gltf)
         .then((gotVrm) => {
+          if (scene) scene.add(gotVrm.scene)
           gotVrm.scene.rotation.y = Math.PI
           this.setVRM(gotVrm)
         })
@@ -34,6 +44,10 @@ class VRMAvatar {
           console.log('Failed to load VRM', e)
         })
     })
+  }
+
+  setVrm2Scene(scene: THREE.Scene) {
+    if (this.vrm) scene.remove(this.vrm.scene)
   }
 }
 

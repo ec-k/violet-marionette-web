@@ -2,9 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import { uiStores } from 'stores/uiStores'
 import { autorun } from 'mobx'
-import { Box, Tabs, Tab, Button } from '@mui/material'
+import { Box, Tabs, Tab } from '@mui/material'
 import TrackingSettingWindow from 'components/leftwindow/TrackingSettingWindow'
 import NetworkSettingWindow from 'components/leftwindow/NetworkSettingWindow'
+import OtherSettings from 'components/leftwindow/OtherSettingWindow'
 
 const tabPanelHeight = 10 // %
 const Div = styled.div`
@@ -85,15 +86,12 @@ const LeftWindow: React.FC<Props> = () => {
           </Box>
           <TabPanel value={settingItem} index={0}>
             <TrackingSettingWindow />
-            <Button variant="outlined" color="primary">
-              Update
-            </Button>
           </TabPanel>
           <TabPanel value={settingItem} index={1}>
             <NetworkSettingWindow />
-            <Button variant="outlined" color="primary">
-              Update
-            </Button>
+          </TabPanel>
+          <TabPanel value={settingItem} index={2}>
+            <OtherSettings />
           </TabPanel>
         </Div>
       )}

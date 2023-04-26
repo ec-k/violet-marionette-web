@@ -1,29 +1,25 @@
 import React from 'react'
-import styled from 'styled-components'
+// import styled from 'styled-components'
 // import { CameraScreen } from 'components/CameraScreen'
 import { Stack, Button } from '@mui/material'
 // import { otherSettings } from 'stores/settings'
+import { vrmAvatar } from 'stores/VRMAvatar'
 
-const Div = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 80%;
-  height: 80%;
-  left: 40px;
-  top: 20px;
-  position: relative;
-`
+const OtherSettings: React.FC = () => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const url = URL.createObjectURL(event.target.files![0])
+    vrmAvatar.setAvatarSrc(url)
+    URL.revokeObjectURL(url)
+  }
 
-const TrackingSettingWindow: React.FC = () => {
   return (
-    <Div>
-      <Stack></Stack>
-      <p style={{ color: '#DAC0EE' }}>Under Construction...</p>
-      <Button variant="outlined" color="secondary">
-        Update
+    <Stack spacing={2}>
+      <Button variant="outlined" component="label">
+        Load VRM
+        <input hidden accept=".vrm" type="file" onChange={handleChange}></input>
       </Button>
-    </Div>
+    </Stack>
   )
 }
 
-export default TrackingSettingWindow
+export default OtherSettings

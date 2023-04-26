@@ -2,11 +2,11 @@
 
 import * as THREE from 'three'
 import React from 'react'
-import { autorun, IReactionDisposer } from 'mobx'
+import { autorun, IReactionDisposer, reaction } from 'mobx'
 import { vrmAvatar } from 'stores/VRMAvatar'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { rigController } from 'stores/RigController'
-import { VRM } from '@pixiv/three-vrm'
+// import { VRM } from '@pixiv/three-vrm'
 import { VRMRigs } from 'stores/RigController'
 import styled from 'styled-components'
 
@@ -21,7 +21,7 @@ const createScene = (
   sceneRef: React.MutableRefObject<VRMScene | null>,
   canvas: HTMLCanvasElement,
 ) => {
-  const scene = {
+  const vrmScene = {
     clock: new THREE.Clock(),
     renderer: new THREE.WebGL1Renderer({
       antialias: true,
@@ -36,27 +36,32 @@ const createScene = (
       1000,
     ),
   }
-  sceneRef.current = scene
+  sceneRef.current = vrmScene
   canvas.addEventListener('webglcontextlost', (ev) => {
     ev.preventDefault()
     createScene(sceneRef, canvas)
   })
-  scene.renderer.setSize(window.innerWidth, window.innerHeight)
-  scene.renderer.setPixelRatio(window.devicePixelRatio)
+  vrmScene.renderer.setSize(window.innerWidth, window.innerHeight)
+  vrmScene.renderer.setPixelRatio(window.devicePixelRatio)
   const light = new THREE.DirectionalLight(0xffffff)
   light.position.set(1, 1, 1).normalize()
-  scene.scene.add(light)
-  scene.camera.position.set(0.0, 1.15, 1.5)
-  const controls = new OrbitControls(scene.camera, scene.renderer.domElement)
+  vrmScene.scene.add(light)
+  vrmScene.camera.position.set(0.0, 1.15, 1.5)
+  const controls = new OrbitControls(
+    vrmScene.camera,
+    vrmScene.renderer.domElement,
+  )
   controls.screenSpacePanning = true
   controls.target.set(0.0, 1.15, 0.0)
   controls.update()
-  scene.scene.background = new THREE.Color(0x2b2a2f)
-  if (vrmAvatar.vrm) {
-    scene.scene.add(vrmAvatar.vrm.scene)
-    isAddedVrm = true
-  }
-  return scene
+  vrmScene.scene.background = new THREE.Color(0x2b2a2f)
+  // if (vrmAvatar.vrm) {
+  //   scene.scene.add(vrmAvatar.vrm.scene)
+  //   isAddedVrm = true
+  // }
+  if (vrmAvatar.avatarSrc)
+    vrmAvatar.loadVRM(vrmAvatar.avatarSrc, vrmScene.scene)
+  return vrmScene
 }
 
 let isAddedVrm = false
@@ -78,9 +83,10 @@ export const VRMSceneScreen: React.FC = () => {
 
     const dispo: IReactionDisposer[] = []
 
-    const render3d = (vrm: VRM, rig?: VRMRigs) => {
+    const render3d = (rig?: VRMRigs) => {
       const scene = sceneRef.current
       const glCtx = scene?.renderer?.getContext()
+      const vrm = vrmAvatar.vrm
       if (vrm && glCtx && !glCtx.isContextLost() && scene) {
         if (!isAddedVrm) {
           scene.scene.add(vrm.scene)
@@ -93,8 +99,17 @@ export const VRMSceneScreen: React.FC = () => {
     }
     dispo.push(
       autorun(() => {
-        if (vrmAvatar.vrm) render3d(vrmAvatar.vrm, rigController.rig!)
+        render3d(rigController.rig!)
       }),
+    )
+    dispo.push(
+      reaction(
+        () => vrmAvatar.avatarSrc,
+        () => {
+          if (vrmAvatar.avatarSrc && sceneRef.current)
+            vrmAvatar.loadVRM(vrmAvatar.avatarSrc, sceneRef.current.scene)
+        },
+      ),
     )
 
     return () => {

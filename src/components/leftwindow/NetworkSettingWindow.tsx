@@ -1,15 +1,18 @@
 import React from 'react'
-import { Stack } from '@mui/material'
+import { Stack, Button } from '@mui/material'
 // import { networkSettings } from 'stores/settings'
 import VM_TextField from 'components/leftwindow/VM_TextField'
 
 const NetworkSettingWindow: React.FC = () => {
   return (
     <>
-      <Stack>
+      <Stack spacing={2}>
+        <Button variant="outlined" color="primary">
+          Update
+        </Button>
         <VM_TextField
           label="User Name (NeosVR)"
-          adornment={{ position: 'start', value: 'U―' }}
+          adornment={{ position: 'start', value: 'U -' }}
         />
         <VM_TextField
           label="host"

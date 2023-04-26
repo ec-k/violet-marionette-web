@@ -7,6 +7,7 @@ import {
   FormControlLabel,
   ToggleButtonGroup,
   ToggleButton,
+  Button,
 } from '@mui/material'
 import VM_TextField from 'components/leftwindow/VM_TextField'
 import purple from '@mui/material/colors/purple'
@@ -29,7 +30,10 @@ const TrackingSettingWindow: React.FC = () => {
 
   return (
     <>
-      <Stack spacing={2} sx={{ height: '90%' }}>
+      <Stack spacing={2}>
+        <Button variant="outlined" color="primary">
+          Update
+        </Button>
         <Box
           sx={{
             overflow: 'hidden',
