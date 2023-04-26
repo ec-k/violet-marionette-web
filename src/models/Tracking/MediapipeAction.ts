@@ -61,7 +61,7 @@ export function startMpActions(): Promise<void> {
         videoElement.autoplay = true
 
         holistic.onResults((results) => {
-          if (uiStores.getStartTrack === 'loading') uiStores.toggleStartTrack()
+          if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
           if (videoElement)
             rigController.setRig(

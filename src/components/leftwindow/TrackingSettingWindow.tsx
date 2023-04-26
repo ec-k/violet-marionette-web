@@ -5,47 +5,47 @@ import {
   Box,
   Switch,
   FormControlLabel,
-  ToggleButtonGroup,
-  ToggleButton,
-  Button,
+  // ToggleButtonGroup,
+  // ToggleButton,
+  // Button,
 } from '@mui/material'
-import VM_TextField from 'components/leftwindow/VM_TextField'
+// import VM_TextField from 'components/leftwindow/VM_TextField'
 import purple from '@mui/material/colors/purple'
-import { trackingSettings } from 'stores/settings'
+// import { trackingSettings } from 'stores/settings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showResult, setShowResult] = React.useState<boolean>(true)
-  const [aligntment, setAlignment] = React.useState<string>('height')
-  const userHeightInputRef = React.useRef<HTMLInputElement | null>(null)
-  const userArmLengthInputRef = React.useRef<HTMLInputElement | null>(null)
+  // const [aligntment, setAlignment] = React.useState<string>('height')
+  // const userHeightInputRef = React.useRef<HTMLInputElement | null>(null)
+  // const userArmLengthInputRef = React.useRef<HTMLInputElement | null>(null)
 
-  const handleClick = () => {
-    trackingSettings.coefCalculationBase = aligntment
-    if (aligntment === 'height') {
-      const value = Number(userHeightInputRef.current?.value)
-      if (!Number.isNaN(value)) trackingSettings.userHeight = value
-    } else {
-      const value = Number(userArmLengthInputRef.current?.value)
-      if (!Number.isNaN(value)) trackingSettings.userArmLength = value
-    }
-  }
+  // const handleClick = () => {
+  //   trackingSettings.coefCalculationBase_ = aligntment
+  //   if (aligntment === 'height') {
+  //     const value = Number(userHeightInputRef.current?.value)
+  //     if (!Number.isNaN(value)) trackingSettings.userHeight_ = value
+  //   } else {
+  //     const value = Number(userArmLengthInputRef.current?.value)
+  //     if (!Number.isNaN(value)) trackingSettings.userArmLength_ = value
+  //   }
+  // }
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowResult(event.target.checked)
   }
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignt: string | null,
-  ) => {
-    console.log(event) // Fixme: this is for escaping worning for not using variable
-    if (newAlignt !== null) setAlignment(newAlignt)
-  }
+  // const handleAlignment = (
+  //   event: React.MouseEvent<HTMLElement>,
+  //   newAlignt: string | null,
+  // ) => {
+  //   console.log(event) // Fixme: this is for escaping worning for not using variable
+  //   if (newAlignt !== null) setAlignment(newAlignt)
+  // }
 
   return (
     <>
       <Stack spacing={2}>
-        <Button variant="outlined" color="primary" onClick={handleClick}>
+        {/* <Button variant="outlined" color="primary" onClick={handleClick}>
           Update
-        </Button>
+        </Button> */}
         <Box
           sx={{
             overflow: 'hidden',
@@ -67,7 +67,7 @@ const TrackingSettingWindow: React.FC = () => {
           label="Mediapipe Result"
           sx={{ color: purple[50] }}
         />
-        {aligntment === 'height' ? (
+        {/* {aligntment === 'height' ? (
           <VM_TextField
             label="Height"
             adornment={{ position: 'end', value: 'cm' }}
@@ -99,7 +99,7 @@ const TrackingSettingWindow: React.FC = () => {
           >
             Arm Length
           </ToggleButton>
-        </ToggleButtonGroup>
+        </ToggleButtonGroup> */}
         {/* <FormControlLabel
           control={<Switch color="primary" defaultChecked />}
           label="Face Tracking"

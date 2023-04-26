@@ -2,6 +2,7 @@ import React from 'react'
 import { Stack, Button } from '@mui/material'
 import { networkSettings } from 'stores/settings'
 import VM_TextField from 'components/leftwindow/VM_TextField'
+import networkHandler from 'models/NetworkHandler'
 
 const NetworkSettingWindow: React.FC = () => {
   const userNameInputRef = React.useRef<HTMLInputElement | null>(null)
@@ -13,15 +14,12 @@ const NetworkSettingWindow: React.FC = () => {
     const port = Number(portInputRef.current?.value)
     const updateRate = Number(updateRateInputRef.current?.value)
 
-    networkSettings.neosUserName = String(userNameInputRef.current?.value)
-    networkSettings.host = String(hostInputRef.current?.value)
-    if (!Number.isNaN(port)) networkSettings.port = port
-    if (!Number.isNaN(updateRate)) networkSettings.updateRate = updateRate
+    networkSettings.neosUserName_ = String(userNameInputRef.current?.value)
+    networkSettings.host_ = String(hostInputRef.current?.value)
+    if (!Number.isNaN(port)) networkSettings.port_ = port
+    if (!Number.isNaN(updateRate)) networkSettings.updateRate_ = updateRate
 
-    console.log(networkSettings.neosUserName)
-    console.log(networkSettings.host)
-    console.log(networkSettings.port)
-    console.log(networkSettings.updateRate)
+    networkHandler.ConnectWS()
   }
 
   return (

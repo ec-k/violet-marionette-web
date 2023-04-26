@@ -19,7 +19,7 @@ const GuideCanvas = styled.canvas`
   display: block;
   position: absolute;
   transform: scale(-1, 1);
-  top: 50px;
+  // top: 50px;
   left: 0;
   width: 100%;
   z-index: 1;

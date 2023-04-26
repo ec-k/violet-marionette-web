@@ -20,6 +20,9 @@ const Div = styled.div`
   left: 0px;
   bottom: 0px;
 `
+
+// HACK: I just want to render this component when observables of uiStores change.
+//       It is better if useState can be removed.
 const Footer: React.FC = () => {
   const [openSettings, setOpenSettings] = React.useState<boolean>(false)
   const [startTracking, setStartTracking] =

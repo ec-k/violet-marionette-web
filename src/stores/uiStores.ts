@@ -29,14 +29,5 @@ class UIStores {
   toggleStartSendPose() {
     this.startSendMotion = !this.startSendMotion
   }
-  get getOpenLeftWindow() {
-    return this.openLeftWindow
-  }
-  get getStartTrack() {
-    return this.startTrack
-  }
-  get getStartSendMotion() {
-    return this.startSendMotion
-  }
 }
 export const uiStores = new UIStores()

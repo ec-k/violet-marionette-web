@@ -1,14 +1,13 @@
-// R3Fで簡単に書き直せると思う
-
 import * as THREE from 'three'
 import React from 'react'
 import { autorun, IReactionDisposer, reaction } from 'mobx'
 import { vrmAvatar } from 'stores/VRMAvatar'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { rigController } from 'stores/RigController'
-// import { VRM } from '@pixiv/three-vrm'
 import { VRMRigs } from 'stores/RigController'
 import styled from 'styled-components'
+import networkHandler from 'models/NetworkHandler'
+import { uiStores } from 'stores/uiStores'
 
 type VRMScene = {
   clock: THREE.Clock
@@ -55,10 +54,6 @@ const createScene = (
   controls.target.set(0.0, 1.15, 0.0)
   controls.update()
   vrmScene.scene.background = new THREE.Color(0x2b2a2f)
-  // if (vrmAvatar.vrm) {
-  //   scene.scene.add(vrmAvatar.vrm.scene)
-  //   isAddedVrm = true
-  // }
   if (vrmAvatar.avatarSrc)
     vrmAvatar.loadVRM(vrmAvatar.avatarSrc, vrmScene.scene)
   return vrmScene
@@ -100,6 +95,12 @@ export const VRMSceneScreen: React.FC = () => {
     dispo.push(
       autorun(() => {
         render3d(rigController.rig!)
+      }),
+    )
+    dispo.push(
+      autorun(() => {
+        if (uiStores.startSendMotion)
+          networkHandler.SendPoseMessage(vrmAvatar.vrm!, rigController.rig!)
       }),
     )
     dispo.push(

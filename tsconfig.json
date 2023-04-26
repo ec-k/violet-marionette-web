@@ -25,6 +25,8 @@
     "baseUrl": "src"
   },
   "include": [
-    "src"
-, "NetworkHandler.ts", "settingItem.tsx"  ]
+    "src",
+    "src/models/NetworkHandler.ts",
+    "settingItem.tsx"
+  ]
 }

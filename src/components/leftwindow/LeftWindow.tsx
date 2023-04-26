@@ -48,7 +48,7 @@ const LeftWindow: React.FC<Props> = () => {
   const [settingItem, setSettingItem] = React.useState<number>(0)
   React.useEffect(() => {
     autorun(() => {
-      if (uiStores.getOpenLeftWindow) setOpen(true)
+      if (uiStores.openLeftWindow) setOpen(true)
       else setOpen(false)
     })
   })

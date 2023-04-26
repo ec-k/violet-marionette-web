@@ -33,7 +33,8 @@
     "styled-components": "^5.3.9",
     "three": "^0.137.0",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "ws": "^7.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
