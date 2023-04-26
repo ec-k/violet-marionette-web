@@ -1,7 +1,7 @@
 import { makeObservable, observable, computed } from 'mobx'
 
 class NetworkSettings {
-  neosUserId: string = ''
+  neosUserName: string = ''
   isBloadcastActive: boolean = false
   host: string = 'localhost'
   port: number = 50505
@@ -19,8 +19,10 @@ class NetworkSettings {
 
 class TrackingSettings {
   userHeight: number = 170 // unit: cm
-  armLength: number = 58 // unit: cm
-  trackingCoef: number = 1.0
+  userArmLength: number = 58 // unit: cm
+  avatarHeight: number = 120 // unit: cm
+  avatarArmLength: number = 45 // unit: cm
+  coefCalculationBase: string = 'height'
   isFacetrackingActive: boolean = true
   isHandtrackingActive: boolean = true
   isFoottrackingActive: boolean = true
@@ -28,14 +30,15 @@ class TrackingSettings {
   constructor() {
     makeObservable(this, {
       userHeight: observable,
-      armLength: observable,
-      setTrackingCoef: computed,
+      userArmLength: observable,
+      getTrackingCoef: computed,
     })
-    this.setTrackingCoef()
   }
 
-  setTrackingCoef() {
-    this.trackingCoef = this.userHeight * 0.2
+  get getTrackingCoef() {
+    return this.coefCalculationBase === 'height'
+      ? this.userHeight / this.avatarHeight
+      : this.userArmLength / this.avatarArmLength
   }
 
   toggleFaceTrackingState() {

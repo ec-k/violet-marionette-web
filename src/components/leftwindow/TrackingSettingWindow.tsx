@@ -11,12 +11,24 @@ import {
 } from '@mui/material'
 import VM_TextField from 'components/leftwindow/VM_TextField'
 import purple from '@mui/material/colors/purple'
-// import { trackingSettings } from 'stores/settings'
+import { trackingSettings } from 'stores/settings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showResult, setShowResult] = React.useState<boolean>(true)
   const [aligntment, setAlignment] = React.useState<string>('height')
+  const userHeightInputRef = React.useRef<HTMLInputElement | null>(null)
+  const userArmLengthInputRef = React.useRef<HTMLInputElement | null>(null)
 
+  const handleClick = () => {
+    trackingSettings.coefCalculationBase = aligntment
+    if (aligntment === 'height') {
+      const value = Number(userHeightInputRef.current?.value)
+      if (!Number.isNaN(value)) trackingSettings.userHeight = value
+    } else {
+      const value = Number(userArmLengthInputRef.current?.value)
+      if (!Number.isNaN(value)) trackingSettings.userArmLength = value
+    }
+  }
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowResult(event.target.checked)
   }
@@ -31,7 +43,7 @@ const TrackingSettingWindow: React.FC = () => {
   return (
     <>
       <Stack spacing={2}>
-        <Button variant="outlined" color="primary">
+        <Button variant="outlined" color="primary" onClick={handleClick}>
           Update
         </Button>
         <Box
@@ -59,11 +71,15 @@ const TrackingSettingWindow: React.FC = () => {
           <VM_TextField
             label="Height"
             adornment={{ position: 'end', value: 'cm' }}
+            inputRef={userHeightInputRef}
+            inputProps={{ pattern: '^[0-9]+$' }}
           />
         ) : (
           <VM_TextField
             label="Arm Length"
             adornment={{ position: 'end', value: 'cm' }}
+            inputRef={userArmLengthInputRef}
+            inputProps={{ pattern: '^[0-9]+$' }}
           />
         )}
         <ToggleButtonGroup
