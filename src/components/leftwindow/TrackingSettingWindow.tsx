@@ -10,12 +10,14 @@ import {
   // Button,
 } from '@mui/material'
 // import VM_TextField from 'components/leftwindow/VM_TextField'
-import purple from '@mui/material/colors/purple'
 // import { trackingSettings } from 'stores/settings'
+import purple from '@mui/material/colors/purple'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showResult, setShowResult] = React.useState<boolean>(true)
-  // const [aligntment, setAlignment] = React.useState<string>('height')
+  // const [aligntment, setAlignment] = React.useState<string>(
+  //   trackingSettings.coefCalculationBase_,
+  // )
   // const userHeightInputRef = React.useRef<HTMLInputElement | null>(null)
   // const userArmLengthInputRef = React.useRef<HTMLInputElement | null>(null)
 
@@ -70,6 +72,7 @@ const TrackingSettingWindow: React.FC = () => {
         {/* {aligntment === 'height' ? (
           <VM_TextField
             label="Height"
+            defaultValue={trackingSettings.userHeight_}
             adornment={{ position: 'end', value: 'cm' }}
             inputRef={userHeightInputRef}
             inputProps={{ pattern: '^[0-9]+$' }}
@@ -77,6 +80,7 @@ const TrackingSettingWindow: React.FC = () => {
         ) : (
           <VM_TextField
             label="Arm Length"
+            defaultValue={trackingSettings.userArmLength_}
             adornment={{ position: 'end', value: 'cm' }}
             inputRef={userArmLengthInputRef}
             inputProps={{ pattern: '^[0-9]+$' }}

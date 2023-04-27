@@ -30,24 +30,25 @@ const NetworkSettingWindow: React.FC = () => {
         </Button>
         <VM_TextField
           label="User Name (NeosVR)"
+          defaultValue={networkSettings.neosUserName_}
           // adornment={{ position: 'start', value: 'U -' }}
           inputRef={userNameInputRef}
         />
         <VM_TextField
           label="host"
-          defaultValue="localhost"
+          defaultValue={networkSettings.host_}
           adornment={{ position: 'start', value: 'ws://' }}
           inputRef={hostInputRef}
         />
         <VM_TextField
           label="port"
-          defaultValue="3000"
+          defaultValue={networkSettings.port_}
           inputRef={portInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
         <VM_TextField
           label="update rate"
-          defaultValue="30"
+          defaultValue={networkSettings.updateRate_}
           adornment={{ position: 'end', value: 'fps' }}
           inputRef={updateRateInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}

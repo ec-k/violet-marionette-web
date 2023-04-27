@@ -10,7 +10,7 @@ import React from 'react'
 
 interface VM_TextFieldProps {
   label: string
-  defaultValue?: string
+  defaultValue?: string | number
   adornment?: {
     position: adornmentPos
     value: string
@@ -54,7 +54,7 @@ const VM_TextField = ({
       ) : (
         <Input
           error={inputError}
-          inputProps={{ pattern: '^[0-9]+$' }}
+          inputProps={inputProps}
           sx={{ color: '#fff' }}
           defaultValue={defaultValue}
           inputRef={inputRef}

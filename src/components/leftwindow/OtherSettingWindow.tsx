@@ -1,6 +1,4 @@
 import React from 'react'
-// import styled from 'styled-components'
-// import { CameraScreen } from 'components/CameraScreen'
 import { Stack, Button } from '@mui/material'
 // import { otherSettings } from 'stores/settings'
 import { vrmAvatar } from 'stores/VRMAvatar'
