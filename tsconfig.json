@@ -24,9 +24,10 @@
     "noUnusedParameters": true,
     "baseUrl": "src"
   },
+  "compilerOption":{
+    "baseUrl":"src"
+  },
   "include": [
-    "src",
-    "src/models/NetworkHandler.ts",
-    "settingItem.tsx"
+    "src"
   ]
 }
