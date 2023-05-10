@@ -1,10 +1,10 @@
 import React from 'react'
 import { ThemeProvider } from '@mui/material'
 import theme from 'styles/theme'
-import LeftWindow from './leftwindow/LeftWindow'
+import LeftWindow from 'components/leftwindow/LeftWindow'
 import { uiStores } from 'stores/uiStores'
 import { VRMSceneScreen } from 'components/VRMSceneScreen'
-import { startMpActions, stopMpActions } from 'models/Tracking/MediapipeAction'
+import { startMpActions, stopMpActions } from 'models/MediapipeAction'
 import Footer from 'components/Footer'
 import { autorun } from 'mobx'
 

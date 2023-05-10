@@ -1,7 +1,7 @@
 import React from 'react'
 import { autorun, IReactionDisposer } from 'mobx'
 import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
-import { DrawResults } from 'models/Tracking/MediapipeAction'
+import { DrawResults } from 'models/MediapipeAction'
 import styled from 'styled-components'
 
 const Video = styled.video`
