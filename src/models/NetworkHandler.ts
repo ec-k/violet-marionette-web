@@ -2,11 +2,13 @@ import { /*trackingSettings,*/ networkSettings } from 'stores/settings'
 import { VRMRigs } from 'stores/RigController'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 // import { vrmAvatar } from 'stores/VRMAvatar'
-import { ConvertBoneName } from './utills/ConvertBoneName'
+import { ConvertBoneName } from './utils'
+
 
 class NetworkHandler {
   private ws_: WebSocket | undefined = undefined
   private oscAddressHead = '/violet-marionette/'
+  private numberOfDigits = 4
 
   constructor() {
     this.ConnectWS()
@@ -32,13 +34,13 @@ class NetworkHandler {
     if (!position) return ``
     if (!quaternion) return ``
     return `#` + `${ConvertBoneName(trackingTargetName)},` +
-      `${this.DecimalNumber(position.x)},` +
-      `${this.DecimalNumber(position.y)},` +
-      `${this.DecimalNumber(position.z)},` +
-      `${this.DecimalNumber(quaternion.x)},` +
-      `${this.DecimalNumber(quaternion.y)},` +
-      `${this.DecimalNumber(quaternion.z)},` +
-      `${this.DecimalNumber(quaternion.w)}`
+      `${this.DecimalNumber(position.x).toFixed(this.numberOfDigits)},` +
+      `${this.DecimalNumber(position.y).toFixed(this.numberOfDigits)},` +
+      `${this.DecimalNumber(position.z).toFixed(this.numberOfDigits)},` +
+      `${this.DecimalNumber(quaternion.x).toFixed(this.numberOfDigits)},` +
+      `${this.DecimalNumber(quaternion.y).toFixed(this.numberOfDigits)},` +
+      `${this.DecimalNumber(quaternion.z).toFixed(this.numberOfDigits)},` +
+      `${this.DecimalNumber(quaternion.w).toFixed(this.numberOfDigits)}`
   }
 
   // private getGlobalTransform(bodyNode: VRMHumanBone | undefined) {
@@ -79,6 +81,7 @@ class NetworkHandler {
   private DecimalNumber(num: number): number {
     return Math.abs(num) < 10 ** -6 ? 0 : num
   }
+
   // Almost all parts of VRMRigs don't have position,
   // but VRM's Bone Nodes has both position and quaternion.
   // Because of that, I make to use VRM as a tracking reference instead of VRMRigs.
