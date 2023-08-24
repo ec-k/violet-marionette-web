@@ -14,8 +14,6 @@ class VRMAvatar {
       setAvatarSrc: action,
     })
     this.setAvatarSrc(url)
-    // if (this.avatarSrc)
-    //   this.loadVRM(this.avatarSrc)
   }
   get getVRM() {
     return this.vrm
@@ -37,7 +35,6 @@ class VRMAvatar {
       VRM.from(gltf)
         .then((gotVrm) => {
           if (scene) scene.add(gotVrm.scene)
-          gotVrm.scene.rotation.y = Math.PI
           this.setVRM(gotVrm)
         })
         .catch((e) => {
@@ -51,6 +48,4 @@ class VRMAvatar {
   }
 }
 
-export const vrmAvatar = new VRMAvatar(
-  './first_loaded_avatar.vrm',
-)
+export const vrmAvatar = new VRMAvatar('./first_loaded_avatar.vrm')

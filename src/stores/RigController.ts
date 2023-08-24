@@ -187,7 +187,7 @@ class RigController {
         vrm,
         'Hips',
         {
-          x: rig.pose.Hips.position.x,
+          x: -rig.pose.Hips.position.x,
           y: rig.pose.Hips.position.y + 1,
           z: -rig.pose.Hips.position.z,
         },

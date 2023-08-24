@@ -1,6 +1,4 @@
-// import { Server } from "ws";
 const server = require("ws").Server;
-// const server = new Server
 const ws = new server({ port: 23000 });
 
 ws.on("connection", socket => {

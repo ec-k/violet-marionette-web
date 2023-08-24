@@ -45,7 +45,7 @@ const createScene = (
   const light = new THREE.DirectionalLight(0xffffff)
   light.position.set(1, 1, 1).normalize()
   vrmScene.scene.add(light)
-  vrmScene.camera.position.set(0.0, 1.15, 1.5)
+  vrmScene.camera.position.set(0.0, 1.15, -1.5)
   const controls = new OrbitControls(
     vrmScene.camera,
     vrmScene.renderer.domElement,
@@ -56,6 +56,11 @@ const createScene = (
   vrmScene.scene.background = new THREE.Color(0x2b2a2f)
   if (vrmAvatar.avatarSrc)
     vrmAvatar.loadVRM(vrmAvatar.avatarSrc, vrmScene.scene)
+
+  // Show axis helper.
+  // const axes = new THREE.AxesHelper(25)
+  // vrmScene.scene.add(axes)
+
   return vrmScene
 }
 
@@ -100,6 +105,7 @@ export const VRMSceneScreen: React.FC = () => {
     dispo.push(
       autorun(() => {
         if (uiStores.startSendMotion)
+          // networkHandler.SendPoseMessage(vrmAvatar.vrm!)
           networkHandler.SendPoseMessage(vrmAvatar.vrm!, rigController.rig!)
       }),
     )
@@ -107,8 +113,9 @@ export const VRMSceneScreen: React.FC = () => {
       reaction(
         () => vrmAvatar.avatarSrc,
         () => {
-          if (vrmAvatar.avatarSrc && sceneRef.current)
+          if (vrmAvatar.avatarSrc && sceneRef.current) {
             vrmAvatar.loadVRM(vrmAvatar.avatarSrc, sceneRef.current.scene)
+          }
         },
       ),
     )
