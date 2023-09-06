@@ -6484,10 +6484,9 @@ jsonpointer@^5.0.0:
     array-includes "^3.1.5"
     object.assign "^4.1.3"
 
-kalidokit@^1.1.5:
+"kalidokit@https://github.com/ec-k/kalidokit_nonMirror":
   version "1.1.5"
-  resolved "https://registry.npmjs.org/kalidokit/-/kalidokit-1.1.5.tgz"
-  integrity sha512-cLaPfCK5UB1QUesFSF12s1/ZsOz4FMcaZDqfFoIYYAzouAjzreishAKIMuoN4zhz2KLuJudGKYWVjI+VVb0W1Q==
+  resolved "git+ssh://git@github.com/ec-k/kalidokit_nonMirror.git#1c5ac250bfe21a2e2f9f6e98efed4ce08a8dd05c"
 
 kind-of@^6.0.2:
   version "6.0.3"
