@@ -77,6 +77,18 @@ export const VRMSceneScreen: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<VRMScene | null>(null)
 
+  onResize()
+  function onResize() {
+    const vrmScene = sceneRef.current
+    if (!vrmScene) return
+    const width = window.innerWidth
+    const hegiht = window.innerHeight
+    vrmScene.renderer.setPixelRatio(window.devicePixelRatio)
+    vrmScene.renderer.setSize(width, hegiht)
+    vrmScene.camera.aspect = width / hegiht
+    vrmScene.camera.updateProjectionMatrix()
+  }
+  window.addEventListener('resize', onResize)
   React.useEffect(() => {
     if (!canvasRef.current) return
     if (!sceneRef.current) createScene(sceneRef, canvasRef.current)
