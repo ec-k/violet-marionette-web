@@ -7,7 +7,6 @@ import styled from 'styled-components'
 const Video = styled.video`
   max-width: 100%;
   position: absolute;
-  transform: scale(-1, 1);
   @media only screen and (max-width: 600px) {
     video {
       max-width: 160px;
@@ -18,7 +17,6 @@ const Video = styled.video`
 const GuideCanvas = styled.canvas`
   display: block;
   position: absolute;
-  transform: scale(-1, 1);
   // top: 50px;
   left: 0;
   width: 100%;
