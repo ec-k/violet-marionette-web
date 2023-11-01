@@ -7,7 +7,9 @@ import { trackingSettings } from 'stores/settings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showResult, setShowResult] = React.useState<boolean>(true)
-  const [activatedLeg, setActivatedLeg] = React.useState<boolean>(false)
+  const [activatedLeg, setActivatedLeg] = React.useState<boolean>(
+    trackingSettings.enableLeg,
+  )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,13 +19,9 @@ const TrackingSettingWindow: React.FC = () => {
     const value = Number(cameraAngleInputRef.current?.value)
     if (!Number.isNaN(value)) trackingSettings.cameraDepressionAngle = value
   }
-  const _activateLeg = () => {
-    trackingSettings.enableLeg = true
-    setActivatedLeg(trackingSettings.enableLeg)
-  }
-  const _disactivateLeg = () => {
-    trackingSettings.enableLeg = false
-    setActivatedLeg(trackingSettings.enableLeg)
+  const _toggleLegActivation = () => {
+    trackingSettings.enableLeg = !activatedLeg
+    setActivatedLeg(!activatedLeg)
   }
 
   return (
@@ -60,11 +58,17 @@ const TrackingSettingWindow: React.FC = () => {
           inputRef={cameraAngleInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
-        {/* <FormControlLabel
-          control={<Switch color="primary" defaultChecked />}
-          label="Foot Tracking"
-        />  */}
-        {activatedLeg ? (
+        <FormControlLabel
+          control={
+            <Switch
+              color="primary"
+              defaultChecked={activatedLeg}
+              onChange={_toggleLegActivation}
+            />
+          }
+          label="Leg Tracking"
+        />
+        {/* {activatedLeg ? (
           <Button variant="contained" color="primary" onClick={_disactivateLeg}>
             Move Leg
           </Button>
@@ -72,7 +76,7 @@ const TrackingSettingWindow: React.FC = () => {
           <Button variant="outlined" color="primary" onClick={_activateLeg}>
             Move Leg
           </Button>
-        )}
+        )} */}
       </Stack>
     </>
   )
