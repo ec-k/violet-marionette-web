@@ -15,6 +15,7 @@ export const setupIKController = (viewer: Viewer, avatar: Avatar) => {
     })
     avatar.vrm?.scene.add(transCtrl)
     transCtrlList.push(transCtrl)
+    disableIKController()
   })
 }
 

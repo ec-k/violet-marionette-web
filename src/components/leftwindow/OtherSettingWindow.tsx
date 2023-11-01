@@ -5,6 +5,7 @@ import {
   enableIKController,
   disableIKController,
 } from 'models/vrm-toy-box-ik-solver/UI'
+import purple from '@mui/material/colors/purple'
 
 const OtherSettings: React.FC = () => {
   const [showIkTarget, setShowIkTarget] = React.useState<boolean>(false)
@@ -15,9 +16,9 @@ const OtherSettings: React.FC = () => {
     URL.revokeObjectURL(url)
   }
   const toggleIkTargetVisualization = () => {
-    setShowIkTarget(!showIkTarget)
-    if (showIkTarget) enableIKController()
+    if (!showIkTarget) enableIKController()
     else disableIKController()
+    setShowIkTarget(!showIkTarget)
   }
 
   return (
@@ -30,11 +31,12 @@ const OtherSettings: React.FC = () => {
         control={
           <Switch
             color="primary"
-            defaultChecked
+            defaultChecked={showIkTarget}
             onChange={toggleIkTargetVisualization}
           />
         }
         label="Show IK Target"
+        sx={{ color: purple[50] }}
       />
     </Stack>
   )

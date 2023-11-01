@@ -67,6 +67,7 @@ const TrackingSettingWindow: React.FC = () => {
             />
           }
           label="Leg Tracking"
+          sx={{ color: purple[50] }}
         />
         {/* {activatedLeg ? (
           <Button variant="contained" color="primary" onClick={_disactivateLeg}>
