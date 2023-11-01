@@ -2,6 +2,8 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { Viewer } from './Viewer'
 import { Avatar } from './Avatar'
 
+const transCtrlList: TransformControls[] = []
+
 export const setupIKController = (viewer: Viewer, avatar: Avatar) => {
   if (!avatar.vrmIK || !avatar.vrm) return
   avatar.vrmIK.ikChains.forEach((chain) => {
@@ -12,5 +14,19 @@ export const setupIKController = (viewer: Viewer, avatar: Avatar) => {
       viewer.orbitControl.enabled = !event.value
     })
     avatar.vrm?.scene.add(transCtrl)
+    transCtrlList.push(transCtrl)
+  })
+}
+
+export const enableIKController = () => {
+  transCtrlList.forEach((transCtrl) => {
+    transCtrl.visible = true
+    transCtrl.enabled = true
+  })
+}
+export const disableIKController = () => {
+  transCtrlList.forEach((transCtrl) => {
+    transCtrl.enabled = false
+    transCtrl.visible = false
   })
 }
