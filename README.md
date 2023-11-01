@@ -1,7 +1,5 @@
 # Violet Marionette
-Violet Marionetteは，VRSNS上のアバターをWebカメラによるトラッキングで動かせるアプリケーションです．
-
-現在はNeosVRにのみ対応しています．
+Violet Marionetteは，NeosおよびResoniteのアバターをWebカメラによるトラッキングで動かせるアプリケーションです．
 
 
 Violet Marionetteは，以下の技術を使用しています．
@@ -16,11 +14,6 @@ Violet Marionetteは，以下の技術を使用しています．
 
 <img src="resources/violetMarionette_usage.gif" width="600px">
 
-## 非常に忍びない状態
-Violet Marionetteはwebカメラを用いてVRSNS上でアバターを動かすことのできるアプリケーションであるのですが，送信するトラッキングデータの回転軸が正しくないので正しく動作しません．
-重要な機能が動かないので，使える状態ではありません．非常に忍びないです．ごめんなさい．
-
-本WebアプリおよびNeosVRのレシーバーはそれぞれ単体ではほぼ完成しているので，数日の内に使えるようになります．
 
 ## 実行
 ### Webアプリケーションの実行
@@ -33,7 +26,6 @@ git clone git@github.com:ec-k/violet-marionette.git
 必要なパッケージをインストールしてください．
 ```bash
 npm install
-yarn install
 ```
 
 アプリケーションの立ち上げには，次の2つを行ってください
