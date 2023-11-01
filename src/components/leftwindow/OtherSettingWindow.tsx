@@ -1,12 +1,12 @@
 import React from 'react'
 import { Stack, Button } from '@mui/material'
 // import { otherSettings } from 'stores/settings'
-import { vrmAvatar } from 'stores/VRMAvatar'
+import { avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
 
 const OtherSettings: React.FC = () => {
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const url = URL.createObjectURL(event.target.files![0])
-    vrmAvatar.setAvatarSrc(url)
+    avatar.setAvatarSrc(url)
     URL.revokeObjectURL(url)
   }
 
