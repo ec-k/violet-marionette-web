@@ -4,6 +4,7 @@ import { VRM } from '@pixiv/three-vrm'
 import { VrmIK } from './IK'
 import { VrmFK } from './VrmFK'
 import { makeObservable, observable, action } from 'mobx'
+import { trackingSettings } from 'stores/settings'
 
 export class Avatar {
   private _scene: THREE.Scene | null = null
@@ -59,7 +60,8 @@ export class Avatar {
     this._vrmFK = new VrmFK()
   }
 
-  public updatePose(enabledIK: boolean = true) {
+  public updatePose() {
+    const enabledIK = trackingSettings.enabledIK
     if (enabledIK && !!this._vrmIK) this._vrmIK.solve()
     if (!!this._vrmFK && !!this.vrm) this._vrmFK.setPose(this.vrm, !enabledIK)
   }

@@ -11,20 +11,15 @@ class NetworkSettings {
 }
 
 class TrackingSettings {
-  private _enableLeg: boolean = false
+  enableLeg: boolean = false
+  enabledIK: boolean = false
   private _cameraDepressionAngle: number = 15 // degree
 
-  get enableLeg() {
-    return this._enableLeg
-  }
   get cameraDepressionAngle() {
     return this._cameraDepressionAngle
   }
   get angleWithRadian() {
     return (this._cameraDepressionAngle * Math.PI) / 180
-  }
-  set enableLeg(isEnabled: boolean) {
-    this._enableLeg = isEnabled
   }
   set cameraDepressionAngle(angle: number) {
     this._cameraDepressionAngle = angle

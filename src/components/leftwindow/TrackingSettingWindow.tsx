@@ -7,27 +7,34 @@ import { trackingSettings } from 'stores/settings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showResult, setShowResult] = React.useState<boolean>(true)
-  const [activatedLeg, setActivatedLeg] = React.useState<boolean>(
+  const [enabledLeg, setActivatedLeg] = React.useState<boolean>(
     trackingSettings.enableLeg,
+  )
+  const [enabledIK, setEnabledIK] = React.useState<boolean>(
+    trackingSettings.enabledIK,
   )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const toggleShowResults = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowResult(event.target.checked)
   }
-  const handleClick = () => {
+  const updateSettings = () => {
     const value = Number(cameraAngleInputRef.current?.value)
     if (!Number.isNaN(value)) trackingSettings.cameraDepressionAngle = value
   }
-  const _toggleLegActivation = () => {
-    trackingSettings.enableLeg = !activatedLeg
-    setActivatedLeg(!activatedLeg)
+  const toggleLegActivation = () => {
+    trackingSettings.enableLeg = !enabledLeg
+    setActivatedLeg(!enabledLeg)
+  }
+  const toggleIKActivation = () => {
+    trackingSettings.enabledIK = !enabledIK
+    setEnabledIK(!enabledIK)
   }
 
   return (
     <>
       <Stack spacing={2}>
-        <Button variant="outlined" color="primary" onClick={handleClick}>
+        <Button variant="outlined" color="primary" onClick={updateSettings}>
           Update
         </Button>
         <Box
@@ -43,7 +50,7 @@ const TrackingSettingWindow: React.FC = () => {
           control={
             <Switch
               color="primary"
-              onChange={handleChange}
+              onChange={toggleShowResults}
               checked={showResult}
             ></Switch>
           }
@@ -62,11 +69,22 @@ const TrackingSettingWindow: React.FC = () => {
           control={
             <Switch
               color="primary"
-              defaultChecked={activatedLeg}
-              onChange={_toggleLegActivation}
+              defaultChecked={enabledLeg}
+              onChange={toggleLegActivation}
             />
           }
-          label="Leg Tracking"
+          label="Track Legs"
+          sx={{ color: purple[50] }}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              color="primary"
+              defaultChecked={enabledIK}
+              onChange={toggleIKActivation}
+            />
+          }
+          label="Use IK (arm)"
           sx={{ color: purple[50] }}
         />
         {/* {activatedLeg ? (
