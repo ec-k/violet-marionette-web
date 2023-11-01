@@ -209,6 +209,12 @@ class RigController {
         this.rigRotation(vrm, 'LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
         this.rigRotation(vrm, 'RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
         this.rigRotation(vrm, 'RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
+      } else {
+        const defaultRot = new THREE.Quaternion(0, 0, 0, 1)
+        this.rigRotation(vrm, 'LeftUpperLeg', defaultRot, 1, 0.3)
+        this.rigRotation(vrm, 'LeftLowerLeg', defaultRot, 1, 0.3)
+        this.rigRotation(vrm, 'RightUpperLeg', defaultRot, 1, 0.3)
+        this.rigRotation(vrm, 'RightLowerLeg', defaultRot, 1, 0.3)
       }
 
       if (rig.leftHand) {
