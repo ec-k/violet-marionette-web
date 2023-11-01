@@ -1,67 +1,51 @@
 import * as THREE from 'three'
 import React from 'react'
-import { autorun, IReactionDisposer, reaction } from 'mobx'
-import { vrmAvatar } from 'stores/VRMAvatar'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { /*autorun,*/ IReactionDisposer, reaction } from 'mobx'
 import { rigController } from 'stores/RigController'
 import { VRMRigs } from 'stores/RigController'
 import styled from 'styled-components'
 import networkHandler from 'models/NetworkHandler'
 import { uiStores } from 'stores/uiStores'
+import { Viewer } from 'models/vrm-toy-box-ik-solver/Viewer'
+import { Avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
+import { avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
+import * as UI from 'models/vrm-toy-box-ik-solver/UI'
+import { throttle } from 'lodash'
+import { VRM } from '@pixiv/three-vrm'
 
 type VRMScene = {
   clock: THREE.Clock
-  renderer: THREE.WebGL1Renderer
-  scene: THREE.Scene
-  camera: THREE.PerspectiveCamera
+  viewer: Viewer
+  avatar: Avatar
 }
 
 const createScene = (
   sceneRef: React.MutableRefObject<VRMScene | null>,
   canvas: HTMLCanvasElement,
 ) => {
-  const vrmScene = {
+  if (!canvas.parentElement) return
+  const viewer = new Viewer(canvas)
+  if (!viewer) return
+  const mainScene = {
     clock: new THREE.Clock(),
-    renderer: new THREE.WebGL1Renderer({
-      antialias: true,
-      alpha: true,
-      canvas: canvas,
-    }),
-    scene: new THREE.Scene(),
-    camera: new THREE.PerspectiveCamera(
-      35,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000,
-    ),
+    viewer: viewer,
+    avatar: avatar,
   }
-  sceneRef.current = vrmScene
+  sceneRef.current = mainScene
   canvas.addEventListener('webglcontextlost', (ev) => {
     ev.preventDefault()
     createScene(sceneRef, canvas)
   })
-  vrmScene.renderer.setSize(window.innerWidth, window.innerHeight)
-  vrmScene.renderer.setPixelRatio(window.devicePixelRatio)
-  const light = new THREE.DirectionalLight(0xffffff)
-  light.position.set(1, 1, 1).normalize()
-  vrmScene.scene.add(light)
-  vrmScene.camera.position.set(0.0, 1.15, -1.5)
-  const controls = new OrbitControls(
-    vrmScene.camera,
-    vrmScene.renderer.domElement,
-  )
-  controls.screenSpacePanning = true
-  controls.target.set(0.0, 1.15, 0.0)
-  controls.update()
-  vrmScene.scene.background = new THREE.Color(0x2b2a2f)
-  if (vrmAvatar.avatarSrc)
-    vrmAvatar.loadVRM(vrmAvatar.avatarSrc, vrmScene.scene)
 
-  // Show axis helper.
-  // const axes = new THREE.AxesHelper(25)
-  // vrmScene.scene.add(axes)
-
-  return vrmScene
+  async function loadVRM(url: string) {
+    const _avatar = sceneRef.current?.avatar
+    if (!_avatar) return
+    if (!sceneRef.current) return
+    await avatar.loadVRM(url)
+    UI.setupIKController(sceneRef.current.viewer, avatar)
+  }
+  avatar.setScene(sceneRef.current.viewer.scene)
+  loadVRM('./first_loaded_avatar.vrm')
 }
 
 let isAddedVrm = false
@@ -77,60 +61,52 @@ export const VRMSceneScreen: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<VRMScene | null>(null)
 
-  onResize()
-  function onResize() {
-    const vrmScene = sceneRef.current
-    if (!vrmScene) return
-    const width = window.innerWidth
-    const hegiht = window.innerHeight
-    vrmScene.renderer.setPixelRatio(window.devicePixelRatio)
-    vrmScene.renderer.setSize(width, hegiht)
-    vrmScene.camera.aspect = width / hegiht
-    vrmScene.camera.updateProjectionMatrix()
+  const render3d = (rig?: VRMRigs | null) => {
+    const scene = sceneRef.current
+    const viewer = sceneRef.current?.viewer
+    const glCtx = viewer?.renderer?.getContext()
+    const vrm = scene?.avatar.vrm
+    if (vrm && glCtx && !glCtx.isContextLost() && viewer) {
+      if (!isAddedVrm) {
+        viewer.scene.add(vrm.scene)
+        isAddedVrm = true
+      }
+      if (rig) rigController.setVrmPose(vrm, rig)
+      vrm.update(scene.clock.getDelta())
+      viewer.renderer.render(viewer.scene, viewer.camera)
+    }
   }
-  window.addEventListener('resize', onResize)
+  const fps = 30
+  const sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+    if (!vrm) return
+    if (sendActive) networkHandler.SendPoseMessage(vrm)
+  }, 1000 / fps)
+  const mainRoop = () => {
+    render3d(rigController.rig)
+    sendPose(sceneRef.current?.avatar.vrm!, uiStores.startSendMotion)
+    requestAnimationFrame(mainRoop)
+  }
   React.useEffect(() => {
     if (!canvasRef.current) return
     if (!sceneRef.current) createScene(sceneRef, canvasRef.current)
 
     const dispo: IReactionDisposer[] = []
 
-    const render3d = (rig?: VRMRigs) => {
-      const scene = sceneRef.current
-      const glCtx = scene?.renderer?.getContext()
-      const vrm = vrmAvatar.vrm
-      if (vrm && glCtx && !glCtx.isContextLost() && scene) {
-        if (!isAddedVrm) {
-          scene.scene.add(vrm.scene)
-          isAddedVrm = true
-        }
-        if (rig) rigController.setVrmPose(vrm, rig)
-        vrm.update(scene.clock.getDelta())
-        scene.renderer.render(scene.scene, scene.camera)
-      }
-    }
-    dispo.push(
-      autorun(() => {
-        render3d(rigController.rig!)
-      }),
-    )
-    dispo.push(
-      autorun(() => {
-        if (uiStores.startSendMotion)
-          // networkHandler.SendPoseMessage(vrmAvatar.vrm!)
-          networkHandler.SendPoseMessage(vrmAvatar.vrm!, rigController.rig!)
-      }),
-    )
+    mainRoop()
     dispo.push(
       reaction(
-        () => vrmAvatar.avatarSrc,
+        () => sceneRef.current?.avatar.avatarSrc,
         () => {
-          if (vrmAvatar.avatarSrc && sceneRef.current) {
-            vrmAvatar.loadVRM(vrmAvatar.avatarSrc, sceneRef.current.scene)
+          if (sceneRef.current?.avatar.avatarSrc && sceneRef.current) {
+            sceneRef.current?.avatar.loadVRM(sceneRef.current?.avatar.avatarSrc)
           }
         },
       ),
     )
+
+    window.addEventListener('resize', () => {
+      if (sceneRef.current) sceneRef.current.viewer.onResize()
+    })
 
     return () => {
       for (const d of dispo) d()

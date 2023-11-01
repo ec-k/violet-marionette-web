@@ -1,7 +1,7 @@
 import React from 'react'
 import { Stack, Button } from '@mui/material'
 import { networkSettings } from 'stores/settings'
-import VM_TextField from 'components/leftwindow/VM_TextField'
+import VM_TextField from 'components/leftwindow/VMTextField'
 import networkHandler from 'models/NetworkHandler'
 
 const NetworkSettingWindow: React.FC = () => {

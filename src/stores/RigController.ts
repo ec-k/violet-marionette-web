@@ -199,10 +199,10 @@ class RigController {
       this.rigRotation(vrm, 'Chest', rig.pose.Spine, 0.25, 0.3)
       this.rigRotation(vrm, 'Spine', rig.pose.Spine, 0.45, 0.3)
 
-      this.rigRotation(vrm, 'RightUpperArm', rig.pose.RightUpperArm, 1, 0.3)
-      this.rigRotation(vrm, 'RightLowerArm', rig.pose.RightLowerArm, 1, 0.3)
-      this.rigRotation(vrm, 'LeftUpperArm', rig.pose.LeftUpperArm, 1, 0.3)
-      this.rigRotation(vrm, 'LeftLowerArm', rig.pose.LeftLowerArm, 1, 0.3)
+      // this.rigRotation(vrm, 'RightUpperArm', rig.pose.RightUpperArm, 1, 0.3)
+      // this.rigRotation(vrm, 'RightLowerArm', rig.pose.RightLowerArm, 1, 0.3)
+      // this.rigRotation(vrm, 'LeftUpperArm', rig.pose.LeftUpperArm, 1, 0.3)
+      // this.rigRotation(vrm, 'LeftLowerArm', rig.pose.LeftLowerArm, 1, 0.3)
 
       if (trackingSettings.enableLeg) {
         this.rigRotation(vrm, 'LeftUpperLeg', rig.pose.LeftUpperLeg, 1, 0.3)
@@ -218,11 +218,11 @@ class RigController {
       }
 
       if (rig.leftHand) {
-        this.rigRotation(vrm, 'LeftHand', {
-          z: rig.pose.LeftHand.z,
-          y: rig.leftHand.LeftWrist.y,
-          x: rig.leftHand.LeftWrist.x,
-        })
+        // this.rigRotation(vrm, 'LeftHand', {
+        //   z: rig.pose.LeftHand.z,
+        //   y: rig.leftHand.LeftWrist.y,
+        //   x: rig.leftHand.LeftWrist.x,
+        // })
         this.rigRotation(vrm, 'LeftRingProximal', rig.leftHand.LeftRingProximal)
         this.rigRotation(
           vrm,
@@ -278,12 +278,12 @@ class RigController {
         this.rigRotation(vrm, 'LeftLittleDistal', rig.leftHand.LeftLittleDistal)
       }
       if (rig.rightHand) {
-        this.rigRotation(vrm, 'RightHand', {
-          // Combine Z axis from pose hand and X/Y axis from hand wrist rotation
-          z: rig.pose.RightHand.z,
-          y: rig.rightHand.RightWrist.y,
-          x: rig.rightHand.RightWrist.x,
-        })
+        // this.rigRotation(vrm, 'RightHand', {
+        //   // Combine Z axis from pose hand and X/Y axis from hand wrist rotation
+        //   z: rig.pose.RightHand.z,
+        //   y: rig.rightHand.RightWrist.y,
+        //   x: rig.rightHand.RightWrist.x,
+        // })
         this.rigRotation(
           vrm,
           'RightRingProximal',

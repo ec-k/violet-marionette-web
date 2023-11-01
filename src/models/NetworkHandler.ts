@@ -2,7 +2,6 @@ import { networkSettings } from 'stores/settings'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { ConvertBoneName } from './utils/ConvertBoneName'
 import { Euler, Quaternion } from 'three'
-import { VRMRigs } from 'stores/RigController'
 import { getGlobalRotation } from './utils/GetGlobalRotation'
 
 class NetworkHandler {
@@ -59,9 +58,8 @@ class NetworkHandler {
     this.ws_.send(`${configAddressHead + configTargetAddress}, ${values} `)
   }
 
-  SendPoseMessage(vrm: VRM, rig: VRMRigs) {
+  SendPoseMessage(vrm: VRM) {
     if (!vrm.humanoid) return
-    if (!rig) return
     let msg = ''
 
     msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Hips)

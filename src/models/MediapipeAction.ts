@@ -1,4 +1,4 @@
-import { Holistic } from '@mediapipe/holistic/'
+import { Holistic, NormalizedLandmark } from '@mediapipe/holistic/'
 import { FaceMesh } from '@mediapipe/face_mesh'
 import { rigController } from 'stores/RigController'
 import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
@@ -7,6 +7,9 @@ import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
 import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 import { uiStores } from 'stores/uiStores'
+import { Vector3 } from 'three'
+import { Avatar } from './vrm-toy-box-ik-solver/Avatar'
+import { trackingSettings } from 'stores/settings'
 
 export const holistic = new Holistic({
   locateFile: (file) => {
@@ -30,7 +33,7 @@ faceMesh.setOptions({
   refineLandmarks: true,
 })
 
-let fps: number = 30
+let fps: number = 60
 let timeInterval = (1 / fps) * 1000
 let videoElement: HTMLVideoElement | undefined
 let isMediapipeActive: boolean = false
@@ -48,7 +51,19 @@ export function stopMpActions() {
   isMediapipeActive = false
 }
 
-export function startMpActions(): Promise<void> {
+const toVector3 = (pos: NormalizedLandmark | undefined) => {
+  if (!pos) return
+  return new Vector3(pos.x, pos.y, pos.z)
+}
+const rotateResultByAngle = (pos: THREE.Vector3 | undefined) => {
+  if (!pos) return
+  const angle = trackingSettings.angleWithRadian
+  pos.z = pos.z * Math.cos(angle) - pos.y * Math.sin(angle)
+  pos.y = pos.y * Math.cos(angle) + pos.z * Math.sin(angle)
+  return pos
+}
+
+export function startMpActions(avatar: Avatar): Promise<void> {
   stopMpActions()
   const promise = new Promise<void>((resolve) => {
     navigator.mediaDevices
@@ -63,6 +78,28 @@ export function startMpActions(): Promise<void> {
         holistic.onResults((results) => {
           if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
+          const lShoulder = rotateResultByAngle(
+            toVector3(results.poseLandmarks[11]),
+          )
+          const rShoulder = rotateResultByAngle(
+            toVector3(results.poseLandmarks[12]),
+          )
+          const lElbow = rotateResultByAngle(
+            toVector3(results.poseLandmarks[13]),
+          )
+          const rElbow = rotateResultByAngle(
+            toVector3(results.poseLandmarks[14]),
+          )
+          const lHand = rotateResultByAngle(
+            toVector3(results.poseLandmarks[15]),
+          )
+          const rHand = rotateResultByAngle(
+            toVector3(results.poseLandmarks[16]),
+          )
+          const shoulders = { l: lShoulder, r: rShoulder }
+          const elbows = { l: lElbow, r: rElbow }
+          const hands = { l: lHand, r: rHand }
+          avatar.vrmIK?.trackPose(hands, elbows, shoulders)
           if (videoElement)
             rigController.setRig(
               mediapipeLandmarks.resultLandmarks,

@@ -8,7 +8,7 @@ import {
 import purple from '@mui/material/colors/purple'
 import React from 'react'
 
-interface VM_TextFieldProps {
+interface VMTextFieldProps {
   label: string
   defaultValue?: string | number
   adornment?: {
@@ -21,13 +21,13 @@ interface VM_TextFieldProps {
 
 type adornmentPos = 'start' | 'end'
 
-const VM_TextField = ({
+const VMTextField = ({
   label,
   defaultValue,
   adornment,
   inputRef,
   inputProps,
-}: VM_TextFieldProps) => {
+}: VMTextFieldProps) => {
   const [inputError, setInputError] = React.useState<boolean>(false)
   const handleChange = () => {
     if (inputRef && inputRef.current) {
@@ -67,4 +67,4 @@ const VM_TextField = ({
     </FormControl>
   )
 }
-export default VM_TextField
+export default VMTextField
