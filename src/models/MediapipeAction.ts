@@ -1,6 +1,5 @@
 import { Holistic, NormalizedLandmark } from '@mediapipe/holistic/'
 import { FaceMesh } from '@mediapipe/face_mesh'
-import { rigController } from 'stores/RigController'
 import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
 // import { PoseResults } from 'stores/MpLandmarksObserver'
 import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
@@ -99,9 +98,9 @@ export function startMpActions(avatar: Avatar): Promise<void> {
           const shoulders = { l: lShoulder, r: rShoulder }
           const elbows = { l: lElbow, r: rElbow }
           const hands = { l: lHand, r: rHand }
-          avatar.vrmIK?.trackPose(hands, elbows, shoulders)
-          if (videoElement)
-            rigController.setRig(
+          avatar.vrmIK?.trackTargets(hands, elbows, shoulders)
+          if (videoElement && avatar.vrmFK)
+            avatar.vrmFK.setRig(
               mediapipeLandmarks.resultLandmarks,
               videoElement,
             )

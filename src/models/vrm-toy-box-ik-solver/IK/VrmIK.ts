@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as IKSolver from './IKSolver'
 import { defaultIKConfig } from './DefaultConfig'
-import { aiRim, avatarRim } from './types'
+import { avatarRim, aiRim } from 'types'
 
 export class VrmIK {
   private _chains: Array<IKSolver.IKChain>
@@ -35,8 +35,7 @@ export class VrmIK {
     return this._chains
   }
 
-  // TODO: updateの方が良い？
-  public solve() {
+  solve() {
     // FIX: ただ，肘からsolveしたいだけ．もっといい書き方があるはず
     this._chains.forEach((chain) => {
       if (
@@ -54,12 +53,7 @@ export class VrmIK {
     })
   }
 
-  public trackPose(handPos: aiRim, elbowPos: aiRim, shoulderPos: aiRim) {
-    this._trackTargets(handPos, elbowPos, shoulderPos)
-    this.solve()
-  }
-
-  private _trackTargets(handPos: aiRim, elbowPos: aiRim, shoulderPos: aiRim) {
+  trackTargets(handPos: aiRim, elbowPos: aiRim, shoulderPos: aiRim) {
     // const offset = new THREE.Vector3(0.5, 1.5, 0)
 
     // Track L_Hand IK Target

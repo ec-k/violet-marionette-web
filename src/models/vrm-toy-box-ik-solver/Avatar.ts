@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { VRM } from '@pixiv/three-vrm'
-
 import { VrmIK } from './IK'
+import { VrmFK } from './VrmFK'
 import { makeObservable, observable, action } from 'mobx'
 
 export class Avatar {
@@ -10,6 +10,7 @@ export class Avatar {
   public vrm: VRM | null
   public avatarSrc: string | null = null
   private _vrmIK: VrmIK | null = null
+  private _vrmFK: VrmFK | null = null
 
   constructor(scene?: THREE.Scene) {
     makeObservable(this, {
@@ -25,6 +26,9 @@ export class Avatar {
 
   get vrmIK() {
     return this._vrmIK
+  }
+  get vrmFK() {
+    return this._vrmFK
   }
   setAvatarSrc(url: string) {
     this.avatarSrc = url
@@ -52,12 +56,12 @@ export class Avatar {
     this.setVRM(vrm)
 
     this._vrmIK = new VrmIK(vrm)
+    this._vrmFK = new VrmFK()
   }
 
-  public update() {
-    //this._vrm.update(deltaTime);
-
-    if (!!this._vrmIK) this._vrmIK.solve()
+  public updatePose(enabledIK: boolean = true) {
+    if (enabledIK && !!this._vrmIK) this._vrmIK.solve()
+    if (!!this._vrmFK && !!this.vrm) this._vrmFK.setPose(this.vrm, !enabledIK)
   }
 }
 

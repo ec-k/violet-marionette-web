@@ -1,8 +1,6 @@
 import * as THREE from 'three'
 import React from 'react'
 import { /*autorun,*/ IReactionDisposer, reaction } from 'mobx'
-import { rigController } from 'stores/RigController'
-import { VRMRigs } from 'stores/RigController'
 import styled from 'styled-components'
 import networkHandler from 'models/NetworkHandler'
 import { uiStores } from 'stores/uiStores'
@@ -61,7 +59,7 @@ export const VRMSceneScreen: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const sceneRef = React.useRef<VRMScene | null>(null)
 
-  const render3d = (rig?: VRMRigs | null) => {
+  const render3d = () => {
     const scene = sceneRef.current
     const viewer = sceneRef.current?.viewer
     const glCtx = viewer?.renderer?.getContext()
@@ -71,7 +69,7 @@ export const VRMSceneScreen: React.FC = () => {
         viewer.scene.add(vrm.scene)
         isAddedVrm = true
       }
-      if (rig) rigController.setVrmPose(vrm, rig)
+      if (avatar) avatar.updatePose()
       vrm.update(scene.clock.getDelta())
       viewer.renderer.render(viewer.scene, viewer.camera)
     }
@@ -82,7 +80,7 @@ export const VRMSceneScreen: React.FC = () => {
     if (sendActive) networkHandler.SendPoseMessage(vrm)
   }, 1000 / fps)
   const mainRoop = () => {
-    render3d(rigController.rig)
+    render3d()
     sendPose(sceneRef.current?.avatar.vrm!, uiStores.startSendMotion)
     requestAnimationFrame(mainRoop)
   }
