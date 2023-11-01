@@ -7,14 +7,15 @@ import {
   FormControlLabel,
   // ToggleButtonGroup,
   // ToggleButton,
-  // Button,
+  Button,
 } from '@mui/material'
 // import VM_TextField from 'components/leftwindow/VM_TextField'
-// import { trackingSettings } from 'stores/settings'
 import purple from '@mui/material/colors/purple'
+import { trackingSettings } from 'stores/settings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showResult, setShowResult] = React.useState<boolean>(true)
+  const [activatedLeg, setActivatedLeg] = React.useState<boolean>(false)
   // const [aligntment, setAlignment] = React.useState<string>(
   //   trackingSettings.coefCalculationBase_,
   // )
@@ -41,6 +42,14 @@ const TrackingSettingWindow: React.FC = () => {
   //   console.log(event) // Fixme: this is for escaping worning for not using variable
   //   if (newAlignt !== null) setAlignment(newAlignt)
   // }
+  const _activateLeg = () => {
+    trackingSettings.enableLeg = true
+    setActivatedLeg(trackingSettings.enableLeg)
+  }
+  const _disactivateLeg = () => {
+    trackingSettings.enableLeg = false
+    setActivatedLeg(trackingSettings.enableLeg)
+  }
 
   return (
     <>
@@ -116,6 +125,15 @@ const TrackingSettingWindow: React.FC = () => {
           control={<Switch color="primary" defaultChecked />}
           label="Foot Tracking"
         /> */}
+        {activatedLeg ? (
+          <Button variant="contained" color="primary" onClick={_disactivateLeg}>
+            Move Leg
+          </Button>
+        ) : (
+          <Button variant="outlined" color="primary" onClick={_activateLeg}>
+            Move Leg
+          </Button>
+        )}
       </Stack>
     </>
   )

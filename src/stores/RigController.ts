@@ -2,6 +2,7 @@ import * as Kalidokit from 'kalidokit'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { action, makeObservable, observable } from 'mobx'
+import { trackingSettings } from './settings'
 
 type HumanoidBoneNameKey = keyof typeof VRMSchema.HumanoidBoneName
 
@@ -203,10 +204,12 @@ class RigController {
       this.rigRotation(vrm, 'LeftUpperArm', rig.pose.LeftUpperArm, 1, 0.3)
       this.rigRotation(vrm, 'LeftLowerArm', rig.pose.LeftLowerArm, 1, 0.3)
 
-      this.rigRotation(vrm, 'LeftUpperLeg', rig.pose.LeftUpperLeg, 1, 0.3)
-      this.rigRotation(vrm, 'LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
-      this.rigRotation(vrm, 'RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
-      this.rigRotation(vrm, 'RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
+      if (trackingSettings.enableLeg) {
+        this.rigRotation(vrm, 'LeftUpperLeg', rig.pose.LeftUpperLeg, 1, 0.3)
+        this.rigRotation(vrm, 'LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
+        this.rigRotation(vrm, 'RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
+        this.rigRotation(vrm, 'RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
+      }
 
       if (rig.leftHand) {
         this.rigRotation(vrm, 'LeftHand', {
