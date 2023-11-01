@@ -1,21 +1,14 @@
 import * as Kalidokit from 'kalidokit'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
-import { action, makeObservable, observable } from 'mobx'
 import { trackingSettings } from '../../stores/settings'
 import { KalidokitRig, HumanoidBoneNameKey } from 'types'
 
 export class VrmFK {
   private _lerp = Kalidokit.Vector.lerp
   private _clamp = Kalidokit.Utils.clamp
-  public rig: KalidokitRig | null = null
+  private _rig: KalidokitRig | null = null
 
-  constructor() {
-    makeObservable(this, {
-      rig: observable.ref,
-      setRig: action,
-    })
-  }
   setRig(results: any, videoEl: HTMLVideoElement) {
     const facelm = results.facelm
     const poselm = results.poselm
@@ -40,7 +33,7 @@ export class VrmFK {
       leftHand: leftHandlm && Kalidokit.Hand.solve(leftHandlm, 'Left'),
       rightHand: rightHandlm && Kalidokit.Hand.solve(rightHandlm, 'Right'),
     }
-    this.rig = vrmRigs
+    this._rig = vrmRigs
   }
 
   private _rigRotation = (
@@ -165,7 +158,7 @@ export class VrmFK {
   }
 
   setPose(vrm: VRM, enabledFK: boolean): void {
-    const rig = this.rig
+    const rig = this._rig
     if (!rig) return
     if (!vrm) return
 
@@ -267,8 +260,8 @@ export class VrmFK {
           'LeftThumbIntermediate',
           rig.leftHand.LeftThumbIntermediate,
         )
-        // this._rigRotation(vrm, 'LeftThumbMetacarpal', this.rig.leftHand.LeftThumbProximal)
-        // this._rigRotation(vrm, 'LeftThumbProximal', this.rig.leftHand.LeftThumbIntermediate)
+        // this._rigRotation(vrm, 'LeftThumbMetacarpal', this._rig.leftHand.LeftThumbProximal)
+        // this._rigRotation(vrm, 'LeftThumbProximal', this._rig.leftHand.LeftThumbIntermediate)
         this._rigRotation(vrm, 'LeftThumbDistal', rig.leftHand.LeftThumbDistal)
         this._rigRotation(
           vrm,
@@ -346,8 +339,8 @@ export class VrmFK {
           'RightThumbIntermediate',
           rig.rightHand.RightThumbIntermediate,
         )
-        // this._rigRotation(vrm, 'RightThumbMetacarpal', this.rig.rightHand.RightThumbProximal)
-        // this._rigRotation(vrm, 'RightThumbProximal', this.rig.rightHand.RightThumbIntermediate)
+        // this._rigRotation(vrm, 'RightThumbMetacarpal', this._rig.rightHand.RightThumbProximal)
+        // this._rigRotation(vrm, 'RightThumbProximal', this._rig.rightHand.RightThumbIntermediate)
         this._rigRotation(
           vrm,
           'RightThumbDistal',

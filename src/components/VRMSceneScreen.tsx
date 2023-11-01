@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import React from 'react'
-import { /*autorun,*/ IReactionDisposer, reaction } from 'mobx'
+import { IReactionDisposer, reaction } from 'mobx'
 import styled from 'styled-components'
 import networkHandler from 'models/NetworkHandler'
 import { uiStores } from 'stores/uiStores'
