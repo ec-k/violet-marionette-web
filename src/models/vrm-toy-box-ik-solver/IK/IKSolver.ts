@@ -1,18 +1,18 @@
-import * as THREE from 'three'
+import { Vector3, Quaternion, Object3D } from 'three'
 import { VRMSchema } from '@pixiv/three-vrm'
 
 // 計算用の一時的な変数
 // 不要なインスタンス化をさける
-const _goalPosition = new THREE.Vector3()
-const _joint2GoalVector = new THREE.Vector3()
-const _effectorPosition = new THREE.Vector3()
-const _joint2EffectorVector = new THREE.Vector3()
-const _jointPosition = new THREE.Vector3()
-const _jointQuaternionInverse = new THREE.Quaternion()
-const _jointScale = new THREE.Vector3()
-const _axis = new THREE.Vector3()
-const _vector = new THREE.Vector3()
-const _quarternion = new THREE.Quaternion()
+const _goalPosition = new Vector3()
+const _joint2GoalVector = new Vector3()
+const _effectorPosition = new Vector3()
+const _joint2EffectorVector = new Vector3()
+const _jointPosition = new Vector3()
+const _jointQuaternionInverse = new Quaternion()
+const _jointScale = new Vector3()
+const _axis = new Vector3()
+const _vector = new Vector3()
+const _quarternion = new Quaternion()
 
 export const solve = (ikChain: IKChain, iteration: number) => {
   // 目標位置のワールド座標
@@ -85,16 +85,16 @@ export const solve = (ikChain: IKChain, iteration: number) => {
 }
 
 export interface IKChain {
-  goal: THREE.Object3D
-  effector: THREE.Object3D // VRM.VRMHumanoid.getBoneNode() で取得することを想定
+  goal: Object3D
+  effector: Object3D // VRM.VRMHumanoid.getBoneNode() で取得することを想定
   joints: Array<Joint>
 }
 
 export interface Joint {
-  bone: THREE.Object3D
+  bone: Object3D
   order: 'XYZ' | 'YZX' | 'ZXY' | 'XZY' | 'YXZ' | 'ZYX'
-  rotationMin: THREE.Vector3
-  rotationMax: THREE.Vector3
+  rotationMin: Vector3
+  rotationMax: Vector3
 }
 
 // VRM から IKChainを生成するための情報
@@ -115,6 +115,6 @@ export interface JointConfig {
   order: 'XYZ' | 'YZX' | 'ZXY' | 'XZY' | 'YXZ' | 'ZYX'
 
   // オイラー角による関節角度制限
-  rotationMin: THREE.Vector3 // -pi ~ pi
-  rotationMax: THREE.Vector3 // -pi ~ pi
+  rotationMin: Vector3 // -pi ~ pi
+  rotationMax: Vector3 // -pi ~ pi
 }

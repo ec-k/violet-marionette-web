@@ -3,6 +3,7 @@ import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { trackingSettings } from '../../stores/settings'
 import { KalidokitRig, HumanoidBoneNameKey } from 'types'
+import { NormalizedLandmarkList } from '@mediapipe/holistic'
 
 export class VrmFK {
   private _lerp = Kalidokit.Vector.lerp
@@ -15,6 +16,12 @@ export class VrmFK {
     const poselm3d = results.poselm3d
     const rightHandlm = results.rightHandlm
     const leftHandlm = results.leftHandlm
+
+    this._rotateResults(poselm)
+    this._rotateResults(poselm3d)
+    this._rotateResults(rightHandlm)
+    this._rotateResults(leftHandlm)
+
     const vrmRigs: KalidokitRig = {
       face:
         facelm &&
@@ -36,6 +43,16 @@ export class VrmFK {
     this._rig = vrmRigs
   }
 
+  // Coordinate transformation with camera angle.
+  private _rotateResults(LMs: NormalizedLandmarkList | undefined) {
+    if (!LMs) return
+    LMs.forEach((lm) => {
+      const angle = trackingSettings.angleWithRadian
+      lm.z = lm.z * Math.cos(angle) - lm.y * Math.sin(angle)
+      lm.y = lm.y * Math.cos(angle) + lm.z * Math.sin(angle)
+    })
+  }
+
   private _rigRotation = (
     vrm: VRM,
     name: HumanoidBoneNameKey,
@@ -53,7 +70,17 @@ export class VrmFK {
       rotation.z * dampener,
     )
     let quaternion = new THREE.Quaternion().setFromEuler(euler)
+    if (name === 'RightUpperArm' || name === 'RightHand')
+      this._rHandRotAdjust(quaternion)
     Part.quaternion.slerp(quaternion, _lerpAmount) // interpolate
+  }
+
+  private _rHandRotAdjust = (quat: THREE.Quaternion) => {
+    quat.premultiply(
+      new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(THREE.MathUtils.degToRad(-45), 0, 0),
+      ),
+    )
   }
 
   private _rigPosition = (
@@ -206,13 +233,12 @@ export class VrmFK {
       }
 
       if (rig.leftHand) {
-        if (enabledFK) {
+        if (enabledFK)
           this._rigRotation(vrm, 'LeftHand', {
             z: rig.pose.LeftHand.z,
             y: rig.leftHand.LeftWrist.y,
             x: rig.leftHand.LeftWrist.x,
           })
-        }
         this._rigRotation(
           vrm,
           'LeftRingProximal',
@@ -280,14 +306,13 @@ export class VrmFK {
         )
       }
       if (rig.rightHand) {
-        if (enabledFK) {
+        if (enabledFK)
           this._rigRotation(vrm, 'RightHand', {
             // Combine Z axis from pose hand and X/Y axis from hand wrist rotation
             z: rig.pose.RightHand.z,
             y: rig.rightHand.RightWrist.y,
             x: rig.rightHand.RightWrist.x,
           })
-        }
         this._rigRotation(
           vrm,
           'RightRingProximal',

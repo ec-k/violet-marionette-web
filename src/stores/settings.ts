@@ -12,7 +12,7 @@ class NetworkSettings {
 
 class TrackingSettings {
   enableLeg: boolean = false
-  enabledIK: boolean = false
+  enabledIK: boolean = true
   private _cameraDepressionAngle: number = 15 // degree
 
   get cameraDepressionAngle() {

@@ -1,8 +1,8 @@
 import { networkSettings } from 'stores/settings'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
-import { ConvertBoneName } from './utils/ConvertBoneName'
+import { ConvertBoneName } from './utils'
 import { Euler, Quaternion } from 'three'
-import { getGlobalRotation } from './utils/GetGlobalRotation'
+import { getGlobalRotation } from './utils'
 
 class NetworkHandler {
   private ws_: WebSocket | undefined = undefined

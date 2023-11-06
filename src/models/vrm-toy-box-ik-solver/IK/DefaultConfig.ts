@@ -103,6 +103,44 @@ export const defaultIKConfig: IKConfig = {
       ],
       effectorBoneName: VRMSchema.HumanoidBoneName.LeftLowerArm,
     },
+    // // Left Shoulder -> Hand Tips
+    // {
+    //   jointConfigs: [
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.LeftLowerArm,
+    //       order: 'YZX',
+    //       rotationMin: new Vector3(
+    //         0,
+    //         -(45 / 180) * Math.PI,
+    //         -(45 / 180) * Math.PI,
+    //       ),
+    //       rotationMax: new Vector3(0, (45 / 180) * Math.PI, 0),
+    //     },
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.LeftLowerArm,
+    //       order: 'YZX',
+    //       rotationMin: new Vector3(0, -Math.PI, 0),
+    //       rotationMax: new Vector3(0, -(0.1 / 180) * Math.PI, 0),
+    //     },
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.LeftUpperArm,
+    //       order: 'ZXY',
+    //       rotationMin: new Vector3(-Math.PI / 2, -Math.PI, -Math.PI),
+    //       rotationMax: new Vector3(Math.PI / 2, Math.PI, Math.PI),
+    //     },
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.LeftShoulder,
+    //       order: 'ZXY',
+    //       rotationMin: new Vector3(
+    //         0,
+    //         -(45 / 180) * Math.PI,
+    //         -(45 / 180) * Math.PI,
+    //       ),
+    //       rotationMax: new Vector3(0, (45 / 180) * Math.PI, 0),
+    //     },
+    //   ],
+    //   effectorBoneName: VRMSchema.HumanoidBoneName.LeftMiddleProximal,
+    // },
     // Right Shoulder -> Hand
     {
       jointConfigs: [
@@ -153,6 +191,44 @@ export const defaultIKConfig: IKConfig = {
       ],
       effectorBoneName: VRMSchema.HumanoidBoneName.RightLowerArm,
     },
+    // // Right Shoulder -> Hand Tips
+    // {
+    //   jointConfigs: [
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.RightHand,
+    //       order: 'YZX',
+    //       rotationMin: new Vector3(0, -(45 / 180) * Math.PI, 0),
+    //       rotationMax: new Vector3(
+    //         0,
+    //         (45 / 180) * Math.PI,
+    //         (45 / 180) * Math.PI,
+    //       ),
+    //     },
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.RightLowerArm,
+    //       order: 'YZX',
+    //       rotationMin: new Vector3(0, (0.1 / 180) * Math.PI, 0),
+    //       rotationMax: new Vector3(0, Math.PI, 0),
+    //     },
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.RightUpperArm,
+    //       order: 'ZXY',
+    //       rotationMin: new Vector3(-Math.PI / 2, -Math.PI, -Math.PI),
+    //       rotationMax: new Vector3(Math.PI / 2, Math.PI, Math.PI),
+    //     },
+    //     {
+    //       boneName: VRMSchema.HumanoidBoneName.RightShoulder,
+    //       order: 'ZXY',
+    //       rotationMin: new Vector3(0, -(45 / 180) * Math.PI, 0),
+    //       rotationMax: new Vector3(
+    //         0,
+    //         (45 / 180) * Math.PI,
+    //         (45 / 180) * Math.PI,
+    //       ),
+    //     },
+    //   ],
+    //   effectorBoneName: VRMSchema.HumanoidBoneName.RightMiddleProximal,
+    // },
     // Left Leg
     // {
     //   jointConfigs: [

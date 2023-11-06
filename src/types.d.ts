@@ -21,3 +21,12 @@ export declare type avatarRim = {
   l: GLTFNode
   r: GLTFNode
 }
+
+export declare type hand = {
+  wrist: Vector3
+  middle: Vector3
+  pinky: Vector3
+  isLeft: boolean
+}
+
+export declare type side = 'left' | 'right'
