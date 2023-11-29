@@ -1,7 +1,7 @@
 import React from 'react'
 import { Stack, Button } from '@mui/material'
 import { networkSettings } from 'stores/settings'
-import VM_TextField from 'components/leftwindow/VMTextField'
+import VMTextField from 'components/leftwindow/VMTextField'
 import networkHandler from 'models/NetworkHandler'
 
 const NetworkSettingWindow: React.FC = () => {
@@ -17,7 +17,7 @@ const NetworkSettingWindow: React.FC = () => {
     networkSettings.neosUserName_ = String(userNameInputRef.current?.value)
     networkSettings.host_ = String(hostInputRef.current?.value)
     if (!Number.isNaN(port)) networkSettings.port_ = port
-    if (!Number.isNaN(updateRate)) networkSettings.updateRate_ = updateRate
+    if (!Number.isNaN(updateRate)) networkSettings.updateRate = updateRate
 
     networkHandler.ConnectWS()
   }
@@ -28,27 +28,27 @@ const NetworkSettingWindow: React.FC = () => {
         <Button variant="outlined" color="primary" onClick={handleClick}>
           Update
         </Button>
-        <VM_TextField
+        <VMTextField
           label="User Name (NeosVR)"
           defaultValue={networkSettings.neosUserName_}
           // adornment={{ position: 'start', value: 'U -' }}
           inputRef={userNameInputRef}
         />
-        <VM_TextField
+        <VMTextField
           label="host"
           defaultValue={networkSettings.host_}
           adornment={{ position: 'start', value: 'ws://' }}
           inputRef={hostInputRef}
         />
-        <VM_TextField
+        <VMTextField
           label="port"
           defaultValue={networkSettings.port_}
           inputRef={portInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
-        <VM_TextField
+        <VMTextField
           label="update rate"
-          defaultValue={networkSettings.updateRate_}
+          defaultValue={networkSettings.updateRate}
           adornment={{ position: 'end', value: 'fps' }}
           inputRef={updateRateInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
