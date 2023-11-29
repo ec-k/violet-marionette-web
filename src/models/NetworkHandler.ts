@@ -39,9 +39,6 @@ class NetworkHandler {
     return (
       `#` +
       `${ConvertBoneName(trackingTargetName)},` +
-      `${-position.x.toFixed(this.numberOfDigits)},` +
-      `${position.y.toFixed(this.numberOfDigits)},` +
-      `${position.z.toFixed(this.numberOfDigits)},` +
       `${quaternion.x.toFixed(this.numberOfDigits)},` +
       `${-quaternion.y.toFixed(this.numberOfDigits)},` +
       `${-quaternion.z.toFixed(this.numberOfDigits)},` +
