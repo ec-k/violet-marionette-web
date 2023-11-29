@@ -3,7 +3,7 @@ class NetworkSettings {
   // isBloadcastActive_: boolean = false
   host_: string = 'localhost'
   port_: number = 23000
-  updateRate_: number = 30
+  sendRate: number = 30
 
   get getOrigin() {
     return `ws://${this.host_}:${this.port_}`

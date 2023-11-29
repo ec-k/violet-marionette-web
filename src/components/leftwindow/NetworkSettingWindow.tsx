@@ -8,16 +8,16 @@ const NetworkSettingWindow: React.FC = () => {
   const userNameInputRef = React.useRef<HTMLInputElement | null>(null)
   const hostInputRef = React.useRef<HTMLInputElement | null>(null)
   const portInputRef = React.useRef<HTMLInputElement | null>(null)
-  const updateRateInputRef = React.useRef<HTMLInputElement | null>(null)
+  const sendRateInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const handleClick = () => {
     const port = Number(portInputRef.current?.value)
-    const updateRate = Number(updateRateInputRef.current?.value)
+    const sendRate = Number(sendRateInputRef.current?.value)
 
     networkSettings.neosUserName_ = String(userNameInputRef.current?.value)
     networkSettings.host_ = String(hostInputRef.current?.value)
     if (!Number.isNaN(port)) networkSettings.port_ = port
-    if (!Number.isNaN(updateRate)) networkSettings.updateRate = updateRate
+    if (!Number.isNaN(sendRate)) networkSettings.sendRate = sendRate
 
     networkHandler.ConnectWS()
   }
@@ -48,9 +48,9 @@ const NetworkSettingWindow: React.FC = () => {
         />
         <VMTextField
           label="update rate"
-          defaultValue={networkSettings.updateRate}
+          defaultValue={networkSettings.sendRate}
           adornment={{ position: 'end', value: 'fps' }}
-          inputRef={updateRateInputRef}
+          inputRef={sendRateInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
       </Stack>

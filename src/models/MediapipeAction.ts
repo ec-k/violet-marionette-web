@@ -7,7 +7,7 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 import { uiStores } from 'stores/uiStores'
 import { Vector3 } from 'three'
 import { Avatar } from './vrm-toy-box-ik-solver/Avatar'
-import { trackingSettings } from 'stores/settings'
+import { networkSettings, trackingSettings } from 'stores/settings'
 
 export const holistic = new Holistic({
   locateFile: (file) => {
@@ -31,8 +31,7 @@ faceMesh.setOptions({
   refineLandmarks: true,
 })
 
-let fps: number = 60
-let timeInterval = (1 / fps) * 1000
+let timeInterval = (1 / networkSettings.sendRate) * 1000
 let videoElement: HTMLVideoElement | undefined
 let isMediapipeActive: boolean = false
 
