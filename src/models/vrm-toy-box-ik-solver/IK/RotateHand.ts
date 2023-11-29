@@ -1,12 +1,15 @@
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { Quaternion, Vector3 } from 'three'
 import { aiRim, avatarRim, side } from 'types'
-import * as THREE from 'three'
 
 export class RotateHand {
   private _hands: avatarRim
   private _middleFingerProximal: avatarRim
   private _pinkyFingerProximal: avatarRim
+
+  // private _lowerArms: avatarRim
+
+  // private _armConstraint: ArmConstraint
 
   private _targetRotation = {
     l: new Quaternion().identity(),
@@ -34,12 +37,53 @@ export class RotateHand {
       l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftHand)!,
       r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightHand)!,
     }
+    // this._lowerArms = {
+    //   l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftLowerArm)!,
+    //   r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm)!,
+    // }
+
+    // this._armConstraint = defaultConfig
   }
 
   rotateHands() {
+    // constraintの範囲で手首を回す
     this._hands.l.quaternion.slerp(this._targetRotation.l, 0.3)
     this._hands.r.quaternion.slerp(this._targetRotation.r, 0.3)
+    // this._hands.l.quaternion.slerp(
+    //   rotationClamp(this._targetRotation.l, this._armConstraint.hand),
+    //   0.3,
+    // )
+    // this._hands.r.quaternion.slerp(
+    //   rotationClamp(this._targetRotation.r, this._armConstraint.hand),
+    //   0.3,
+    // )
+
+    // this._rotateRoll(this._targetRotation.l, 0.3, 'left')
+    // this._rotateRoll(this._targetRotation.r, 0.3, 'right')
   }
+
+  // この名前正しくないので，適切な名前に変えよ
+  // setFromAxisAngleで回した方が良いかもなぁ...
+  // _rotateRoll(rotation: Quaternion, slerpAmount: number, side: side) {
+  //   const isLeft = side === 'left'
+  //   const _slerpAmount = MathUtils.clamp(slerpAmount, 0, 1)
+
+  //   if (isLeft) {
+  //     // Rotate lower arm.
+  //     let roll = new Euler().setFromQuaternion(rotation).x
+  //     let rollRot = this._lowerArms.l.quaternion
+  //       .clone()
+  //       .premultiply(new Quaternion().setFromEuler(new Euler(roll, 0, 0)))
+  //     this._lowerArms.l.quaternion.slerp(rollRot, _slerpAmount)
+  //   } else {
+  //     // Rotate lower arm.
+  //     let roll = new Euler().setFromQuaternion(rotation).x
+  //     let rollRot = this._lowerArms.r.quaternion
+  //       .clone()
+  //       .premultiply(new Quaternion().setFromEuler(new Euler(roll, 0, 0)))
+  //     this._lowerArms.r.quaternion.slerp(rollRot, _slerpAmount)
+  //   }
+  // }
 
   setHandTargets(wrists: aiRim, middleProximals: aiRim, pinkyProximals: aiRim) {
     if (!!wrists.l || !!middleProximals.l || !!pinkyProximals.l)
@@ -154,3 +198,38 @@ export class RotateHand {
     return [front, up]
   }
 }
+
+// // lとrとは，eulerのy, zを反転させればいい
+// // 反転：minとmaxを入れ替えて，それぞれの成分に-1をかける
+// interface ArmConstraint {
+//   // upperArm: Range
+//   // lowerArm: Range
+//   hand: Range
+// }
+// interface Range {
+//   min: Euler
+//   max: Euler
+// }
+// // 左手を基準とする
+// const defaultConfig = {
+//   // upperArm: {
+//   //   min: new Euler(-Math.PI / 2, -Math.PI / 3, (-Math.PI * 2) / 3),
+//   //   max: new Euler(0, (Math.PI * 2) / 3, Math.PI * 2),
+//   // },
+//   // lowerArm: {
+//   //   min: new Euler(-Math.PI / 2, (-Math.PI * 2) / 3, 0),
+//   //   max: new Euler(Math.PI / 2, 0, 0),
+//   // },
+//   hand: {
+//     min: new Euler(0, -Math.PI / 4, -Math.PI / 2),
+//     max: new Euler(0, Math.PI / 4, Math.PI / 2),
+//   },
+// }
+
+// const rotationClamp = (q: Quaternion, constraint: Range) => {
+//   const euler = new Euler().setFromQuaternion(q)
+//   euler.x = MathUtils.clamp(euler.x, constraint.min.x, constraint.max.x)
+//   euler.y = MathUtils.clamp(euler.y, constraint.min.y, constraint.max.y)
+//   euler.z = MathUtils.clamp(euler.z, constraint.min.z, constraint.max.z)
+//   return new Quaternion().setFromEuler(euler)
+// }
