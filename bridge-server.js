@@ -8,7 +8,12 @@ console.log('Start server')
 
 ws.on('connection', (socket) => {
   const uuid = crypto.randomUUID()
-  socket.send('Request attributes.')
+  socket.send(
+    JSON.stringify({
+      messageType: 'websocketSetting',
+      data: 'Request attributes.',
+    }),
+  )
 
   let userName = { current: '' }
 
@@ -19,6 +24,7 @@ ws.on('connection', (socket) => {
     switch (message.messageType) {
       case 'trackingData':
         if (message.userName.length <= 0) break
+        if (!(message.userName in connectionMap)) break
         Object.keys(connectionMap[message.userName]).forEach((uuid) => {
           const client = connectionMap[message.userName][uuid]
           if (client.connectionType === 'resoniteClient')
@@ -38,7 +44,19 @@ ws.on('connection', (socket) => {
         )
         break
       case 'connectionCheck':
-        socket.send('pong')
+        socket.send(
+          JSON.stringify({ messageType: 'connectionCheck', data: 'pong' }),
+        )
+        break
+      case 'notification':
+        if (message.userName.length <= 0) break
+        Object.keys(connectionMap[message.userName]).forEach((uuid) => {
+          const client = connectionMap[message.userName][uuid]
+          if (client.connectionType === 'webClient')
+            client.socket.send(
+              JSON.stringify({ messageType: 'notification', data: data }),
+            )
+        })
         break
       default:
         break

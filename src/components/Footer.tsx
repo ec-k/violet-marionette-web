@@ -9,7 +9,7 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff'
 import WifiIcon from '@mui/icons-material/Wifi'
 import WifiOffIcon from '@mui/icons-material/WifiOff'
 import CircularProgress from '@mui/material/CircularProgress'
-import { autorun } from 'mobx'
+import { autorun, IReactionDisposer } from 'mobx'
 
 type MediapipeState = 'stop' | 'loading' | 'active'
 
@@ -48,9 +48,15 @@ const Footer: React.FC = () => {
   }
 
   React.useEffect(() => {
-    autorun(() => {
-      if (uiStores.startTrack === 'active') setStartTracking('active')
-    })
+    const dispo: IReactionDisposer[] = []
+    dispo.push(
+      autorun(() => {
+        if (uiStores.startTrack === 'active') setStartTracking('active')
+      }),
+    )
+    return () => {
+      for (const d of dispo) d()
+    }
   }, [])
 
   return (

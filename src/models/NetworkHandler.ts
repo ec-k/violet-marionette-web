@@ -5,7 +5,11 @@ import { Euler, Quaternion } from 'three'
 import { getGlobalRotation } from './utils'
 
 type ConnectionType = 'resoniteClient' | 'webClient' | 'server'
-type MessageType = 'trackingData' | 'websocketSetting' | 'connectionCheck'
+type MessageType =
+  | 'trackingData'
+  | 'websocketSetting'
+  | 'connectionCheck'
+  | 'notification'
 interface VmMessage {
   userName: string
   connectionType: ConnectionType
@@ -19,31 +23,51 @@ const _connectionType = 'webClient'
 class NetworkHandler {
   private _ws: WebSocket | undefined = undefined
   private _numberOfDigits = 4
-  private _connectionCheckInterval = 10 * 1000 // [ms]
+  private _connectionCheckInterval = 5 * 1000 // [ms]
   private _checkTimer: NodeJS.Timeout | undefined
 
-  constructor() {
-    this._connect()
+  get existWebsocket() {
+    return !!this._ws
   }
 
-  private _connect() {
+  constructor() {
+    this.connect()
+    if (Notification.permission !== 'granted') Notification.requestPermission()
+  }
+
+  connect() {
     if (!!this._ws && this._ws.readyState === this._ws.OPEN) this._ws.close()
     this._ws = new WebSocket(networkSettings.origin)
     this._checkConnection()
 
     if (!!this._ws) {
       this._ws.onmessage = (event: MessageEvent) => {
-        switch (event.data) {
-          case 'Request attributes.':
-            this.sendAttributes()
+        const message: VmData = JSON.parse(event.data)
+        const msType = message.messageType
+        const data = message.data
+        switch (msType) {
+          case 'websocketSetting':
+            if (data === 'Request attributes.') this.sendAttributes()
             break
-          case 'pong':
-            if (!!this._checkTimer) clearTimeout(this._checkTimer)
-            this._checkConnection()
+          case 'connectionCheck':
+            if (data === 'pong') {
+              if (!!this._checkTimer) clearTimeout(this._checkTimer)
+              this._checkConnection()
+            }
+            break
+          case 'notification':
+            if (Notification.permission === 'granted')
+              new Notification(data as string)
             break
           default:
             break
         }
+      }
+      this._ws.onopen = () => {
+        this._connectionCheckInterval = 30 * 1000
+      }
+      this._ws.onclose = () => {
+        this._connectionCheckInterval = 5 * 1000
       }
     }
   }
@@ -53,14 +77,14 @@ class NetworkHandler {
       this.send({ messageType: 'connectionCheck', data: 'ping' })
       const checkTimeDeadline = 1 * 1000 //[ms]
       this._checkTimer = setTimeout(() => {
-        this._connect()
+        this.connect()
         this._checkTimer = undefined
       }, checkTimeDeadline)
     }, this._connectionCheckInterval)
   }
 
   send(ms: VmData) {
-    if (!this._ws) return
+    if (!this._ws || this._ws.readyState !== this._ws.OPEN) return
     const message: VmMessage = {
       userName: networkSettings.userName,
       connectionType: _connectionType,
