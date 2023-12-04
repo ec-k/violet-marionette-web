@@ -21,12 +21,6 @@ class NetworkSettings {
   get getOrigin() {
     return `ws://${this._host}:${this._port}`
   }
-  set host(_host: string) {
-    this._host = _host
-  }
-  set port(_port: number) {
-    this._port = _port
-  }
 }
 
 class TrackingSettings {

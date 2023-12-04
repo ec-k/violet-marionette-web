@@ -7,17 +7,12 @@ import { IReactionDisposer, reaction } from 'mobx'
 
 const NetworkSettingWindow: React.FC = () => {
   const userNameInputRef = React.useRef<HTMLInputElement | null>(null)
-  const hostInputRef = React.useRef<HTMLInputElement | null>(null)
-  const portInputRef = React.useRef<HTMLInputElement | null>(null)
   const sendRateInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const handleClick = () => {
-    const port = Number(portInputRef.current?.value)
     const sendRate = Number(sendRateInputRef.current?.value)
 
     networkSettings.userName = String(userNameInputRef.current?.value)
-    networkSettings.host = String(hostInputRef.current?.value)
-    if (!Number.isNaN(port)) networkSettings.port = port
     if (!Number.isNaN(sendRate)) networkSettings.sendRate = sendRate
 
     // networkHandler.ConnectWS()
@@ -42,22 +37,10 @@ const NetworkSettingWindow: React.FC = () => {
           Update
         </Button>
         <VMTextField
-          label="User Name (NeosVR)"
+          label="User Name (Resonite)"
           defaultValue={networkSettings.userName}
           // adornment={{ position: 'start', value: 'U -' }}
           inputRef={userNameInputRef}
-        />
-        <VMTextField
-          label="host"
-          defaultValue={networkSettings.host}
-          adornment={{ position: 'start', value: 'ws://' }}
-          inputRef={hostInputRef}
-        />
-        <VMTextField
-          label="port"
-          defaultValue={networkSettings.port}
-          inputRef={portInputRef}
-          inputProps={{ pattern: '^[0-9]+$' }}
         />
         <VMTextField
           label="update rate"
