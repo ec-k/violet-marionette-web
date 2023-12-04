@@ -224,6 +224,13 @@ export class VrmFK {
         this._rigRotation(vrm, 'LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
         this._rigRotation(vrm, 'RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
         this._rigRotation(vrm, 'RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
+      } else if (trackingSettings.sit) {
+        const upperLegRot = new THREE.Euler(Math.PI / 2, 0, 0)
+        const lowerLegRot = new THREE.Euler(-Math.PI / 2, 0, 0)
+        this._rigRotation(vrm, 'LeftUpperLeg', upperLegRot, 1, 0.3)
+        this._rigRotation(vrm, 'LeftLowerLeg', lowerLegRot, 1, 0.3)
+        this._rigRotation(vrm, 'RightUpperLeg', upperLegRot, 1, 0.3)
+        this._rigRotation(vrm, 'RightLowerLeg', lowerLegRot, 1, 0.3)
       } else {
         const defaultRot = new THREE.Quaternion(0, 0, 0, 1)
         this._rigRotation(vrm, 'LeftUpperLeg', defaultRot, 1, 0.3)

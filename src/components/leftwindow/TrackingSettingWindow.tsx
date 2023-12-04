@@ -14,6 +14,7 @@ const TrackingSettingWindow: React.FC = () => {
     trackingSettings.enabledIK,
   )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
+  const [sit, setSit] = React.useState<boolean>(trackingSettings.sit)
 
   const toggleShowResults = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowResult(event.target.checked)
@@ -29,6 +30,10 @@ const TrackingSettingWindow: React.FC = () => {
   const toggleIKActivation = () => {
     trackingSettings.enabledIK = !enabledIK
     setEnabledIK(!enabledIK)
+  }
+  const toggleSit = () => {
+    trackingSettings.sit = !sit
+    setSit(!sit)
   }
 
   return (
@@ -85,6 +90,13 @@ const TrackingSettingWindow: React.FC = () => {
             />
           }
           label="Use IK (arm)"
+          sx={{ color: purple[50] }}
+        />
+        <FormControlLabel
+          control={
+            <Switch color="primary" defaultChecked={sit} onChange={toggleSit} />
+          }
+          label="sit"
           sx={{ color: purple[50] }}
         />
         {/* {activatedLeg ? (

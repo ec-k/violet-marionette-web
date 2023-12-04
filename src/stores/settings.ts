@@ -27,6 +27,7 @@ class TrackingSettings {
   enableLeg: boolean = false
   enabledIK: boolean = true
   private _cameraDepressionAngle: number = 15 // degree
+  sit: boolean = false
 
   get cameraDepressionAngle() {
     return this._cameraDepressionAngle
