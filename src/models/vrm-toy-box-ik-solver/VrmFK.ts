@@ -83,23 +83,23 @@ export class VrmFK {
     )
   }
 
-  private _rigPosition = (
-    vrm: VRM,
-    name: HumanoidBoneNameKey,
-    position = { x: 0, y: 0, z: 0 },
-    dampener = 1,
-    _lerpAmount = 0.3,
-  ) => {
-    if (!vrm.humanoid) return
-    const Part = vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[name])
-    if (!Part) return
-    let vector = new THREE.Vector3(
-      position.x * dampener,
-      position.y * dampener,
-      position.z * dampener,
-    )
-    Part.position.lerp(vector, _lerpAmount)
-  }
+  // private _rigPosition = (
+  //   vrm: VRM,
+  //   name: HumanoidBoneNameKey,
+  //   position = { x: 0, y: 0, z: 0 },
+  //   dampener = 1,
+  //   _lerpAmount = 0.3,
+  // ) => {
+  //   if (!vrm.humanoid) return
+  //   const Part = vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[name])
+  //   if (!Part) return
+  //   let vector = new THREE.Vector3(
+  //     position.x * dampener,
+  //     position.y * dampener,
+  //     position.z * dampener,
+  //   )
+  //   Part.position.lerp(vector, _lerpAmount)
+  // }
 
   private _oldLookTarget = new THREE.Euler()
   private _rigFace(vrm: VRM, riggedFace: Kalidokit.TFace) {
@@ -196,18 +196,18 @@ export class VrmFK {
 
     // Animate Pose
     if (rig.pose) {
-      this._rigRotation(vrm, 'Hips', rig.pose.Hips.rotation, 0.7)
-      this._rigPosition(
-        vrm,
-        'Hips',
-        {
-          x: -rig.pose.Hips.position.x,
-          y: rig.pose.Hips.position.y + 1,
-          z: -rig.pose.Hips.position.z,
-        },
-        1,
-        0.07,
-      )
+      // this._rigRotation(vrm, 'Hips', rig.pose.Hips.rotation, 0.7)
+      // this._rigPosition(
+      //   vrm,
+      //   'Hips',
+      //   {
+      //     x: -rig.pose.Hips.position.x,
+      //     y: rig.pose.Hips.position.y + 1,
+      //     z: -rig.pose.Hips.position.z,
+      //   },
+      //   1,
+      //   0.07,
+      // )
 
       this._rigRotation(vrm, 'Chest', rig.pose.Spine, 0.25, 0.3)
       this._rigRotation(vrm, 'Spine', rig.pose.Spine, 0.45, 0.3)
