@@ -7,11 +7,10 @@ const connectionMap = {}
 console.log('Start server')
 
 ws.on('connection', (socket) => {
-  console.log('connected!')
+  const uuid = crypto.randomUUID()
   socket.send('Request attributes.')
 
-  let userName = { prev: '' }
-  const uuid = crypto.randomUUID()
+  let userName = { current: '' }
 
   socket.on('message', (ms) => {
     const message = JSON.parse(ms)
@@ -34,6 +33,9 @@ ws.on('connection', (socket) => {
           userName,
           uuid,
         )
+        console.log(
+          `connected: {user:${data.userName}, type:${data.connectionType}}`,
+        )
         break
 
       default:
@@ -43,7 +45,13 @@ ws.on('connection', (socket) => {
   })
 
   socket.on('close', () => {
-    console.log('good bye.')
+    if (userName.current in connectionMap) {
+      const connection = connectionMap[userName.current][uuid]
+      console.log(
+        `closed: {user:${userName.current}, type:${connection.connectionType}}`,
+      )
+      delete connectionMap[userName.current][uuid]
+    }
   })
 })
 
@@ -65,14 +73,14 @@ const setVmConnectionAttribute = (
   uuid,
 ) => {
   if (checkConnectionType(connectionType)) {
-    if (userName.prev in connectionMap)
-      delete connectionMap[userName.prev][uuid]
+    if (userName.current in connectionMap)
+      delete connectionMap[userName.current][uuid]
     if (!(newUserName in connectionMap)) connectionMap[newUserName] = {}
     connectionMap[newUserName][uuid] = {
       connectionType: connectionType,
       socket: socket,
     }
-    userName.prev = newUserName
+    userName.current = newUserName
 
     deleteEmptyList()
     console.log(connectionMap)
