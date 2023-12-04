@@ -5,7 +5,7 @@ import { Euler, Quaternion } from 'three'
 import { getGlobalRotation } from './utils'
 
 type ConnectionType = 'resoniteClient' | 'webClient' | 'server'
-type MessageType = 'trackingData' | 'websocketSetting'
+type MessageType = 'trackingData' | 'websocketSetting' | 'connectionCheck'
 interface VmMessage {
   userName: string
   connectionType: ConnectionType
@@ -19,22 +19,44 @@ const _connectionType = 'webClient'
 class NetworkHandler {
   private _ws: WebSocket | undefined = undefined
   private _numberOfDigits = 4
+  private _connectionCheckInterval = 10 * 1000 // [ms]
+  private _checkTimer: NodeJS.Timeout | undefined
 
   constructor() {
-    this.ConnectWS()
+    this._connect()
+  }
+
+  private _connect() {
+    if (!!this._ws && this._ws.readyState === this._ws.OPEN) this._ws.close()
+    this._ws = new WebSocket(networkSettings.origin)
+    this._checkConnection()
 
     if (!!this._ws) {
       this._ws.onmessage = (event: MessageEvent) => {
-        if (event.data === 'Request attributes.') {
-          this.sendAttributes()
+        switch (event.data) {
+          case 'Request attributes.':
+            this.sendAttributes()
+            break
+          case 'pong':
+            if (!!this._checkTimer) clearTimeout(this._checkTimer)
+            this._checkConnection()
+            break
+          default:
+            break
         }
       }
     }
   }
 
-  ConnectWS(): void {
-    if (this._ws) this._ws.close()
-    this._ws = new WebSocket(networkSettings.getOrigin)
+  private _checkConnection = () => {
+    setTimeout(() => {
+      this.send({ messageType: 'connectionCheck', data: 'ping' })
+      const checkTimeDeadline = 1 * 1000 //[ms]
+      this._checkTimer = setTimeout(() => {
+        this._connect()
+        this._checkTimer = undefined
+      }, checkTimeDeadline)
+    }, this._connectionCheckInterval)
   }
 
   send(ms: VmData) {

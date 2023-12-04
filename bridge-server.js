@@ -37,9 +37,10 @@ ws.on('connection', (socket) => {
           `connected: {user:${data.userName}, type:${data.connectionType}}`,
         )
         break
-
+      case 'connectionCheck':
+        socket.send('pong')
+        break
       default:
-        console.log('default')
         break
     }
   })
@@ -83,7 +84,6 @@ const setVmConnectionAttribute = (
     userName.current = newUserName
 
     deleteEmptyList()
-    console.log(connectionMap)
   }
 }
 

@@ -18,7 +18,7 @@ class NetworkSettings {
     this.userName = userName
   }
 
-  get getOrigin() {
+  get origin() {
     return `ws://${this._host}:${this._port}`
   }
 }
