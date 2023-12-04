@@ -4,18 +4,48 @@ import { ConvertBoneName } from './utils'
 import { Euler, Quaternion } from 'three'
 import { getGlobalRotation } from './utils'
 
+type ConnectionType = 'resoniteClient' | 'webClient' | 'server'
+type MessageType = 'trackingData' | 'websocketSetting'
+interface VmMessage {
+  userName: string
+  connectionType: ConnectionType
+  messageType: MessageType
+  data: string | VmAttribute
+}
+type VmData = Pick<VmMessage, 'messageType' | 'data'>
+type VmAttribute = Pick<VmMessage, 'userName' | 'connectionType'>
+const _connectionType = 'webClient'
+
 class NetworkHandler {
-  private ws_: WebSocket | undefined = undefined
-  private oscAddressHead = '/violet-marionette/'
-  private numberOfDigits = 4
+  private _ws: WebSocket | undefined = undefined
+  private _numberOfDigits = 4
 
   constructor() {
     this.ConnectWS()
+
+    if (!!this._ws) {
+      this._ws.onmessage = (event: MessageEvent) => {
+        if (event.data === 'Request attributes.') {
+          this.sendAttributes()
+        }
+      }
+    }
   }
 
   ConnectWS(): void {
-    if (this.ws_) this.ws_.close()
-    this.ws_ = new WebSocket(networkSettings.getOrigin)
+    if (this._ws) this._ws.close()
+    this._ws = new WebSocket(networkSettings.getOrigin)
+  }
+
+  send(ms: VmData) {
+    if (!this._ws) return
+    const message: VmMessage = {
+      userName: networkSettings.userName,
+      connectionType: _connectionType,
+      messageType: ms.messageType,
+      data: JSON.stringify(ms.data),
+    }
+    this._ws.send(JSON.stringify(message))
   }
 
   private AddTrackingMessage(
@@ -24,7 +54,7 @@ class NetworkHandler {
   ): string {
     if (!vrm.humanoid) return ``
     if (!trackingTargetName) return ``
-    if (!this.ws_) return ``
+    if (!this._ws) return ``
 
     const boneNode = vrm.humanoid.getBoneNode(trackingTargetName)!
     const position = boneNode.position
@@ -39,187 +69,218 @@ class NetworkHandler {
     return (
       `#` +
       `${ConvertBoneName(trackingTargetName)},` +
-      `${quaternion.x.toFixed(this.numberOfDigits)},` +
-      `${-quaternion.y.toFixed(this.numberOfDigits)},` +
-      `${-quaternion.z.toFixed(this.numberOfDigits)},` +
-      `${quaternion.w.toFixed(this.numberOfDigits)} `
+      `${quaternion.x.toFixed(this._numberOfDigits)},` +
+      `${-quaternion.y.toFixed(this._numberOfDigits)},` +
+      `${-quaternion.z.toFixed(this._numberOfDigits)},` +
+      `${quaternion.w.toFixed(this._numberOfDigits)}`
     )
   }
 
-  SendConfigMessage(
-    configTargetAddress: string,
-    values: string | number,
-  ): void {
-    if (!this.ws_) return
-    const configAddressHead = this.oscAddressHead + 'config/'
-    this.ws_.send(`${configAddressHead + configTargetAddress}, ${values} `)
+  sendAttributes() {
+    if (!this._ws) return
+    const message: VmData = {
+      messageType: 'websocketSetting',
+      data: {
+        userName: networkSettings.userName,
+        connectionType: _connectionType,
+      },
+    }
+    this.send(message)
   }
+
+  // SendConfigMessage(
+  //   configTargetAddress: string,
+  //   values: string | number,
+  // ): void {
+  //   if (!this._ws) return
+  // const configAddressHead = this.oscAddressHead + 'config/'
+  //   this._ws.send(`${configAddressHead + configTargetAddress}, ${values} `)
+  // }
 
   SendPoseMessage(vrm: VRM) {
     if (!vrm.humanoid) return
-    let msg = ''
+    let data = ''
 
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Hips)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Spine)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Chest)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.UpperChest)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Neck)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Head)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftShoulder)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftUpperArm)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftLowerArm)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftUpperLeg)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftLowerLeg)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftFoot)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftToes)
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Hips)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Spine)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Chest)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.UpperChest)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Neck)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.Head)
+    data += this.AddTrackingMessage(
+      vrm,
+      VRMSchema.HumanoidBoneName.LeftShoulder,
+    )
+    data += this.AddTrackingMessage(
+      vrm,
+      VRMSchema.HumanoidBoneName.LeftUpperArm,
+    )
+    data += this.AddTrackingMessage(
+      vrm,
+      VRMSchema.HumanoidBoneName.LeftLowerArm,
+    )
+    data += this.AddTrackingMessage(
+      vrm,
+      VRMSchema.HumanoidBoneName.LeftUpperLeg,
+    )
+    data += this.AddTrackingMessage(
+      vrm,
+      VRMSchema.HumanoidBoneName.LeftLowerLeg,
+    )
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftFoot)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftToes)
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightShoulder,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightUpperArm,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightLowerArm,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightUpperLeg,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightLowerLeg,
     )
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightFoot)
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightToes)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightFoot)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightToes)
 
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftHand)
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftHand)
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftThumbProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftThumbIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftThumbDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftIndexProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftIndexIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftIndexDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftMiddleProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftMiddleIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftMiddleDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftRingProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftRingIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftRingDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftLittleProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftLittleIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.LeftLittleDistal,
     )
 
-    msg += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightHand)
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightHand)
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightThumbProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightThumbIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightThumbDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightIndexProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightIndexIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightIndexDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightMiddleProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightMiddleIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightMiddleDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightRingProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightRingIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightRingDistal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightLittleProximal,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightLittleIntermediate,
     )
-    msg += this.AddTrackingMessage(
+    data += this.AddTrackingMessage(
       vrm,
       VRMSchema.HumanoidBoneName.RightLittleDistal,
     )
 
-    this.ws_?.send(msg)
+    const message: VmData = {
+      messageType: 'trackingData',
+      data: data,
+    }
+    this.send(message)
   }
 }
 const networkHandler = new NetworkHandler()

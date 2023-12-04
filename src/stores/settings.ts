@@ -1,12 +1,31 @@
+import { makeObservable, observable, action } from 'mobx'
+
 class NetworkSettings {
-  neosUserName_: string = ''
+  userName: string = ''
   // isBloadcastActive_: boolean = false
-  host_: string = 'localhost'
-  port_: number = 23000
+  private _host: string = 'localhost'
+  private _port: number = 23000
   sendRate: number = 30
 
+  constructor() {
+    makeObservable(this, {
+      userName: observable,
+      setUserName: action,
+    })
+  }
+
+  setUserName(userName: string) {
+    this.userName = userName
+  }
+
   get getOrigin() {
-    return `ws://${this.host_}:${this.port_}`
+    return `ws://${this._host}:${this._port}`
+  }
+  set host(_host: string) {
+    this._host = _host
+  }
+  set port(_port: number) {
+    this._port = _port
   }
 }
 

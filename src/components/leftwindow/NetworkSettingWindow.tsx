@@ -3,6 +3,7 @@ import { Stack, Button } from '@mui/material'
 import { networkSettings } from 'stores/settings'
 import VMTextField from 'components/leftwindow/VMTextField'
 import networkHandler from 'models/NetworkHandler'
+import { IReactionDisposer, reaction } from 'mobx'
 
 const NetworkSettingWindow: React.FC = () => {
   const userNameInputRef = React.useRef<HTMLInputElement | null>(null)
@@ -14,13 +15,25 @@ const NetworkSettingWindow: React.FC = () => {
     const port = Number(portInputRef.current?.value)
     const sendRate = Number(sendRateInputRef.current?.value)
 
-    networkSettings.neosUserName_ = String(userNameInputRef.current?.value)
-    networkSettings.host_ = String(hostInputRef.current?.value)
-    if (!Number.isNaN(port)) networkSettings.port_ = port
+    networkSettings.userName = String(userNameInputRef.current?.value)
+    networkSettings.host = String(hostInputRef.current?.value)
+    if (!Number.isNaN(port)) networkSettings.port = port
     if (!Number.isNaN(sendRate)) networkSettings.sendRate = sendRate
 
-    networkHandler.ConnectWS()
+    // networkHandler.ConnectWS()
   }
+
+  React.useEffect(() => {
+    const dispo: IReactionDisposer[] = []
+    dispo.push(
+      reaction(
+        () => networkSettings.userName,
+        () => {
+          networkHandler.sendAttributes()
+        },
+      ),
+    )
+  }, [])
 
   return (
     <>
@@ -30,19 +43,19 @@ const NetworkSettingWindow: React.FC = () => {
         </Button>
         <VMTextField
           label="User Name (NeosVR)"
-          defaultValue={networkSettings.neosUserName_}
+          defaultValue={networkSettings.userName}
           // adornment={{ position: 'start', value: 'U -' }}
           inputRef={userNameInputRef}
         />
         <VMTextField
           label="host"
-          defaultValue={networkSettings.host_}
+          defaultValue={networkSettings.host}
           adornment={{ position: 'start', value: 'ws://' }}
           inputRef={hostInputRef}
         />
         <VMTextField
           label="port"
-          defaultValue={networkSettings.port_}
+          defaultValue={networkSettings.port}
           inputRef={portInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
