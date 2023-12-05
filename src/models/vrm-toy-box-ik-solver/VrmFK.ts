@@ -196,7 +196,13 @@ export class VrmFK {
 
     // Animate Pose
     if (rig.pose) {
-      // this._rigRotation(vrm, 'Hips', rig.pose.Hips.rotation, 0.7)
+      if (rig.pose.Hips.rotation)
+        this._rigRotation(
+          vrm,
+          'Hips',
+          { y: rig.pose.Hips.rotation.y, x: 0, z: 0 },
+          0.7,
+        )
       // this._rigPosition(
       //   vrm,
       //   'Hips',
