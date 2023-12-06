@@ -103,14 +103,12 @@ class NetworkHandler {
     if (!this._ws) return ``
 
     const boneNode = vrm.humanoid.getBoneNode(trackingTargetName)!
-    const position = boneNode.position
     const offset = new Quaternion().setFromEuler(new Euler(0, Math.PI, 0))
     const quaternion = new Quaternion().multiplyQuaternions(
       offset,
       getGlobalRotation(boneNode),
     )
 
-    if (!position) return ``
     if (!boneNode) return ``
     return (
       `#` +
@@ -321,6 +319,9 @@ class NetworkHandler {
       vrm,
       VRMSchema.HumanoidBoneName.RightLittleDistal,
     )
+
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftEye)
+    data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightEye)
 
     const message: VmData = {
       messageType: 'trackingData',
