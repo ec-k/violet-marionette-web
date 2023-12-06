@@ -114,21 +114,18 @@ export class VrmFK {
     if (!PresetName) return
     // Simple example without winking. Interpolate based on old blendshape, then stabilize blink with `Kalidokit` helper function.
     // for VRM, 1 is closed, 0 is open.
-    riggedFace.eye.l = this._lerp(
+    const EyeL = this._lerp(
       this._clamp(1 - riggedFace.eye.l, 0, 1),
-      Blendshape.getValue(PresetName.Blink)!,
+      Blendshape.getValue(PresetName.BlinkL)!,
       0.5,
     )
-    riggedFace.eye.r = this._lerp(
+    const EyeR = this._lerp(
       this._clamp(1 - riggedFace.eye.r, 0, 1),
-      Blendshape.getValue(PresetName.Blink)!,
+      Blendshape.getValue(PresetName.BlinkR)!,
       0.5,
     )
-    riggedFace.eye = Kalidokit.Face.stabilizeBlink(
-      riggedFace.eye,
-      riggedFace.head.y,
-    )
-    Blendshape.setValue(PresetName.Blink, riggedFace.eye.l)
+    Blendshape.setValue(PresetName.BlinkL, EyeL)
+    Blendshape.setValue(PresetName.BlinkR, EyeR)
 
     // Interpolate and set mouth expression
     Blendshape.setValue(
