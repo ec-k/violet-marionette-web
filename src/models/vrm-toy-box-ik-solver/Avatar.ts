@@ -4,7 +4,7 @@ import { VRM } from '@pixiv/three-vrm'
 import { VrmIK } from './IK'
 import { VrmFK } from './VrmFK'
 import { makeObservable, observable, action } from 'mobx'
-import { trackingSettings } from 'stores/settings'
+import { trackingSettings } from 'stores/userSettings'
 
 export class Avatar {
   private _scene: THREE.Scene | null = null

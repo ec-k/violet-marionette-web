@@ -3,7 +3,7 @@ import { CameraScreen } from 'components/leftwindow/CameraScreen'
 import { Stack, Box, Switch, FormControlLabel, Button } from '@mui/material'
 import VMTextField from 'components/leftwindow/VMTextField'
 import purple from '@mui/material/colors/purple'
-import { trackingSettings } from 'stores/settings'
+import { trackingSettings } from 'stores/userSettings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showVideo, setShowVideo] = React.useState<boolean>(false)

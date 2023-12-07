@@ -7,7 +7,7 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 import { uiStores } from 'stores/uiStores'
 import { Vector3 } from 'three'
 import { Avatar } from './vrm-toy-box-ik-solver/Avatar'
-import { networkSettings, trackingSettings } from 'stores/settings'
+import { networkSettings, trackingSettings } from 'stores/userSettings'
 
 export const holistic = new Holistic({
   locateFile: (file) => {

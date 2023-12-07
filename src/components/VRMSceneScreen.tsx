@@ -10,6 +10,7 @@ import { avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
 import * as UI from 'models/vrm-toy-box-ik-solver/UI'
 import { throttle } from 'lodash'
 import { VRM } from '@pixiv/three-vrm'
+import { mainSceneViewer } from '../stores/scene'
 
 type VRMScene = {
   clock: THREE.Clock
@@ -44,6 +45,7 @@ const createScene = (
   }
   avatar.setScene(sceneRef.current.viewer.scene)
   loadVRM('./first_loaded_avatar.vrm')
+  mainSceneViewer.current = mainScene.viewer
 }
 
 let isAddedVrm = false

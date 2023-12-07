@@ -7,6 +7,7 @@ export class Viewer {
   private _scene: THREE.Scene
   private _camera: THREE.PerspectiveCamera
   private _controls: OrbitControls
+  private _helper: { grid: THREE.GridHelper; axes: THREE.AxesHelper }
 
   constructor(canvas: HTMLCanvasElement) {
     //レンダラーの設定
@@ -55,37 +56,48 @@ export class Viewer {
     const gridHelper = new THREE.GridHelper(100, 100)
     this._scene.add(gridHelper)
 
+    this._helper = {
+      grid: gridHelper,
+      axes: axesHelper,
+    }
+    this.showHelper(false)
+
     this._scene.background = new THREE.Color(0x2b2a2f)
   }
 
-  public get scene(): THREE.Scene {
+  get scene(): THREE.Scene {
     return this._scene
   }
 
-  public get camera(): THREE.PerspectiveCamera {
+  get camera(): THREE.PerspectiveCamera {
     return this._camera
   }
 
-  public get canvas(): HTMLCanvasElement {
+  get canvas(): HTMLCanvasElement {
     return this._canvas
   }
 
-  public get orbitControl(): OrbitControls {
+  get orbitControl(): OrbitControls {
     return this._controls
   }
-  public get renderer(): THREE.WebGL1Renderer {
+  get renderer(): THREE.WebGL1Renderer {
     return this._renderer
   }
 
-  public update() {
+  update() {
     this._renderer.render(this._scene, this._camera)
   }
 
-  public onResize() {
+  onResize() {
     this._renderer.setPixelRatio(window.devicePixelRatio)
     this._renderer.setSize(window.innerWidth, window.innerHeight)
 
     this._camera.aspect = window.innerWidth / window.innerHeight
     this._camera.updateProjectionMatrix()
+  }
+
+  showHelper(showHelper: boolean) {
+    this._helper.grid.visible = showHelper
+    this._helper.axes.visible = showHelper
   }
 }

@@ -1,4 +1,4 @@
-import { networkSettings } from 'stores/settings'
+import { networkSettings } from 'stores/userSettings'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { ConvertBoneName } from './utils'
 import { Euler, Quaternion } from 'three'

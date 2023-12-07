@@ -6,9 +6,11 @@ import {
   disableIKController,
 } from 'models/vrm-toy-box-ik-solver/UI'
 import purple from '@mui/material/colors/purple'
+import { mainSceneViewer } from 'stores/scene'
 
 const OtherSettings: React.FC = () => {
   const [showIkTarget, setShowIkTarget] = React.useState<boolean>(false)
+  const [showGrid, setShowGrid] = React.useState<boolean>(false)
 
   const loadVRM = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const url = URL.createObjectURL(event.target.files![0])
@@ -36,6 +38,21 @@ const OtherSettings: React.FC = () => {
           />
         }
         label="Show IK Target"
+        sx={{ color: purple[50] }}
+      />
+      <FormControlLabel
+        control={
+          <Switch
+            color="primary"
+            defaultChecked={showGrid}
+            onChange={() => {
+              if (mainSceneViewer.current)
+                mainSceneViewer.current.showHelper(!showGrid)
+              setShowGrid(!showGrid)
+            }}
+          />
+        }
+        label="Show grid"
         sx={{ color: purple[50] }}
       />
     </Stack>

@@ -1,7 +1,7 @@
 import * as Kalidokit from 'kalidokit'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
-import { trackingSettings } from '../../stores/settings'
+import { trackingSettings } from '../../stores/userSettings'
 import { KalidokitRig, HumanoidBoneNameKey } from 'types'
 import { NormalizedLandmarkList } from '@mediapipe/holistic'
 
