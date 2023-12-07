@@ -24,26 +24,30 @@ const GuideCanvas = styled.canvas`
 `
 
 interface CameraScreenProps {
-  showResult: boolean
+  showVideo: boolean
 }
 
-export const CameraScreen: React.FC<CameraScreenProps> = ({ showResult }) => {
+export const CameraScreen: React.FC<CameraScreenProps> = ({ showVideo }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const videoRef = React.useRef<HTMLVideoElement>(null)
+
+  if (!!videoRef.current) {
+    if (showVideo) videoRef.current.play()
+    else videoRef.current.srcObject = null
+  }
 
   React.useEffect(() => {
     if (!videoRef.current?.srcObject)
       navigator.mediaDevices.getUserMedia({ video: true }).then((sm) => {
         if (videoRef.current) {
           videoRef.current.srcObject = sm
-          videoRef.current.autoplay = true
         }
       })
 
     const dispo: IReactionDisposer[] = []
     dispo.push(
       autorun(() => {
-        if (canvasRef.current && videoRef.current && showResult)
+        if (canvasRef.current && videoRef.current)
           DrawResults(
             mediapipeLandmarks.resultLandmarks,
             canvasRef.current,
@@ -55,14 +59,12 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ showResult }) => {
     return () => {
       for (const d of dispo) return d()
     }
-  }, [showResult])
+  })
 
   return (
     <>
       <Video ref={videoRef}></Video>
-      {showResult && (
-        <GuideCanvas className="guides" ref={canvasRef}></GuideCanvas>
-      )}
+      <GuideCanvas className="guides" ref={canvasRef}></GuideCanvas>
     </>
   )
 }

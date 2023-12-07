@@ -6,7 +6,7 @@ import purple from '@mui/material/colors/purple'
 import { trackingSettings } from 'stores/settings'
 
 const TrackingSettingWindow: React.FC = () => {
-  const [showResult, setShowResult] = React.useState<boolean>(true)
+  const [showVideo, setShowVideo] = React.useState<boolean>(false)
   const [enabledLeg, setActivatedLeg] = React.useState<boolean>(
     trackingSettings.enableLeg,
   )
@@ -15,9 +15,6 @@ const TrackingSettingWindow: React.FC = () => {
   )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
 
-  const toggleShowResults = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowResult(event.target.checked)
-  }
   const updateSettings = () => {
     const value = Number(cameraAngleInputRef.current?.value)
     if (!Number.isNaN(value)) trackingSettings.cameraDepressionAngle = value
@@ -44,18 +41,20 @@ const TrackingSettingWindow: React.FC = () => {
             height: '230px',
           }}
         >
-          <CameraScreen showResult={showResult} />
+          <CameraScreen showVideo={showVideo} />
         </Box>
         <FormControlLabel
           control={
             <Switch
               color="primary"
-              onChange={toggleShowResults}
-              checked={showResult}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                setShowVideo(event.target.checked)
+              }
+              checked={showVideo}
             ></Switch>
           }
-          checked={showResult}
-          label="Mediapipe Result"
+          checked={showVideo}
+          label="Show camera"
           sx={{ color: purple[50] }}
         />
         <VMTextField
