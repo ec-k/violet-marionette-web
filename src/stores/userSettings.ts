@@ -10,12 +10,17 @@ class NetworkSettings {
   constructor() {
     makeObservable(this, {
       userName: observable,
+      sendRate: observable,
       setUserName: action,
+      setSendRate: action,
     })
   }
 
   setUserName(userName: string) {
     this.userName = userName
+  }
+  setSendRate(sendRate: number) {
+    this.sendRate = sendRate
   }
 
   get origin() {

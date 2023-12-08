@@ -11,6 +11,7 @@ import * as UI from 'models/vrm-toy-box-ik-solver/UI'
 import { throttle } from 'lodash'
 import { VRM } from '@pixiv/three-vrm'
 import { mainSceneViewer } from '../stores/scene'
+import { networkSettings } from 'stores/userSettings'
 
 type VRMScene = {
   clock: THREE.Clock
@@ -76,11 +77,10 @@ export const VRMSceneScreen: React.FC = () => {
       viewer.renderer.render(viewer.scene, viewer.camera)
     }
   }
-  const fps = 30
-  const sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+  let sendPose = throttle((vrm: VRM, sendActive: boolean) => {
     if (!vrm) return
     if (sendActive) networkHandler.SendPoseMessage(vrm)
-  }, 1000 / fps)
+  }, 1000 / networkSettings.sendRate)
   const mainRoop = () => {
     render3d()
     sendPose(sceneRef.current?.avatar.vrm!, uiStores.startSendMotion)
@@ -103,6 +103,17 @@ export const VRMSceneScreen: React.FC = () => {
         },
       ),
     )
+    dispo.push(
+      reaction(
+        () => networkSettings.sendRate,
+        () => {
+          sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+            if (!vrm) return
+            if (sendActive) networkHandler.SendPoseMessage(vrm)
+          }, 1000 / networkSettings.sendRate)
+        },
+      ),
+    )
 
     window.addEventListener('resize', () => {
       if (sceneRef.current) sceneRef.current.viewer.onResize()
@@ -111,7 +122,7 @@ export const VRMSceneScreen: React.FC = () => {
     return () => {
       for (const d of dispo) d()
     }
-  }, [])
+  }, [sendPose])
 
   return (
     <Div>

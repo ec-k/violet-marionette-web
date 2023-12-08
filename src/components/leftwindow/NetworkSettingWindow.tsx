@@ -13,9 +13,7 @@ const NetworkSettingWindow: React.FC = () => {
     const sendRate = Number(sendRateInputRef.current?.value)
 
     networkSettings.userName = String(userNameInputRef.current?.value)
-    if (!Number.isNaN(sendRate)) networkSettings.sendRate = sendRate
-
-    // networkHandler.ConnectWS()
+    if (!Number.isNaN(sendRate)) networkSettings.setSendRate(sendRate)
   }
 
   React.useEffect(() => {
