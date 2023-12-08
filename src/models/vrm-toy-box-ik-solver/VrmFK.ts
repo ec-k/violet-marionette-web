@@ -112,7 +112,6 @@ export class VrmFK {
 
     if (!Blendshape) return
     if (!PresetName) return
-    // Simple example without winking. Interpolate based on old blendshape, then stabilize blink with `Kalidokit` helper function.
     // for VRM, 1 is closed, 0 is open.
     const EyeL = this._lerp(
       this._clamp(1 - riggedFace.eye.l, 0, 1),
