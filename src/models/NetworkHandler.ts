@@ -96,28 +96,42 @@ class NetworkHandler {
 
   private AddTrackingMessage(
     vrm: VRM,
-    trackingTargetName: VRMSchema.HumanoidBoneName,
+    trackingTargetName: VRMSchema.HumanoidBoneName | 'LeftBlink' | 'RightBlink',
   ): string {
     if (!vrm.humanoid) return ``
     if (!trackingTargetName) return ``
     if (!this._ws) return ``
 
-    const boneNode = vrm.humanoid.getBoneNode(trackingTargetName)!
-    const offset = new Quaternion().setFromEuler(new Euler(0, Math.PI, 0))
-    const quaternion = new Quaternion().multiplyQuaternions(
-      offset,
-      getGlobalRotation(boneNode),
-    )
+    if (trackingTargetName === 'LeftBlink') {
+      const Blendshape = vrm.blendShapeProxy
+      const PresetName = VRMSchema.BlendShapePresetName
+      return `#LeftBlink,${Blendshape?.getValue(PresetName.BlinkL)?.toFixed(
+        this._numberOfDigits,
+      )}`
+    } else if (trackingTargetName === 'RightBlink') {
+      const Blendshape = vrm.blendShapeProxy
+      const PresetName = VRMSchema.BlendShapePresetName
+      return `#RightBlink,${Blendshape?.getValue(PresetName.BlinkR)?.toFixed(
+        this._numberOfDigits,
+      )}`
+    } else {
+      const boneNode = vrm.humanoid.getBoneNode(trackingTargetName)!
+      const offset = new Quaternion().setFromEuler(new Euler(0, Math.PI, 0))
+      const quaternion = new Quaternion().multiplyQuaternions(
+        offset,
+        getGlobalRotation(boneNode),
+      )
 
-    if (!boneNode) return ``
-    return (
-      `#` +
-      `${ConvertBoneName(trackingTargetName)},` +
-      `${quaternion.x.toFixed(this._numberOfDigits)},` +
-      `${-quaternion.y.toFixed(this._numberOfDigits)},` +
-      `${-quaternion.z.toFixed(this._numberOfDigits)},` +
-      `${quaternion.w.toFixed(this._numberOfDigits)}`
-    )
+      if (!boneNode) return ``
+      return (
+        `#` +
+        `${ConvertBoneName(trackingTargetName)},` +
+        `${quaternion.x.toFixed(this._numberOfDigits)},` +
+        `${-quaternion.y.toFixed(this._numberOfDigits)},` +
+        `${-quaternion.z.toFixed(this._numberOfDigits)},` +
+        `${quaternion.w.toFixed(this._numberOfDigits)}`
+      )
+    }
   }
 
   sendAttributes() {
@@ -322,6 +336,9 @@ class NetworkHandler {
 
     data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.LeftEye)
     data += this.AddTrackingMessage(vrm, VRMSchema.HumanoidBoneName.RightEye)
+
+    data += this.AddTrackingMessage(vrm, 'LeftBlink')
+    data += this.AddTrackingMessage(vrm, 'RightBlink')
 
     const message: VmData = {
       messageType: 'trackingData',
