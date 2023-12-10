@@ -7,7 +7,6 @@ import { uiStores } from 'stores/uiStores'
 import { Viewer } from 'models/vrm-toy-box-ik-solver/Viewer'
 import { Avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
 import { avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
-import * as UI from 'models/vrm-toy-box-ik-solver/UI'
 import { throttle } from 'lodash'
 import { VRM } from '@pixiv/three-vrm'
 import { mainSceneViewer } from '../stores/scene'
@@ -42,7 +41,6 @@ const createScene = (
     if (!_avatar) return
     if (!sceneRef.current) return
     await avatar.loadVRM(url)
-    UI.setupIKController(sceneRef.current.viewer, avatar)
   }
   avatar.setScene(sceneRef.current.viewer.scene)
   loadVRM('./first_loaded_avatar.vrm')

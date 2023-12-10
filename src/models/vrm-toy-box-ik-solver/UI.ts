@@ -4,7 +4,12 @@ import { Avatar } from './Avatar'
 
 const transCtrlList: TransformControls[] = []
 
-export const setupIKController = (viewer: Viewer, avatar: Avatar) => {
+export const setupIKController = (
+  viewer: Viewer,
+  avatar: Avatar,
+  isEnable = false,
+) => {
+  if (transCtrlList.length > 0) _deleteIKController()
   if (!avatar.vrmIK || !avatar.vrm) return
   avatar.vrmIK.ikChains.forEach((chain) => {
     const transCtrl = new TransformControls(viewer.camera, viewer.canvas)
@@ -15,7 +20,7 @@ export const setupIKController = (viewer: Viewer, avatar: Avatar) => {
     })
     avatar.vrm?.scene.add(transCtrl)
     transCtrlList.push(transCtrl)
-    disableIKController()
+    if (!isEnable) disableIKController()
   })
 }
 
@@ -30,4 +35,10 @@ export const disableIKController = () => {
     transCtrl.enabled = false
     transCtrl.visible = false
   })
+}
+
+const _deleteIKController = () => {
+  while (transCtrlList.length > 0) {
+    transCtrlList.pop()
+  }
 }

@@ -4,7 +4,9 @@ import { VRM } from '@pixiv/three-vrm'
 import { VrmIK } from './IK'
 import { VrmFK } from './VrmFK'
 import { makeObservable, observable, action } from 'mobx'
-import { trackingSettings } from 'stores/userSettings'
+import { otherSenttings, trackingSettings } from 'stores/userSettings'
+import * as UI from './UI'
+import { mainSceneViewer } from 'stores/scene'
 
 export class Avatar {
   private _scene: THREE.Scene | null = null
@@ -59,6 +61,13 @@ export class Avatar {
     this._vrmIK = new VrmIK(vrm)
     this._vrmFK = new VrmFK()
     this._removeSpringBone(vrm)
+
+    if (mainSceneViewer.current)
+      UI.setupIKController(
+        mainSceneViewer.current,
+        avatar,
+        otherSenttings.showIKTarget,
+      )
   }
 
   private _removeSpringBone(vrm: VRM) {

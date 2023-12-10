@@ -7,9 +7,12 @@ import {
 } from 'models/vrm-toy-box-ik-solver/UI'
 import purple from '@mui/material/colors/purple'
 import { mainSceneViewer } from 'stores/scene'
+import { otherSenttings } from 'stores/userSettings'
 
 const OtherSettings: React.FC = () => {
-  const [showIkTarget, setShowIkTarget] = React.useState<boolean>(false)
+  const [showIkTarget, setShowIkTarget] = React.useState<boolean>(
+    otherSenttings.showIKTarget,
+  )
   const [showGrid, setShowGrid] = React.useState<boolean>(false)
 
   const loadVRM = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,6 +24,7 @@ const OtherSettings: React.FC = () => {
     if (!showIkTarget) enableIKController()
     else disableIKController()
     setShowIkTarget(!showIkTarget)
+    otherSenttings.showIKTarget = !showIkTarget
   }
 
   return (

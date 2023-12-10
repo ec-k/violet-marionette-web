@@ -44,5 +44,10 @@ class TrackingSettings {
   }
 }
 
+class OthreSettings {
+  showIKTarget: boolean = false
+}
+
 export const networkSettings = new NetworkSettings()
 export const trackingSettings = new TrackingSettings()
+export const otherSenttings = new OthreSettings()
