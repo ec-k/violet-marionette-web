@@ -70,17 +70,7 @@ export class VrmFK {
       rotation.z * dampener,
     )
     let quaternion = new THREE.Quaternion().setFromEuler(euler)
-    if (name === 'RightUpperArm' || name === 'RightHand')
-      this._rHandRotAdjust(quaternion)
     Part.quaternion.slerp(quaternion, _lerpAmount) // interpolate
-  }
-
-  private _rHandRotAdjust = (quat: THREE.Quaternion) => {
-    quat.premultiply(
-      new THREE.Quaternion().setFromEuler(
-        new THREE.Euler(THREE.MathUtils.degToRad(-45), 0, 0),
-      ),
-    )
   }
 
   // private _rigPosition = (

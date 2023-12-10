@@ -74,3 +74,28 @@ export const quatClamp = (q: Quaternion, min: Vector3, max: Vector3) => {
   const _z = clamp(q_euler.z, min.z, max.z)
   return new Quaternion().setFromEuler(new Euler(_x, _y, _z))
 }
+
+export const world2Local = (
+  worldRotation: Quaternion,
+  target: THREE.Object3D,
+) => {
+  const targetWorldRotation = new Quaternion()
+  try {
+    target.parent!.getWorldQuaternion(targetWorldRotation)
+  } catch {
+    return
+  }
+  worldRotation.premultiply(targetWorldRotation.invert())
+}
+export const local2world = (
+  worldRotation: Quaternion,
+  target: THREE.Object3D,
+) => {
+  const targetWorldRotation = new Quaternion()
+  try {
+    target.parent!.getWorldQuaternion(targetWorldRotation)
+  } catch {
+    return
+  }
+  worldRotation.multiply(targetWorldRotation)
+}

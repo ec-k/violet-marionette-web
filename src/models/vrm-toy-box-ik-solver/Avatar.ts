@@ -7,6 +7,7 @@ import { makeObservable, observable, action } from 'mobx'
 import { otherSenttings, trackingSettings } from 'stores/userSettings'
 import * as UI from './UI'
 import { mainSceneViewer } from 'stores/scene'
+import networkHandler from 'models/NetworkHandler'
 
 export class Avatar {
   private _scene: THREE.Scene | null = null
@@ -44,7 +45,6 @@ export class Avatar {
     this._scene = scene
   }
 
-  // VRMの読み込み
   async loadVRM(url: string) {
     if (!this._scene) return
     if (this.vrm) {
@@ -62,6 +62,7 @@ export class Avatar {
     this._vrmFK = new VrmFK()
     this._removeSpringBone(vrm)
 
+    // Setup IK target for debugging.
     if (mainSceneViewer.current)
       UI.setupIKController(
         mainSceneViewer.current,
@@ -82,6 +83,7 @@ export class Avatar {
     const enabledIK = trackingSettings.enabledIK
     if (enabledIK && !!this._vrmIK) this._vrmIK.solve()
     if (!!this._vrmFK && !!this.vrm) this._vrmFK.setPose(this.vrm, !enabledIK)
+    if (this.vrm) networkHandler.motionLPF.push(this.vrm)
   }
 }
 

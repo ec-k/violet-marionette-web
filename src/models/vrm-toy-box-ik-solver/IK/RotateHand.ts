@@ -1,7 +1,7 @@
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { Quaternion, Vector3 } from 'three'
 import { aiRim, avatarRim, side } from 'types'
-import * as THREE from 'three'
+import { world2Local } from 'models/utils'
 
 export class RotateHand {
   private _hands: avatarRim
@@ -92,22 +92,12 @@ export class RotateHand {
     const targetQuat = this._getQuaternionFromFrontUp(ai_front, ai_up, side)
 
     if (isLeft) {
-      this._world2Local(targetQuat, this._hands.l)
+      world2Local(targetQuat, this._hands.l)
       this._targetRotation.l = targetQuat
     } else {
-      this._world2Local(targetQuat, this._hands.r)
+      world2Local(targetQuat, this._hands.r)
       this._targetRotation.r = targetQuat
     }
-  }
-
-  private _world2Local(worldRotation: Quaternion, target: THREE.Object3D) {
-    const targetWorldRotation = new Quaternion()
-    try {
-      target.parent!.getWorldQuaternion(targetWorldRotation)
-    } catch {
-      return
-    }
-    worldRotation.premultiply(targetWorldRotation.invert())
   }
 
   private _getQuaternionFromFrontUp(
