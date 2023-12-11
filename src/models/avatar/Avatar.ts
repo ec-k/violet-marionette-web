@@ -1,20 +1,17 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { VRM } from '@pixiv/three-vrm'
-import { VrmIK } from './IK'
-import { VrmFK } from './VrmFK'
 import { makeObservable, observable, action } from 'mobx'
-import { otherSenttings, trackingSettings } from 'stores/userSettings'
+import { otherSenttings } from 'stores/userSettings'
 import * as UI from './UI'
 import { mainSceneViewer } from 'stores/scene'
-import networkHandler from 'models/NetworkHandler'
+import { MotionController } from 'models/avatar/motion-controller'
 
 export class Avatar {
   private _scene: THREE.Scene | null = null
+  private _motionController: MotionController | null = null
   vrm: VRM | null
   avatarSrc: string | null = null
-  private _vrmIK: VrmIK | null = null
-  private _vrmFK: VrmFK | null = null
 
   constructor(scene?: THREE.Scene) {
     makeObservable(this, {
@@ -28,12 +25,10 @@ export class Avatar {
     this.vrm = null
   }
 
-  get vrmIK() {
-    return this._vrmIK
+  get motionController() {
+    return this._motionController
   }
-  get vrmFK() {
-    return this._vrmFK
-  }
+
   setAvatarSrc(url: string) {
     this.avatarSrc = url
   }
@@ -58,8 +53,8 @@ export class Avatar {
     this._scene.add(vrm.scene)
     this.setVRM(vrm)
 
-    this._vrmIK = new VrmIK(vrm)
-    this._vrmFK = new VrmFK()
+    this._motionController = new MotionController(vrm)
+    // this._motionController = new MotionController(vrm, 60)
     this._removeSpringBone(vrm)
 
     // Setup IK target for debugging.
@@ -79,12 +74,36 @@ export class Avatar {
     }
   }
 
+  pushPose(
+    enabledIK: boolean,
+    [
+      shoulders,
+      elbows,
+      hands,
+      middleProximals,
+      pinkyProximals,
+      wrists,
+    ]: rimPosition[],
+  ) {
+    if (!this._motionController || !this.vrm) return
+    this._motionController.pushPose2Filter(this.vrm, enabledIK, [
+      shoulders,
+      elbows,
+      hands,
+      middleProximals,
+      pinkyProximals,
+      wrists,
+    ])
+  }
+
   updatePose() {
-    const enabledIK = trackingSettings.enabledIK
-    if (enabledIK && !!this._vrmIK) this._vrmIK.solve()
-    if (!!this._vrmFK && !!this.vrm) this._vrmFK.setPose(this.vrm, !enabledIK)
-    if (this.vrm) networkHandler.motionLPF.push(this.vrm)
+    if (!this._motionController || !this.vrm) return
+    this._motionController.updatePose(this.vrm)
   }
 }
 
 export const avatar = new Avatar()
+type rimPosition = {
+  l: THREE.Vector3 | undefined
+  r: THREE.Vector3 | undefined
+}

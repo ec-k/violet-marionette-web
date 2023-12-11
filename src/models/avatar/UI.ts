@@ -10,8 +10,9 @@ export const setupIKController = (
   isEnable = false,
 ) => {
   if (transCtrlList.length > 0) _deleteIKController()
-  if (!avatar.vrmIK || !avatar.vrm) return
-  avatar.vrmIK.ikChains.forEach((chain) => {
+  if (!avatar.motionController || !avatar.motionController.IK || !avatar.vrm)
+    return
+  avatar.motionController.IK.ikChains.forEach((chain) => {
     const transCtrl = new TransformControls(viewer.camera, viewer.canvas)
     transCtrl.size = 0.5
     transCtrl.attach(chain.goal)

@@ -7,7 +7,7 @@ import { VRMSceneScreen } from 'components/VRMSceneScreen'
 import { startMpActions, stopMpActions } from 'models/MediapipeAction'
 import Footer from 'components/Footer'
 import { autorun } from 'mobx'
-import { avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
+import { avatar } from 'models/avatar'
 
 const App: React.FC = () => {
   // Start&Stop Mediapipe on pushed Start Button

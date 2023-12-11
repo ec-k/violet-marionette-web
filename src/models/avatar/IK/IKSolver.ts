@@ -1,5 +1,5 @@
 import { Vector3, Quaternion, Object3D } from 'three'
-import { VRMSchema } from '@pixiv/three-vrm'
+import { HumanoidBoneNameKey } from 'types'
 
 // 計算用の一時的な変数
 // 不要なインスタンス化をさける
@@ -17,6 +17,12 @@ const _quarternion = new Quaternion()
 export const solve = (ikChain: IKChain, iteration: number) => {
   // 目標位置のワールド座標
   ikChain.goal.getWorldPosition(_goalPosition)
+
+  // To remove side effect.
+  let initialRot = new Map<HumanoidBoneNameKey, Quaternion>()
+  ikChain.joints.forEach((joint) => {
+    initialRot.set(joint.boneName, joint.bone.quaternion)
+  })
 
   for (let i = iteration; i > 0; i--) {
     let didConverge = true
@@ -74,7 +80,7 @@ export const solve = (ikChain: IKChain, iteration: number) => {
           .max(joint.rotationMin)
           .min(joint.rotationMax),
         joint.order,
-      )
+      ) // This is SIDE EFFECT
 
       joint.bone.updateMatrixWorld(true)
       didConverge = false
@@ -82,6 +88,17 @@ export const solve = (ikChain: IKChain, iteration: number) => {
 
     if (didConverge) break
   }
+
+  let ikRotations = new Map<HumanoidBoneNameKey, Quaternion>()
+  ikChain.joints.forEach((joint) => {
+    ikRotations.set(joint.boneName, joint.bone.quaternion)
+  })
+  ikChain.joints.forEach((joint) => {
+    const rot = initialRot.get(joint.boneName)
+    if (!!rot) joint.bone.quaternion.copy(rot)
+  })
+
+  return ikRotations
 }
 
 export interface IKChain {
@@ -95,6 +112,7 @@ export interface Joint {
   order: 'XYZ' | 'YZX' | 'ZXY' | 'XZY' | 'YXZ' | 'ZYX'
   rotationMin: Vector3
   rotationMax: Vector3
+  boneName: HumanoidBoneNameKey
 }
 
 // VRM から IKChainを生成するための情報
@@ -105,11 +123,11 @@ export interface IKConfig {
 
 export interface ChainConfig {
   jointConfigs: Array<JointConfig>
-  effectorBoneName: VRMSchema.HumanoidBoneName // IKChain.effectorに設定するボーン
+  effectorBoneName: HumanoidBoneNameKey // IKChain.effectorに設定するボーン
 }
 
 export interface JointConfig {
-  boneName: VRMSchema.HumanoidBoneName
+  boneName: HumanoidBoneNameKey
 
   // オイラー角の回転順序
   order: 'XYZ' | 'YZX' | 'ZXY' | 'XZY' | 'YXZ' | 'ZYX'

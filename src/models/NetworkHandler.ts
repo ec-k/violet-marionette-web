@@ -2,7 +2,6 @@ import { networkSettings } from 'stores/userSettings'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { ConvertBoneName /*, local2world */ } from './utils'
 import { Euler, Quaternion } from 'three'
-import { MotionLPF } from './motionLPF'
 import { HumanoidBoneNameKey } from 'types'
 
 type ConnectionType = 'resoniteClient' | 'webClient' | 'server'
@@ -26,19 +25,14 @@ class NetworkHandler {
   private _numberOfDigits = 7
   private _connectionCheckInterval = 5 * 1000 // [ms]
   private _checkTimer: NodeJS.Timeout | undefined
-  private _motionLPF: MotionLPF
 
   get existWebsocket() {
     return !!this._ws
-  }
-  get motionLPF() {
-    return this._motionLPF
   }
 
   constructor() {
     this.connect()
     if (Notification.permission !== 'granted') Notification.requestPermission()
-    this._motionLPF = new MotionLPF(60)
   }
 
   connect() {

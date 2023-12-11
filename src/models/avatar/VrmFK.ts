@@ -2,7 +2,7 @@ import * as Kalidokit from 'kalidokit'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { trackingSettings } from '../../stores/userSettings'
-import { KalidokitRig, HumanoidBoneNameKey } from 'types'
+import { KalidokitRig, HumanoidBoneNameKey, avatarPose } from 'types'
 import { NormalizedLandmarkList } from '@mediapipe/holistic'
 
 export class VrmFK {
@@ -69,8 +69,9 @@ export class VrmFK {
       rotation.y * dampener,
       rotation.z * dampener,
     )
-    let quaternion = new THREE.Quaternion().setFromEuler(euler)
-    Part.quaternion.slerp(quaternion, _lerpAmount) // interpolate
+
+    return new THREE.Quaternion().setFromEuler(euler)
+    // Part.quaternion.slerp(quaternion, _lerpAmount) // interpolate
   }
 
   // private _rigPosition = (
@@ -92,16 +93,22 @@ export class VrmFK {
   // }
 
   private _oldLookTarget = new THREE.Euler()
-  private _rigFace(vrm: VRM, riggedFace: Kalidokit.TFace) {
-    if (!vrm) return
-    if (!riggedFace) return
-    this._rigRotation(vrm, 'Neck', riggedFace.head, 0.7)
+  private _rigFace(
+    vrm: VRM,
+    riggedFace: Kalidokit.TFace,
+  ): Map<HumanoidBoneNameKey, THREE.Quaternion> {
+    const rotations = new Map<HumanoidBoneNameKey, THREE.Quaternion>()
+    if (!vrm) return rotations
+    if (!riggedFace) return rotations
+
+    const neckRot = this._rigRotation(vrm, 'Neck', riggedFace.head, 0.7)
+    if (neckRot) rotations.set('Neck', neckRot)
 
     const Blendshape = vrm.blendShapeProxy
     const PresetName = VRMSchema.BlendShapePresetName
 
-    if (!Blendshape) return
-    if (!PresetName) return
+    if (!Blendshape) return rotations
+    if (!PresetName) return rotations
     // for VRM, 1 is closed, 0 is open.
     const EyeL = this._lerp(
       this._clamp(1 - riggedFace.eye.l, 0, 1),
@@ -168,27 +175,49 @@ export class VrmFK {
     )
     this._oldLookTarget.copy(lookTarget)
     vrm.lookAt?.applyer?.lookAt(lookTarget)
+
+    const eyeRots = {
+      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftEye)
+        ?.quaternion,
+      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightEye)
+        ?.quaternion,
+    }
+    if (eyeRots.l) rotations.set('LeftEye', eyeRots.l)
+    if (eyeRots.r) rotations.set('RightEye', eyeRots.r)
+
+    return rotations
   }
 
-  setPose(vrm: VRM, enabledFK: boolean): void {
+  pushPose(vrm: VRM, enabledFK: boolean): avatarPose | undefined {
     const rig = this._rig
     if (!rig) return
     if (!vrm) return
+    const rotations: avatarPose = new avatarPose()
+
+    const setRotation = (
+      name: HumanoidBoneNameKey,
+      rotation = { x: 0, y: 0, z: 0 },
+      dampener = 1,
+      _lerpAmount = 0.3,
+    ) => {
+      const rot = this._rigRotation(vrm, name, rotation, dampener, _lerpAmount)
+      if (!rot) return
+      rotations.set(name, rot)
+    }
 
     // Animate Face
     if (rig.face) {
-      this._rigFace(vrm, rig.face)
+      const facePartsRotations = this._rigFace(vrm, rig.face)
+      if (facePartsRotations)
+        facePartsRotations.forEach((q, key) => {
+          rotations.set(key, q)
+        })
     }
 
     // Animate Pose
     if (rig.pose) {
       if (rig.pose.Hips.rotation)
-        this._rigRotation(
-          vrm,
-          'Hips',
-          { y: rig.pose.Hips.rotation.y, x: 0, z: 0 },
-          0.7,
-        )
+        setRotation('Hips', { y: rig.pose.Hips.rotation.y, x: 0, z: 0 }, 0.7)
       // this._rigPosition(
       //   vrm,
       //   'Hips',
@@ -201,184 +230,103 @@ export class VrmFK {
       //   0.07,
       // )
 
-      this._rigRotation(vrm, 'Chest', rig.pose.Spine, 0.25, 0.3)
-      this._rigRotation(vrm, 'Spine', rig.pose.Spine, 0.45, 0.3)
+      setRotation('Chest', rig.pose.Spine, 0.25, 0.3)
+      setRotation('Spine', rig.pose.Spine, 0.45, 0.3)
 
       if (enabledFK) {
-        this._rigRotation(vrm, 'RightUpperArm', rig.pose.RightUpperArm, 1, 0.3)
-        this._rigRotation(vrm, 'RightLowerArm', rig.pose.RightLowerArm, 1, 0.3)
-        this._rigRotation(vrm, 'LeftUpperArm', rig.pose.LeftUpperArm, 1, 0.3)
-        this._rigRotation(vrm, 'LeftLowerArm', rig.pose.LeftLowerArm, 1, 0.3)
+        setRotation('RightUpperArm', rig.pose.RightUpperArm, 1, 0.3)
+        setRotation('RightLowerArm', rig.pose.RightLowerArm, 1, 0.3)
+        setRotation('LeftUpperArm', rig.pose.LeftUpperArm, 1, 0.3)
+        setRotation('LeftLowerArm', rig.pose.LeftLowerArm, 1, 0.3)
       }
 
       if (trackingSettings.enableLeg) {
-        this._rigRotation(vrm, 'LeftUpperLeg', rig.pose.LeftUpperLeg, 1, 0.3)
-        this._rigRotation(vrm, 'LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
-        this._rigRotation(vrm, 'RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
-        this._rigRotation(vrm, 'RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
+        setRotation('LeftUpperLeg', rig.pose.LeftUpperLeg, 1, 0.3)
+        setRotation('LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
+        setRotation('RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
+        setRotation('RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
       } else {
         const defaultRot = new THREE.Quaternion(0, 0, 0, 1)
-        this._rigRotation(vrm, 'LeftUpperLeg', defaultRot, 1, 0.3)
-        this._rigRotation(vrm, 'LeftLowerLeg', defaultRot, 1, 0.3)
-        this._rigRotation(vrm, 'RightUpperLeg', defaultRot, 1, 0.3)
-        this._rigRotation(vrm, 'RightLowerLeg', defaultRot, 1, 0.3)
+        setRotation('LeftUpperLeg', defaultRot, 1, 0.3)
+        setRotation('LeftLowerLeg', defaultRot, 1, 0.3)
+        setRotation('RightUpperLeg', defaultRot, 1, 0.3)
+        setRotation('RightLowerLeg', defaultRot, 1, 0.3)
       }
 
       if (rig.leftHand) {
         if (enabledFK)
-          this._rigRotation(vrm, 'LeftHand', {
+          setRotation('LeftHand', {
             z: rig.pose.LeftHand.z,
             y: rig.leftHand.LeftWrist.y,
             x: rig.leftHand.LeftWrist.x,
           })
-        this._rigRotation(
-          vrm,
-          'LeftRingProximal',
-          rig.leftHand.LeftRingProximal,
-        )
-        this._rigRotation(
-          vrm,
-          'LeftRingIntermediate',
-          rig.leftHand.LeftRingIntermediate,
-        )
-        this._rigRotation(vrm, 'LeftRingDistal', rig.leftHand.LeftRingDistal)
-        this._rigRotation(
-          vrm,
-          'LeftIndexProximal',
-          rig.leftHand.LeftIndexProximal,
-        )
-        this._rigRotation(
-          vrm,
-          'LeftIndexIntermediate',
-          rig.leftHand.LeftIndexIntermediate,
-        )
-        this._rigRotation(vrm, 'LeftIndexDistal', rig.leftHand.LeftIndexDistal)
-        this._rigRotation(
-          vrm,
-          'LeftMiddleProximal',
-          rig.leftHand.LeftMiddleProximal,
-        )
-        this._rigRotation(
-          vrm,
+        setRotation('LeftRingProximal', rig.leftHand.LeftRingProximal)
+        setRotation('LeftRingIntermediate', rig.leftHand.LeftRingIntermediate)
+        setRotation('LeftRingDistal', rig.leftHand.LeftRingDistal)
+        setRotation('LeftIndexProximal', rig.leftHand.LeftIndexProximal)
+        setRotation('LeftIndexIntermediate', rig.leftHand.LeftIndexIntermediate)
+        setRotation('LeftIndexDistal', rig.leftHand.LeftIndexDistal)
+        setRotation('LeftMiddleProximal', rig.leftHand.LeftMiddleProximal)
+        setRotation(
           'LeftMiddleIntermediate',
           rig.leftHand.LeftMiddleIntermediate,
         )
-        this._rigRotation(
-          vrm,
-          'LeftMiddleDistal',
-          rig.leftHand.LeftMiddleDistal,
-        )
-        this._rigRotation(
-          vrm,
-          'LeftThumbProximal',
-          rig.leftHand.LeftThumbProximal,
-        )
-        this._rigRotation(
-          vrm,
-          'LeftThumbIntermediate',
-          rig.leftHand.LeftThumbIntermediate,
-        )
-        // this._rigRotation(vrm, 'LeftThumbMetacarpal', this._rig.leftHand.LeftThumbProximal)
-        // this._rigRotation(vrm, 'LeftThumbProximal', this._rig.leftHand.LeftThumbIntermediate)
-        this._rigRotation(vrm, 'LeftThumbDistal', rig.leftHand.LeftThumbDistal)
-        this._rigRotation(
-          vrm,
-          'LeftLittleProximal',
-          rig.leftHand.LeftLittleProximal,
-        )
-        this._rigRotation(
-          vrm,
+        setRotation('LeftMiddleDistal', rig.leftHand.LeftMiddleDistal)
+        setRotation('LeftThumbProximal', rig.leftHand.LeftThumbProximal)
+        setRotation('LeftThumbIntermediate', rig.leftHand.LeftThumbIntermediate)
+        // setRotation(LeftThumbMetacarpal', this._rig.leftHand.LeftThumbProximal)
+        // setRotation(LeftThumbProximal', this._rig.leftHand.LeftThumbIntermediate)
+        setRotation('LeftThumbDistal', rig.leftHand.LeftThumbDistal)
+        setRotation('LeftLittleProximal', rig.leftHand.LeftLittleProximal)
+        setRotation(
           'LeftLittleIntermediate',
           rig.leftHand.LeftLittleIntermediate,
         )
-        this._rigRotation(
-          vrm,
-          'LeftLittleDistal',
-          rig.leftHand.LeftLittleDistal,
-        )
+        setRotation('LeftLittleDistal', rig.leftHand.LeftLittleDistal)
       }
       if (rig.rightHand) {
         if (enabledFK)
-          this._rigRotation(vrm, 'RightHand', {
+          setRotation('RightHand', {
             // Combine Z axis from pose hand and X/Y axis from hand wrist rotation
             z: rig.pose.RightHand.z,
             y: rig.rightHand.RightWrist.y,
             x: rig.rightHand.RightWrist.x,
           })
-        this._rigRotation(
-          vrm,
-          'RightRingProximal',
-          rig.rightHand.RightRingProximal,
-        )
-        this._rigRotation(
-          vrm,
+        setRotation('RightRingProximal', rig.rightHand.RightRingProximal)
+        setRotation(
           'RightRingIntermediate',
           rig.rightHand.RightRingIntermediate,
         )
-        this._rigRotation(vrm, 'RightRingDistal', rig.rightHand.RightRingDistal)
-        this._rigRotation(
-          vrm,
-          'RightIndexProximal',
-          rig.rightHand.RightIndexProximal,
-        )
-        this._rigRotation(
-          vrm,
+        setRotation('RightRingDistal', rig.rightHand.RightRingDistal)
+        setRotation('RightIndexProximal', rig.rightHand.RightIndexProximal)
+        setRotation(
           'RightIndexIntermediate',
           rig.rightHand.RightIndexIntermediate,
         )
-        this._rigRotation(
-          vrm,
-          'RightIndexDistal',
-          rig.rightHand.RightIndexDistal,
-        )
-        this._rigRotation(
-          vrm,
-          'RightMiddleProximal',
-          rig.rightHand.RightMiddleProximal,
-        )
-        this._rigRotation(
-          vrm,
+        setRotation('RightIndexDistal', rig.rightHand.RightIndexDistal)
+        setRotation('RightMiddleProximal', rig.rightHand.RightMiddleProximal)
+        setRotation(
           'RightMiddleIntermediate',
           rig.rightHand.RightMiddleIntermediate,
         )
-        this._rigRotation(
-          vrm,
-          'RightMiddleDistal',
-          rig.rightHand.RightMiddleDistal,
-        )
-        this._rigRotation(
-          vrm,
-          'RightThumbProximal',
-          rig.rightHand.RightThumbProximal,
-        )
-        this._rigRotation(
-          vrm,
+        setRotation('RightMiddleDistal', rig.rightHand.RightMiddleDistal)
+        setRotation('RightThumbProximal', rig.rightHand.RightThumbProximal)
+        setRotation(
           'RightThumbIntermediate',
           rig.rightHand.RightThumbIntermediate,
         )
-        // this._rigRotation(vrm, 'RightThumbMetacarpal', this._rig.rightHand.RightThumbProximal)
-        // this._rigRotation(vrm, 'RightThumbProximal', this._rig.rightHand.RightThumbIntermediate)
-        this._rigRotation(
-          vrm,
-          'RightThumbDistal',
-          rig.rightHand.RightThumbDistal,
-        )
-        this._rigRotation(
-          vrm,
-          'RightLittleProximal',
-          rig.rightHand.RightLittleProximal,
-        )
-        this._rigRotation(
-          vrm,
+        // setRotation(RightThumbMetacarpal', this._rig.rightHand.RightThumbProximal)
+        // setRotation(RightThumbProximal', this._rig.rightHand.RightThumbIntermediate)
+        setRotation('RightThumbDistal', rig.rightHand.RightThumbDistal)
+        setRotation('RightLittleProximal', rig.rightHand.RightLittleProximal)
+        setRotation(
           'RightLittleIntermediate',
           rig.rightHand.RightLittleIntermediate,
         )
-        this._rigRotation(
-          vrm,
-          'RightLittleDistal',
-          rig.rightHand.RightLittleDistal,
-        )
+        setRotation('RightLittleDistal', rig.rightHand.RightLittleDistal)
       }
     }
+
+    return rotations
   }
 }

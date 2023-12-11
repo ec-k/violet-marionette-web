@@ -1,16 +1,15 @@
-import { Object3D } from 'three'
-import { VRM } from '@pixiv/three-vrm'
+import { Object3D, Quaternion } from 'three'
+import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as IKSolver from './IKSolver'
 import { defaultIKConfig } from './DefaultConfig'
-import { RotateHand } from './RotateHand'
 import { IkTargetTracker } from './ikTargetTracker'
+import { HumanoidBoneNameKey, aiRim } from 'types'
 
 export class VrmIK {
   private _chains: Array<IKSolver.IKChain>
   private _iteration: number
 
   ikTargetTracker: IkTargetTracker
-  rotateHand: RotateHand
 
   constructor(vrm: VRM, ikConfig: IKSolver.IKConfig = defaultIKConfig) {
     this._chains = ikConfig.chainConfigs.map((chainConfig) => {
@@ -19,30 +18,45 @@ export class VrmIK {
     this._iteration = ikConfig.iteration || 1
 
     this.ikTargetTracker = new IkTargetTracker(vrm, this._chains)
-    this.rotateHand = new RotateHand(vrm)
   }
 
   public get ikChains(): Array<IKSolver.IKChain> {
     return this._chains
   }
 
-  solve() {
+  pushPose(handPos: aiRim, elbowPos: aiRim, shoulderPos: aiRim) {
+    this.ikTargetTracker.trackTargets(handPos, elbowPos, shoulderPos)
+    return this._solve()
+  }
+
+  private _solve() {
+    const rotations = new Map<HumanoidBoneNameKey, Quaternion>()
     // FIX: ただ，肘からsolveしたいだけ．もっといい書き方があるはず
     this._chains.forEach((chain) => {
       if (
         chain.effector.name === 'J_Bip_L_LowerArm' ||
         chain.effector.name === 'J_Bip_R_LowerArm'
-      )
-        IKSolver.solve(chain, this._iteration)
+      ) {
+        const results = IKSolver.solve(chain, this._iteration)
+        results.forEach((q, key) => {
+          if (results.has(key)) results.delete(key)
+          rotations.set(key, q)
+        })
+      }
     })
     this._chains.forEach((chain) => {
       if (
         chain.effector.name === 'J_Bip_L_Hand' ||
         chain.effector.name === 'J_Bip_R_Hand'
-      )
-        IKSolver.solve(chain, this._iteration)
+      ) {
+        const results = IKSolver.solve(chain, this._iteration)
+        results.forEach((q, key) => {
+          if (results.has(key)) results.delete(key)
+          rotations.set(key, q)
+        })
+      }
     })
-    this.rotateHand.rotateHands()
+    return rotations
   }
 
   private _createIKChain(
@@ -50,7 +64,9 @@ export class VrmIK {
     chainConfig: IKSolver.ChainConfig,
   ): IKSolver.IKChain {
     const goal = new Object3D()
-    const effector = vrm.humanoid?.getBoneNode(chainConfig.effectorBoneName)!
+    const effector = vrm.humanoid?.getBoneNode(
+      VRMSchema.HumanoidBoneName[chainConfig.effectorBoneName],
+    )!
     const joints = chainConfig.jointConfigs.map((jointConfig) => {
       return this._createJoint(vrm, jointConfig)
     })
@@ -70,10 +86,13 @@ export class VrmIK {
     jointConfig: IKSolver.JointConfig,
   ): IKSolver.Joint {
     return {
-      bone: vrm.humanoid?.getBoneNode(jointConfig.boneName) as any,
+      bone: vrm.humanoid?.getBoneNode(
+        VRMSchema.HumanoidBoneName[jointConfig.boneName],
+      ) as any,
       order: jointConfig.order,
       rotationMin: jointConfig.rotationMin,
       rotationMax: jointConfig.rotationMax,
+      boneName: jointConfig.boneName,
     }
   }
 }

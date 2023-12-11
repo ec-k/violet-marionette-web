@@ -6,7 +6,7 @@ import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 import { uiStores } from 'stores/uiStores'
 import { Vector3 } from 'three'
-import { Avatar } from './vrm-toy-box-ik-solver/Avatar'
+import { Avatar } from './avatar'
 import { trackingSettings } from 'stores/userSettings'
 
 export const holistic = new Holistic({
@@ -78,26 +78,18 @@ export function startMpActions(avatar: Avatar): Promise<void> {
           if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
 
-          const [
-            shoulders,
-            elbows,
-            hands,
-            middleProximals,
-            pinkyProximals,
-            wrist,
-          ] = setArmResults(results)
-
-          avatar.vrmIK?.ikTargetTracker.trackTargets(hands, elbows, shoulders)
-          avatar.vrmIK?.rotateHand.setHandTargets(
-            wrist,
-            middleProximals,
-            pinkyProximals,
-          )
-          if (videoElement && avatar.vrmFK)
-            avatar.vrmFK.setRig(
+          avatar.pushPose(trackingSettings.enabledIK, setArmResults(results))
+          // TODO: Integrate this into avatar.pushPose().
+          if (
+            videoElement &&
+            avatar.motionController &&
+            avatar.motionController.FK
+          ) {
+            avatar.motionController.FK.setRig(
               mediapipeLandmarks.resultLandmarks,
               videoElement,
             )
+          }
         })
         function timer(detector: Holistic | FaceMesh) {
           if (isMediapipeActive) {

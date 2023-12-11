@@ -1,10 +1,7 @@
 import React from 'react'
 import { Stack, Button, FormControlLabel, Switch } from '@mui/material'
-import { avatar } from 'models/vrm-toy-box-ik-solver/Avatar'
-import {
-  enableIKController,
-  disableIKController,
-} from 'models/vrm-toy-box-ik-solver/UI'
+import { avatar } from 'models/avatar'
+import { enableIKController, disableIKController } from 'models/avatar/UI'
 import purple from '@mui/material/colors/purple'
 import { mainSceneViewer } from 'stores/scene'
 import { otherSenttings } from 'stores/userSettings'

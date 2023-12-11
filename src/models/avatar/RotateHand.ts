@@ -8,11 +8,6 @@ export class RotateHand {
   private _middleFingerProximal: avatarRim
   private _pinkyFingerProximal: avatarRim
 
-  private _targetRotation = {
-    l: new Quaternion().identity(),
-    r: new Quaternion().identity(),
-  }
-
   constructor(vrm: VRM) {
     this._middleFingerProximal = {
       l: vrm.humanoid?.getBoneNode(
@@ -36,26 +31,26 @@ export class RotateHand {
     }
   }
 
-  rotateHands() {
-    this._hands.l.quaternion.slerp(this._targetRotation.l, 0.3)
-    this._hands.r.quaternion.slerp(this._targetRotation.r, 0.3)
-  }
-
   setHandTargets(wrists: aiRim, middleProximals: aiRim, pinkyProximals: aiRim) {
+    const targets: { l: Quaternion | undefined; r: Quaternion | undefined } = {
+      l: undefined,
+      r: undefined,
+    }
     if (!!wrists.l || !!middleProximals.l || !!pinkyProximals.l)
-      this._setHandTargetRotation(
+      targets.l = this._setHandTargetRotation(
         wrists.l,
         middleProximals.l,
         pinkyProximals.l,
         'left',
       )
     if (!!wrists.r || !!middleProximals.r || !!pinkyProximals.r)
-      this._setHandTargetRotation(
+      targets.r = this._setHandTargetRotation(
         wrists.r,
         middleProximals.r,
         pinkyProximals.r,
         'right',
       )
+    return targets
   }
 
   private _setHandTargetRotation(
@@ -93,10 +88,10 @@ export class RotateHand {
 
     if (isLeft) {
       world2Local(targetQuat, this._hands.l)
-      this._targetRotation.l = targetQuat
+      return targetQuat
     } else {
       world2Local(targetQuat, this._hands.r)
-      this._targetRotation.r = targetQuat
+      return targetQuat
     }
   }
 

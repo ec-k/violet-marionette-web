@@ -1,6 +1,6 @@
-import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { Euler, Quaternion } from 'three'
-import { HumanoidBoneNameKey } from 'types'
+import { HumanoidBoneNameKey, avatarPose } from 'types'
+import { MotionFilter, RotationFilter, RotationQueue } from './motion-filter'
 
 interface RotRange {
   x: {
@@ -17,25 +17,7 @@ interface RotRange {
   }
 }
 
-class RotationQueue {
-  private _queue: Quaternion[] = []
-
-  get length() {
-    return this._queue.length
-  }
-  get queue() {
-    return this._queue
-  }
-
-  pop() {
-    return this.queue.pop()
-  }
-  push(q: Quaternion) {
-    this.queue.push(q)
-  }
-}
-
-class RotationLPF {
+class RotationLPF implements RotationFilter {
   private maxLength: number
   private range: RotRange
   protected _current: Quaternion = new Quaternion().identity()
@@ -96,12 +78,12 @@ class RotationLPF {
   }
 }
 
-export class MotionLPF {
-  private boneQueues: BoneQueues
+export class MotionLPF implements MotionFilter {
+  private _boneQueues: BoneQueues
   // private BlinkQueue
 
   constructor(maxLength: number) {
-    this.boneQueues = {
+    this._boneQueues = {
       Hips: new RotationLPF(maxLength),
       Spine: new RotationLPF(maxLength),
       Chest: new RotationLPF(maxLength),
@@ -160,15 +142,14 @@ export class MotionLPF {
     }
   }
 
-  push(vrm: VRM) {
-    if (!vrm.humanoid) return
-    Object.keys(VRMSchema.HumanoidBoneName).forEach((key) => {
-      const boneName = key as HumanoidBoneNameKey
-      const worldRot = new Quaternion()
-      vrm.humanoid
-        ?.getBoneNode(VRMSchema.HumanoidBoneName[boneName])
-        ?.getWorldQuaternion(worldRot)
-      this.boneQueues[boneName].push(worldRot)
+  push(q: Quaternion | undefined, key: HumanoidBoneNameKey) {
+    if (!q) return
+    if (key) this._boneQueues[key].push(q)
+  }
+  pushAll(pose: avatarPose) {
+    Object.keys(pose).forEach((key) => {
+      const bn = key as HumanoidBoneNameKey
+      this.push(pose.bones[bn], bn)
     })
   }
   //   rotate(vrm: VRM) {
@@ -178,8 +159,8 @@ export class MotionLPF {
   //       this.boneQueues[bn].rotate(bone)
   //     })
   //   }
-  getFilteredRotation(key: HumanoidBoneNameKey) {
-    return this.boneQueues[key].current
+  filteredRotation(key: HumanoidBoneNameKey) {
+    return this._boneQueues[key].current
   }
 }
 
