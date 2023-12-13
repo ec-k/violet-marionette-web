@@ -19,10 +19,10 @@ export const solve = (ikChain: IKChain, iteration: number) => {
   ikChain.goal.getWorldPosition(_goalPosition)
 
   // To remove side effect.
-  let initialRot = new Map<HumanoidBoneNameKey, Quaternion>()
-  ikChain.joints.forEach((joint) => {
-    initialRot.set(joint.boneName, joint.bone.quaternion)
-  })
+  // let initialRot = new Map<HumanoidBoneNameKey, Quaternion>()
+  // ikChain.joints.forEach((joint) => {
+  //   initialRot.set(joint.boneName, joint.bone.quaternion.clone())
+  // })
 
   for (let i = iteration; i > 0; i--) {
     let didConverge = true
@@ -89,16 +89,16 @@ export const solve = (ikChain: IKChain, iteration: number) => {
     if (didConverge) break
   }
 
-  let ikRotations = new Map<HumanoidBoneNameKey, Quaternion>()
-  ikChain.joints.forEach((joint) => {
-    ikRotations.set(joint.boneName, joint.bone.quaternion)
-  })
-  ikChain.joints.forEach((joint) => {
-    const rot = initialRot.get(joint.boneName)
-    if (!!rot) joint.bone.quaternion.copy(rot)
-  })
+  // let ikRotations = new Map<HumanoidBoneNameKey, Quaternion>()
+  // ikChain.joints.forEach((joint) => {
+  //   ikRotations.set(joint.boneName, joint.bone.quaternion.clone())
+  // })
+  // ikChain.joints.forEach((joint) => {
+  //   const rot = initialRot.get(joint.boneName)
+  //   if (!!rot) joint.bone.quaternion.copy(rot)
+  // })
 
-  return ikRotations
+  // return ikRotations
 }
 
 export interface IKChain {

@@ -8,7 +8,7 @@ import { Viewer, Avatar, avatar } from 'models/avatar/'
 import { throttle } from 'lodash'
 import { VRM } from '@pixiv/three-vrm'
 import { mainSceneViewer } from '../stores/scene'
-import { networkSettings } from 'stores/userSettings'
+import { networkSettings, trackingSettings } from 'stores/userSettings'
 
 type VRMScene = {
   clock: THREE.Clock
@@ -68,7 +68,7 @@ export const VRMSceneScreen: React.FC = () => {
         viewer.scene.add(vrm.scene)
         isAddedVrm = true
       }
-      if (avatar) avatar.updatePose()
+      if (avatar) avatar.updatePose(trackingSettings.enabledIK)
       vrm.update(scene.clock.getDelta())
       viewer.renderer.render(viewer.scene, viewer.camera)
     }

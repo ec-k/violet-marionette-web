@@ -1,9 +1,15 @@
-import { Object3D, Quaternion } from 'three'
+import {
+  Object3D,
+  // Quaternion
+} from 'three'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as IKSolver from './IKSolver'
 import { defaultIKConfig } from './DefaultConfig'
 import { IkTargetTracker } from './ikTargetTracker'
-import { HumanoidBoneNameKey, aiRim } from 'types'
+import {
+  // HumanoidBoneNameKey,
+  aiRim,
+} from 'types'
 
 export class VrmIK {
   private _chains: Array<IKSolver.IKChain>
@@ -29,19 +35,20 @@ export class VrmIK {
     return this._solve()
   }
 
-  private _solve() {
-    const rotations = new Map<HumanoidBoneNameKey, Quaternion>()
+  _solve() {
+    // const rotations = new Map<HumanoidBoneNameKey, Quaternion>()
     // FIX: ただ，肘からsolveしたいだけ．もっといい書き方があるはず
     this._chains.forEach((chain) => {
       if (
         chain.effector.name === 'J_Bip_L_LowerArm' ||
         chain.effector.name === 'J_Bip_R_LowerArm'
       ) {
-        const results = IKSolver.solve(chain, this._iteration)
-        results.forEach((q, key) => {
-          if (results.has(key)) results.delete(key)
-          rotations.set(key, q)
-        })
+        IKSolver.solve(chain, this._iteration)
+        // const results = IKSolver.solve(chain, this._iteration)
+        // results.forEach((q, key) => {
+        //   if (results.has(key)) results.delete(key)
+        //   rotations.set(key, q)
+        // })
       }
     })
     this._chains.forEach((chain) => {
@@ -49,14 +56,15 @@ export class VrmIK {
         chain.effector.name === 'J_Bip_L_Hand' ||
         chain.effector.name === 'J_Bip_R_Hand'
       ) {
-        const results = IKSolver.solve(chain, this._iteration)
-        results.forEach((q, key) => {
-          if (results.has(key)) results.delete(key)
-          rotations.set(key, q)
-        })
+        IKSolver.solve(chain, this._iteration)
+        // const results = IKSolver.solve(chain, this._iteration)
+        // results.forEach((q, key) => {
+        //   if (results.has(key)) results.delete(key)
+        //   rotations.set(key, q)
+        // })
       }
     })
-    return rotations
+    // return rotations
   }
 
   private _createIKChain(

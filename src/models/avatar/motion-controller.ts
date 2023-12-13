@@ -1,7 +1,7 @@
 import { VrmFK } from './VrmFK'
 import { VrmIK } from './IK'
 import { RotateHand } from './RotateHand'
-import { RawMotion, MotionFilter } from 'models/avatar/motion-filter'
+import { MotionLPF, RawMotion, MotionFilter } from 'models/avatar/motion-filter'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { HumanoidBoneNameKey, avatarPose } from 'types'
 import { Vector3 } from 'three'
@@ -12,9 +12,9 @@ export class MotionController {
   private _rotateHand: RotateHand
   private _motionFilter: MotionFilter
 
-  constructor(vrm: VRM /*, filterLength: number*/) {
-    this._motionFilter = new RawMotion()
-    // this._motionFilter = new MotionLPF(filterLength)
+  constructor(vrm: VRM) {
+    const flg = false // This variable is for smooth debugging.
+    this._motionFilter = flg ? new MotionLPF(1) : new RawMotion()
     this._FK = new VrmFK()
     this._IK = new VrmIK(vrm)
     this._rotateHand = new RotateHand(vrm)
@@ -43,11 +43,12 @@ export class MotionController {
   ) {
     const rots = this._FK.pushPose(vrm, !enabledIK)
     const rotations = !!rots ? rots : new avatarPose()
-    if (enabledIK && !!this._IK) {
-      const ikRots = this._IK.pushPose(hands, elbows, shoulders)
-      ikRots.forEach((q, key) => {
-        rotations.set(key, q)
-      })
+    if (enabledIK && !!this._IK && !!this._IK.ikTargetTracker) {
+      this._IK.ikTargetTracker.trackTargets(hands, elbows, shoulders)
+      // const ikRots = this._IK.pushPose(hands, elbows, shoulders)
+      // ikRots.forEach((q, key) => {
+      //   rotations.set(key, q)
+      // })
       const handRotation = this._rotateHand.setHandTargets(
         wrists,
         middleProximals,
@@ -59,19 +60,30 @@ export class MotionController {
     this._motionFilter.pushAll(rotations)
   }
 
-  updatePose(vrm: VRM) {
+  updatePose(vrm: VRM, enabledIK: boolean) {
     if (!vrm.humanoid) return
     Object.keys(VRMSchema.HumanoidBoneName).forEach((bn) => {
       const boneName = bn as HumanoidBoneNameKey
+      if (
+        enabledIK &&
+        (boneName === 'LeftShoulder' ||
+          boneName === 'LeftUpperArm' ||
+          boneName === 'LeftLowerArm' ||
+          boneName === 'RightShoulder' ||
+          boneName === 'RightUpperArm' ||
+          boneName === 'RightLowerArm')
+      )
+        return
       const boneNode = vrm.humanoid?.getBoneNode(
         VRMSchema.HumanoidBoneName[boneName],
       )
       if (!boneNode) return
       boneNode.quaternion.slerp(
         this._motionFilter.filteredRotation(boneName),
-        0.5,
+        0.3,
       )
     })
+    this._IK._solve()
   }
 }
 

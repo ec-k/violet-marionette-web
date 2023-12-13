@@ -54,7 +54,6 @@ export class Avatar {
     this.setVRM(vrm)
 
     this._motionController = new MotionController(vrm)
-    // this._motionController = new MotionController(vrm, 60)
     this._removeSpringBone(vrm)
 
     // Setup IK target for debugging.
@@ -96,9 +95,9 @@ export class Avatar {
     ])
   }
 
-  updatePose() {
+  updatePose(enabledIK: boolean) {
     if (!this._motionController || !this.vrm) return
-    this._motionController.updatePose(this.vrm)
+    this._motionController.updatePose(this.vrm, enabledIK)
   }
 }
 

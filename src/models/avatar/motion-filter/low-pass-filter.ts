@@ -17,34 +17,48 @@ interface RotRange {
   }
 }
 
-class RotationLPF implements RotationFilter {
+export class RotationLPF implements RotationFilter {
   private maxLength: number
-  private range: RotRange
+  private _range: RotRange
   protected _current: Quaternion = new Quaternion().identity()
   private _rotations: RotationQueue
 
   constructor(maxLength: number) {
     this._rotations = new RotationQueue()
     this.maxLength = maxLength
-    this.range = {
+    this._range = {
       x: { max: 0, min: 0 },
       y: { max: 0, min: 0 },
       z: { max: 0, min: 0 },
     }
   }
-
+  get length() {
+    return this._rotations.length
+  }
+  get range() {
+    return this._range
+  }
   get current() {
     return this._current
   }
 
   push(q: Quaternion) {
-    if (this._checkInput(q)) {
-      this._current = q.clone()
-      this.updateRotationRange()
-    }
-    this._rotations.push(q)
+    const q_input = q.clone()
+    const updateCurrent = this._checkInput(q_input)
+    this._rotations.push(q_input)
     if (this._rotations.length > this.maxLength) {
       this._rotations.pop()
+    }
+    if (updateCurrent) {
+      this._current = q_input
+      this.updateRotationRange()
+    }
+  }
+  private _rangeReset() {
+    this._range = {
+      x: { max: 0, min: 0 },
+      y: { max: 0, min: 0 },
+      z: { max: 0, min: 0 },
     }
   }
 
@@ -52,28 +66,27 @@ class RotationLPF implements RotationFilter {
     const dif = new Euler().setFromQuaternion(
       new Quaternion().multiplyQuaternions(q.clone().invert(), this.current),
     )
-    if (dif.x > this.range.x.max) return true
-    if (dif.y > this.range.y.max) return true
-    if (dif.z > this.range.z.max) return true
-    if (dif.x < this.range.x.min) return true
-    if (dif.y < this.range.y.min) return true
-    if (dif.z < this.range.z.min) return true
+    if (dif.x > this._range.x.max) return true
+    if (dif.y > this._range.y.max) return true
+    if (dif.z > this._range.z.max) return true
+    if (dif.x < this._range.x.min) return true
+    if (dif.y < this._range.y.min) return true
+    if (dif.z < this._range.z.min) return true
     return false
   }
 
   private updateRotationRange() {
+    const curretInv = this.current.clone().invert()
+    this._rangeReset()
     this._rotations.queue.forEach((q) => {
-      const dif_q = new Quaternion().multiplyQuaternions(
-        q.clone().invert(),
-        this.current,
-      )
+      const dif_q = new Quaternion().multiplyQuaternions(curretInv, q)
       const dif = new Euler().setFromQuaternion(dif_q)
-      if (dif.x > this.range.x.max) this.range.x.max = dif.x
-      if (dif.y > this.range.y.max) this.range.y.max = dif.y
-      if (dif.z > this.range.z.max) this.range.z.max = dif.z
-      if (dif.x < this.range.x.min) this.range.x.min = dif.x
-      if (dif.y < this.range.y.min) this.range.y.min = dif.y
-      if (dif.z < this.range.z.min) this.range.z.min = dif.z
+      if (dif.x > this._range.x.max) this._range.x.max = dif.x
+      if (dif.y > this._range.y.max) this._range.y.max = dif.y
+      if (dif.z > this._range.z.max) this._range.z.max = dif.z
+      if (dif.x < this._range.x.min) this._range.x.min = dif.x
+      if (dif.y < this._range.y.min) this._range.y.min = dif.y
+      if (dif.z < this._range.z.min) this._range.z.min = dif.z
     })
   }
 }
@@ -144,10 +157,10 @@ export class MotionLPF implements MotionFilter {
 
   push(q: Quaternion | undefined, key: HumanoidBoneNameKey) {
     if (!q) return
-    if (key) this._boneQueues[key].push(q)
+    this._boneQueues[key].push(q)
   }
   pushAll(pose: avatarPose) {
-    Object.keys(pose).forEach((key) => {
+    Object.keys(pose.bones).forEach((key) => {
       const bn = key as HumanoidBoneNameKey
       this.push(pose.bones[bn], bn)
     })

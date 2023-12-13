@@ -66,7 +66,7 @@ export class RawMotion implements MotionFilter {
   }
   push(q: Quaternion | undefined, key: HumanoidBoneNameKey) {
     if (!q) return
-    if (key) this._bones[key] = q.clone()
+    this._bones[key] = q.clone()
   }
   pushAll(pose: avatarPose): void {
     Object.keys(pose.bones).forEach((key) => {
