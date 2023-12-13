@@ -17,7 +17,6 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.192",
     "@types/node": "^16.18.23",
     "@types/react": "^18.0.32",
@@ -37,7 +36,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
@@ -62,12 +61,14 @@
     ]
   },
   "devDependencies": {
+    "@types/jest": "^29.5.11",
     "@types/styled-components": "^5.1.26",
     "@types/three": "^0.137.0",
     "husky": "^8.0.3",
     "license-checker": "^25.0.1",
     "lint-staged": "^13.2.0",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.7",
+    "ts-jest": "^29.1.1"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
