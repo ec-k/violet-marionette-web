@@ -5,7 +5,7 @@ class NetworkSettings {
   // isBloadcastActive_: boolean = false
   private _host: string = 'localhost'
   private _port: number = 23000
-  sendRate: number = 30
+  sendRate: number = 20
 
   constructor() {
     makeObservable(this, {
