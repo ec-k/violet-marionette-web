@@ -14,18 +14,19 @@ const TrackingSettingWindow: React.FC = () => {
     trackingSettings.enabledIK,
   )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
+  const distanceToMonitorRef = React.useRef<HTMLInputElement | null>(null)
+  const monitorSizeRef = React.useRef<HTMLInputElement | null>(null)
 
   const updateSettings = () => {
-    const value = Number(cameraAngleInputRef.current?.value)
-    if (!Number.isNaN(value)) trackingSettings.cameraDepressionAngle = value
-  }
-  const toggleLegActivation = () => {
-    trackingSettings.enableLeg = !enabledLeg
-    setActivatedLeg(!enabledLeg)
-  }
-  const toggleIKActivation = () => {
-    trackingSettings.enabledIK = !enabledIK
-    setEnabledIK(!enabledIK)
+    const cameraDepAngle = Number(cameraAngleInputRef.current?.value)
+    const monitorSize = Number(monitorSizeRef.current?.value)
+    const disToMonitor = Number(distanceToMonitorRef.current?.value)
+
+    if (!Number.isNaN(cameraDepAngle))
+      trackingSettings.cameraDepressionAngle = cameraDepAngle
+    if (!Number.isNaN(monitorSize)) trackingSettings.monitorInch = monitorSize
+    if (!Number.isNaN(disToMonitor))
+      trackingSettings.distanceToMonitor = disToMonitor
   }
 
   return (
@@ -64,12 +65,29 @@ const TrackingSettingWindow: React.FC = () => {
           inputRef={cameraAngleInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
+        <VMTextField
+          label="Monitor Size"
+          defaultValue={trackingSettings.monitorInch}
+          adornment={{ position: 'end', value: 'inch' }}
+          inputRef={monitorSizeRef}
+          inputProps={{ pattern: '^[0-9]+$' }}
+        />
+        <VMTextField
+          label="Distance to Monitor"
+          defaultValue={trackingSettings.distanceToMonitor}
+          adornment={{ position: 'end', value: 'cm' }}
+          inputRef={distanceToMonitorRef}
+          inputProps={{ pattern: '^[0-9]+$' }}
+        />
         <FormControlLabel
           control={
             <Switch
               color="primary"
               defaultChecked={enabledLeg}
-              onChange={toggleLegActivation}
+              onChange={() => {
+                trackingSettings.enableLeg = !enabledLeg
+                setActivatedLeg(!enabledLeg)
+              }}
             />
           }
           label="Track Legs"
@@ -80,7 +98,10 @@ const TrackingSettingWindow: React.FC = () => {
             <Switch
               color="primary"
               defaultChecked={enabledIK}
-              onChange={toggleIKActivation}
+              onChange={() => {
+                trackingSettings.enabledIK = !enabledIK
+                setEnabledIK(!enabledIK)
+              }}
             />
           }
           label="Use IK (arm)"

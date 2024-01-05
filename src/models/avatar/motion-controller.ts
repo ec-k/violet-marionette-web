@@ -1,7 +1,11 @@
 import { VrmFK } from './VrmFK'
 import { VrmIK } from './IK'
 import { RotateHand } from './RotateHand'
-import { MotionLPF, RawMotion, MotionFilter } from 'models/avatar/motion-filter'
+import {
+  MotionLPF,
+  ConvertedMotion,
+  MotionFilter,
+} from 'models/avatar/motion-filter'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { HumanoidBoneNameKey, avatarPose } from 'types'
 import { Vector3 } from 'three'
@@ -14,7 +18,7 @@ export class MotionController {
 
   constructor(vrm: VRM) {
     const flg = false // This variable is for smooth debugging.
-    this._motionFilter = flg ? new MotionLPF(1) : new RawMotion()
+    this._motionFilter = flg ? new MotionLPF(1) : new ConvertedMotion(vrm)
     this._FK = new VrmFK()
     this._IK = new VrmIK(vrm)
     this._rotateHand = new RotateHand(vrm)

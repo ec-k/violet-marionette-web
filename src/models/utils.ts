@@ -1,4 +1,4 @@
-import { Object3D, Quaternion, Euler, Vector3 } from 'three'
+import { Object3D, Quaternion, Euler, Vector3, Vector2 } from 'three'
 import { VRMSchema } from '@pixiv/three-vrm'
 import { clamp } from 'three/src/math/MathUtils'
 
@@ -98,4 +98,17 @@ export const local2world = (
     return
   }
   worldRotation.multiply(targetWorldRotation)
+}
+
+export const squareBezier = (
+  t: number,
+  p1: Vector2,
+  p2: Vector2,
+  p3: Vector2,
+) => {
+  const _t = clamp(t, 0, 1)
+  const ans = p1.clone().multiplyScalar((1 - _t) ** 2)
+  ans.add(p2.clone().multiplyScalar(2 * (1 - _t) * _t))
+  ans.add(p3.clone().multiplyScalar(_t ** 2))
+  return ans
 }

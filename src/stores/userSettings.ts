@@ -1,4 +1,5 @@
 import { makeObservable, observable, action } from 'mobx'
+import { MathUtils } from 'three'
 
 class NetworkSettings {
   userName: string = ''
@@ -32,6 +33,16 @@ class TrackingSettings {
   enableLeg: boolean = false
   enabledIK: boolean = true
   private _cameraDepressionAngle: number = 15 // degree
+  private _distanceToMonitor: number = 100 // [cm]
+  private _monitorInch = 23 // [inch]
+  private _headRotCoef: number = 1
+  private _headRotConversionThreshold: number = 30
+  private _theta_v = 60 // Resonite's viewing angle. 60 is default setting in Resonite.
+
+  constructor() {
+    this.setHeadRotCoef()
+    this.setHeadRotConversionThreshold()
+  }
 
   get cameraDepressionAngle() {
     return this._cameraDepressionAngle
@@ -39,8 +50,47 @@ class TrackingSettings {
   get angleWithRadian() {
     return (this._cameraDepressionAngle * Math.PI) / 180
   }
+  get monitorInch() {
+    return this._monitorInch
+  }
+  get distanceToMonitor() {
+    return this._distanceToMonitor
+  }
+  get headRotCoef() {
+    return this._headRotCoef
+  }
+  get headRotConversionThreshold() {
+    return this._headRotConversionThreshold
+  }
   set cameraDepressionAngle(angle: number) {
     this._cameraDepressionAngle = angle
+  }
+  set distanceToMonitor(dist: number) {
+    this._distanceToMonitor = dist
+    this.setHeadRotCoef()
+    this.setHeadRotConversionThreshold()
+  }
+  set monitorInch(inch: number) {
+    this._monitorInch = inch
+    this.setHeadRotCoef()
+    this.setHeadRotConversionThreshold()
+  }
+
+  setHeadRotCoef() {
+    const inchToCmCoef = 2.54
+    const theta_p = Math.atan(
+      (Math.sqrt(256 / 337) * this._monitorInch * inchToCmCoef) /
+        this._distanceToMonitor,
+    )
+    this._headRotCoef = this._theta_v / MathUtils.radToDeg(theta_p)
+  }
+
+  setHeadRotConversionThreshold() {
+    const inchToCmCoef = 2.54
+    this._headRotConversionThreshold = Math.atan(
+      (Math.sqrt(256 / 337) * this._monitorInch * inchToCmCoef) /
+        (2 * this._distanceToMonitor),
+    )
   }
 }
 
