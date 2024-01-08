@@ -166,6 +166,17 @@ export class VrmFK {
     )
 
     // PUPILS
+    const eyeRots = {
+      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftEye)
+        ?.quaternion,
+      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightEye)
+        ?.quaternion,
+    }
+    const prevRots = {
+      l: eyeRots.l?.clone(),
+      r: eyeRots.r?.clone(),
+    }
+
     // interpolate pupil and keep a copy of the value
     let lookTarget = new THREE.Euler(
       this._lerp(this._oldLookTarget.x, riggedFace.pupil.y, 0.4),
@@ -173,17 +184,15 @@ export class VrmFK {
       0,
       'XYZ',
     )
-    this._oldLookTarget.copy(lookTarget)
     vrm.lookAt?.applyer?.lookAt(lookTarget)
+    this._oldLookTarget.copy(lookTarget)
 
-    const eyeRots = {
-      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftEye)
-        ?.quaternion,
-      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightEye)
-        ?.quaternion,
-    }
-    if (eyeRots.l) rotations.set('LeftEye', eyeRots.l)
-    if (eyeRots.r) rotations.set('RightEye', eyeRots.r)
+    if (eyeRots.l) rotations.set('LeftEye', eyeRots.l.clone())
+    if (eyeRots.r) rotations.set('RightEye', eyeRots.r.clone())
+
+    // Counteracting side-effects not to move pupils in this function.
+    if (prevRots.l) eyeRots.l?.copy(prevRots.l)
+    if (prevRots.r) eyeRots.r?.copy(prevRots.r)
 
     return rotations
   }
