@@ -88,7 +88,7 @@ export const world2Local = (
   worldRotation.premultiply(targetWorldRotation.invert())
 }
 export const local2world = (
-  worldRotation: Quaternion,
+  localRotation: Quaternion,
   target: THREE.Object3D,
 ) => {
   const targetWorldRotation = new Quaternion()
@@ -97,7 +97,7 @@ export const local2world = (
   } catch {
     return
   }
-  worldRotation.multiply(targetWorldRotation)
+  localRotation.multiply(targetWorldRotation)
 }
 
 export const squareBezier = (
