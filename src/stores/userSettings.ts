@@ -38,6 +38,7 @@ class TrackingSettings {
   private _headRotCoef: number = 1
   private _headRotConversionThreshold: number = 30
   private _theta_v = 60 // Resonite's viewing angle. 60 is default setting in Resonite.
+  eyeRotationOffset = -5 // degree
 
   constructor() {
     this.setHeadRotCoef()
@@ -62,6 +63,7 @@ class TrackingSettings {
   get headRotConversionThreshold() {
     return this._headRotConversionThreshold
   }
+
   set cameraDepressionAngle(angle: number) {
     this._cameraDepressionAngle = angle
   }

@@ -129,9 +129,10 @@ export class ConvertedMotion implements MotionFilter {
     // Exaggerate the orientation of eyes according to the difference in viewing angle.
     if (key === 'LeftEye' || key === 'RightEye') {
       const max = MathUtils.degToRad(15)
+      const offset = MathUtils.degToRad(trackingSettings.eyeRotationOffset)
       const euler = new Euler().setFromQuaternion(quat)
       euler.y = MathUtils.clamp(
-        euler.y * trackingSettings.headRotCoef,
+        euler.y * trackingSettings.headRotCoef + offset,
         -max,
         max,
       )
