@@ -78,9 +78,15 @@ export function startMpActions(avatar: Avatar): Promise<void> {
           if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
 
-          const headPos = transformResultsByCameraAngle(
-            toVector3(results.poseLandmarks[0]),
-          )
+          const headPos = (() => {
+            try {
+              return transformResultsByCameraAngle(
+                toVector3(results.poseLandmarks[0]),
+              )
+            } catch {
+              return undefined
+            }
+          })()
           avatar.pushPose(
             trackingSettings.enabledIK,
             headPos,
