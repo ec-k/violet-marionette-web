@@ -5,11 +5,13 @@ import * as IKSolver from './IKSolver'
 
 export class IkTargetTracker {
   private _head: GLTFNode | null
+  private _hips: GLTFNode | null
 
   private _chains: Array<IKSolver.IKChain>
 
   constructor(vrm: VRM, chains: Array<IKSolver.IKChain>) {
     this._head = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Head)!
+    this._hips = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Head)!
 
     this._chains = chains
   }
@@ -79,6 +81,14 @@ export class IkTargetTracker {
     root: THREE.Vector3,
     coef: number = 1,
   ): THREE.Vector3 {
-    return ai_effector.clone().sub(ai_root).multiplyScalar(coef).add(root)
+    const headToTarget = ai_effector.clone().sub(ai_root).multiplyScalar(coef)
+    this._rotateTargetByHipsRotation(headToTarget)
+    return headToTarget.add(root)
+  }
+
+  private _rotateTargetByHipsRotation(target: THREE.Vector3) {
+    const rot = new THREE.Quaternion()
+    this._hips?.getWorldQuaternion(rot)
+    target.applyQuaternion(rot)
   }
 }
