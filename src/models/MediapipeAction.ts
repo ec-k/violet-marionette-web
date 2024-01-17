@@ -78,7 +78,14 @@ export function startMpActions(avatar: Avatar): Promise<void> {
           if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
 
-          avatar.pushPose(trackingSettings.enabledIK, setArmResults(results))
+          const headPos = transformResultsByCameraAngle(
+            toVector3(results.poseLandmarks[0]),
+          )
+          avatar.pushPose(
+            trackingSettings.enabledIK,
+            headPos,
+            setArmResults(results),
+          )
           // TODO: Integrate this into avatar.pushPose().
           if (
             videoElement &&
@@ -116,20 +123,6 @@ export function startMpActions(avatar: Avatar): Promise<void> {
 }
 
 const setArmResults = (results: any) => {
-  const lShoulder = (() => {
-    try {
-      return transformResultsByCameraAngle(toVector3(results.poseLandmarks[11]))
-    } catch {
-      return undefined
-    }
-  })()
-  const rShoulder = (() => {
-    try {
-      return transformResultsByCameraAngle(toVector3(results.poseLandmarks[12]))
-    } catch {
-      return undefined
-    }
-  })()
   const lElbow = (() => {
     try {
       return transformResultsByCameraAngle(toVector3(results.poseLandmarks[13]))
@@ -214,14 +207,13 @@ const setArmResults = (results: any) => {
     }
   })()
 
-  const shoulders = { l: lShoulder, r: rShoulder }
   const elbows = { l: lElbow, r: rElbow }
   const hands = { l: lHand, r: rHand }
   const middleProximals = { l: lMiddleProximal, r: rMiddleProximal }
   const pinkyProximals = { l: lPinkyProximal, r: rPinkyProximal }
   const wrist = { l: lWrist, r: rWrist }
 
-  return [shoulders, elbows, hands, middleProximals, pinkyProximals, wrist]
+  return [elbows, hands, middleProximals, pinkyProximals, wrist]
 }
 
 export function DrawResults(

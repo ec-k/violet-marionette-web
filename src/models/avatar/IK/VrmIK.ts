@@ -1,5 +1,6 @@
 import {
   Object3D,
+  Vector3,
   // Quaternion
 } from 'three'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
@@ -30,8 +31,8 @@ export class VrmIK {
     return this._chains
   }
 
-  pushPose(handPos: aiRim, elbowPos: aiRim, shoulderPos: aiRim) {
-    this.ikTargetTracker.trackTargets(handPos, elbowPos, shoulderPos)
+  pushPose(handPos: aiRim, elbowPos: aiRim, headPos: Vector3 | undefined) {
+    this.ikTargetTracker.trackTargets(handPos, elbowPos, headPos)
     return this._solve()
   }
 
