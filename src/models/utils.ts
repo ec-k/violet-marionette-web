@@ -112,3 +112,16 @@ export const squareBezier = (
   ans.add(p3.clone().multiplyScalar(_t ** 2))
   return ans
 }
+
+export const worldPosToLocalPos = (
+  worldPos: Vector3,
+  target: Object3D,
+): void => {
+  const parentWorldPos = new Vector3()
+  try {
+    target.parent!.getWorldPosition(parentWorldPos)
+    worldPos.sub(parentWorldPos)
+  } catch {
+    return
+  }
+}
