@@ -2,16 +2,21 @@ import { GLTFNode, VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { aiRim } from 'types'
 import * as IKSolver from './IKSolver'
+import { localPosToWorldPos } from 'models/utils'
 
 export class IkTargetTracker {
-  private _head: GLTFNode | null
+  private _offset: THREE.Vector3
+
+  private _anchor: GLTFNode | null
   private _hips: GLTFNode | null
 
   private _chains: Array<IKSolver.IKChain>
 
   constructor(vrm: VRM, chains: Array<IKSolver.IKChain>) {
-    this._head = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Head)!
-    this._hips = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Head)!
+    this._offset = new THREE.Vector3(0, 0, 0)
+
+    this._anchor = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Head)!
+    this._hips = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Hips)!
 
     this._chains = chains
   }
@@ -19,40 +24,26 @@ export class IkTargetTracker {
   trackTargets(
     handPos: aiRim,
     elbowPos: aiRim,
-    headPos: THREE.Vector3 | undefined,
+    offset: THREE.Vector3 | undefined,
   ) {
-    const avatarHeadPosition = new THREE.Vector3()
-    this._head?.getWorldPosition(avatarHeadPosition)
+    if (!!this._anchor)
+      localPosToWorldPos(this._offset.set(0, 0.05, 0), this._anchor)
 
     // Track L_Hand IK Target
     if (!!handPos.l) {
-      const effector = handPos.l
-      this._trackIkTarget(effector, headPos, avatarHeadPosition, 'J_Bip_L_Hand')
+      this._trackIkTarget(handPos.l, offset, this._offset, 'J_Bip_L_Hand')
     }
     // Track R_Hand IK Target
     if (!!handPos.r) {
-      const effector = handPos.r
-      this._trackIkTarget(effector, headPos, avatarHeadPosition, 'J_Bip_R_Hand')
+      this._trackIkTarget(handPos.r, offset, this._offset, 'J_Bip_R_Hand')
     }
     // Track L_Elbow IK Target
     if (!!elbowPos.l) {
-      const effector = elbowPos.l
-      this._trackIkTarget(
-        effector,
-        headPos,
-        avatarHeadPosition,
-        'J_Bip_L_LowerArm',
-      )
+      this._trackIkTarget(elbowPos.l, offset, this._offset, 'J_Bip_L_LowerArm')
     }
     // Track R_Elbow IK Target
     if (!!elbowPos.r) {
-      const effector = elbowPos.r
-      this._trackIkTarget(
-        effector,
-        headPos,
-        avatarHeadPosition,
-        'J_Bip_R_LowerArm',
-      )
+      this._trackIkTarget(elbowPos.r, offset, this._offset, 'J_Bip_R_LowerArm')
     }
   }
 
@@ -87,8 +78,17 @@ export class IkTargetTracker {
   }
 
   private _rotateTargetByHipsRotation(target: THREE.Vector3) {
-    const rot = new THREE.Quaternion()
-    this._hips?.getWorldQuaternion(rot)
-    target.applyQuaternion(rot)
+    // Get hips' world rotation.
+    const hipsRot = new THREE.Quaternion()
+    this._hips?.getWorldQuaternion(hipsRot)
+
+    // // Extract y rotation.
+    // const euler = new THREE.Euler().setFromQuaternion(hipsRot)
+    // euler.x = 0
+    // euler.z = 0
+
+    // Rotate target by extracted angle.
+    // const rot = new THREE.Quaternion().setFromEuler(euler)
+    target.applyQuaternion(hipsRot)
   }
 }

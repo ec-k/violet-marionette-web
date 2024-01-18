@@ -5,7 +5,7 @@ import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
 import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 import { uiStores } from 'stores/uiStores'
-import { Vector3 } from 'three'
+import { MathUtils, Vector3 } from 'three'
 import { Avatar } from './avatar'
 import { trackingSettings } from 'stores/userSettings'
 
@@ -62,6 +62,10 @@ const transformResultsByCameraAngle = (pos: THREE.Vector3 | undefined) => {
   return pos
 }
 
+const offset: { current: Vector3 | undefined } = {
+  current: new Vector3(0, 0, 0),
+}
+
 export function startMpActions(avatar: Avatar): Promise<void> {
   stopMpActions()
   const promise = new Promise<void>((resolve) => {
@@ -78,18 +82,25 @@ export function startMpActions(avatar: Avatar): Promise<void> {
           if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
           mediapipeLandmarks.setLandmarks(results)
 
-          const headPos = (() => {
-            try {
-              return transformResultsByCameraAngle(
-                toVector3(results.poseLandmarks[0]),
-              )
-            } catch {
-              return undefined
-            }
-          })()
+          try {
+            // Since results.poselandmark[0] is the position of the face surface, manually adjust so that it is at the centre of the head.
+            const face = toVector3(results.poseLandmarks[0])
+            const tmp_1 = toVector3(results.poseLandmarks[10])
+            const tmp_2 = toVector3(results.poseLandmarks[9])
+            if (!face || !tmp_1 || !tmp_2) return
+            const adjAmount = 0.1
+            const adj = new Vector3()
+              .crossVectors(tmp_1?.sub(face), tmp_2?.sub(face))
+              .normalize()
+              .multiplyScalar(adjAmount)
+
+            // apply
+            offset.current = transformResultsByCameraAngle(face.sub(adj))
+          } catch {}
+
           avatar.pushPose(
             trackingSettings.enabledIK,
-            headPos,
+            offset.current,
             setArmResults(results),
           )
           // TODO: Integrate this into avatar.pushPose().
@@ -145,18 +156,27 @@ const setArmResults = (results: any) => {
   })()
   const lHand = (() => {
     try {
-      return transformResultsByCameraAngle(toVector3(results.poseLandmarks[15]))
+      return toVector3(results.poseLandmarks[15])
     } catch {
       return undefined
     }
   })()
   const rHand = (() => {
     try {
-      return transformResultsByCameraAngle(toVector3(results.poseLandmarks[16]))
+      return toVector3(results.poseLandmarks[16])
     } catch {
       return undefined
     }
   })()
+  // Compensate for mis-estimating in depth positions of hands when the distance of hands getting close.
+  if (!!lHand && !!rHand) {
+    const len = Math.abs(lHand.x - rHand.x)
+    const adj = MathUtils.clamp(-len + 0.25, 0, 0.25)
+    lHand.z -= adj
+    rHand.z -= adj
+  }
+  transformResultsByCameraAngle(lHand)
+  transformResultsByCameraAngle(rHand)
 
   const lMiddleProximal = (() => {
     try {

@@ -38,13 +38,13 @@ export class MotionController {
   pushPose2Filter(
     vrm: VRM,
     enabledIK: boolean,
-    head: Vector3 | undefined,
+    offset: Vector3 | undefined,
     [elbows, hands, middleProximals, pinkyProximals, wrists]: rimPosition[],
   ) {
     const rots = this._FK.pushPose(vrm, !enabledIK)
     const rotations = !!rots ? rots : new avatarPose()
     if (enabledIK && !!this._IK && !!this._IK.ikTargetTracker) {
-      this._IK.ikTargetTracker.trackTargets(hands, elbows, head)
+      this._IK.ikTargetTracker.trackTargets(hands, elbows, offset)
       // const ikRots = this._IK.pushPose(hands, elbows, shoulders)
       // ikRots.forEach((q, key) => {
       //   rotations.set(key, q)

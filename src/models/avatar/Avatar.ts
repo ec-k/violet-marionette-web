@@ -75,11 +75,11 @@ export class Avatar {
 
   pushPose(
     enabledIK: boolean,
-    head: THREE.Vector3 | undefined,
+    offset: THREE.Vector3 | undefined,
     [elbows, hands, middleProximals, pinkyProximals, wrists]: rimPosition[],
   ) {
     if (!this._motionController || !this.vrm) return
-    this._motionController.pushPose2Filter(this.vrm, enabledIK, head, [
+    this._motionController.pushPose2Filter(this.vrm, enabledIK, offset, [
       elbows,
       hands,
       middleProximals,

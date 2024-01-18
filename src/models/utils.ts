@@ -125,3 +125,16 @@ export const worldPosToLocalPos = (
     return
   }
 }
+
+export const localPosToWorldPos = (
+  localPos: Vector3,
+  target: Object3D,
+): void => {
+  const parentWorldPos = new Vector3()
+  try {
+    target.parent!.getWorldPosition(parentWorldPos)
+    localPos.add(parentWorldPos)
+  } catch {
+    return
+  }
+}
