@@ -27,7 +27,7 @@ export class IkTargetTracker {
     offset: THREE.Vector3 | undefined,
   ) {
     if (!!this._anchor)
-      localPosToWorldPos(this._offset.set(0, 0.05, 0), this._anchor)
+      localPosToWorldPos(this._offset.set(0, 0.06, 0), this._anchor)
 
     // Track L_Hand IK Target
     if (!!handPos.l) {

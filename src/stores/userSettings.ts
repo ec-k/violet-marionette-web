@@ -32,7 +32,7 @@ class NetworkSettings {
 class TrackingSettings {
   enableLeg: boolean = false
   enabledIK: boolean = true
-  private _cameraDepressionAngle: number = 15 // degree
+  private _cameraDepressionAngle: number = 20 // degree
   private _distanceToMonitor: number = 100 // [cm]
   private _monitorInch = 23 // [inch]
   private _headRotCoef: number = 1
