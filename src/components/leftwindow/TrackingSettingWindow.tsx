@@ -14,23 +14,23 @@ const TrackingSettingWindow: React.FC = () => {
     trackingSettings.enabledIK,
   )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
-  const distanceToMonitorRef = React.useRef<HTMLInputElement | null>(null)
-  const monitorSizeRef = React.useRef<HTMLInputElement | null>(null)
-  const eyeRotOffsetRef = React.useRef<HTMLInputElement | null>(null)
+  // const distanceToMonitorRef = React.useRef<HTMLInputElement | null>(null)
+  // const monitorSizeRef = React.useRef<HTMLInputElement | null>(null)
+  // const eyeRotOffsetRef = React.useRef<HTMLInputElement | null>(null)
 
   const updateSettings = () => {
     const cameraDepAngle = Number(cameraAngleInputRef.current?.value)
-    const monitorSize = Number(monitorSizeRef.current?.value)
-    const disToMonitor = Number(distanceToMonitorRef.current?.value)
-    const eyeRotOffset = Number(eyeRotOffsetRef.current?.value)
+    // const monitorSize = Number(monitorSizeRef.current?.value)
+    // const disToMonitor = Number(distanceToMonitorRef.current?.value)
+    // const eyeRotOffset = Number(eyeRotOffsetRef.current?.value)
 
     if (!Number.isNaN(cameraDepAngle))
       trackingSettings.cameraDepressionAngle = cameraDepAngle
-    if (!Number.isNaN(monitorSize)) trackingSettings.monitorInch = monitorSize
-    if (!Number.isNaN(disToMonitor))
-      trackingSettings.distanceToMonitor = disToMonitor
-    if (!Number.isNaN(eyeRotOffsetRef))
-      trackingSettings.eyeRotationOffset = eyeRotOffset
+    // if (!Number.isNaN(monitorSize)) trackingSettings.monitorInch = monitorSize
+    // if (!Number.isNaN(disToMonitor))
+    //   trackingSettings.distanceToMonitor = disToMonitor
+    // if (!Number.isNaN(eyeRotOffsetRef))
+    //   trackingSettings.eyeRotationOffset = eyeRotOffset
   }
 
   return (
@@ -69,7 +69,7 @@ const TrackingSettingWindow: React.FC = () => {
           inputRef={cameraAngleInputRef}
           inputProps={{ pattern: '^[0-9]+$' }}
         />
-        <VMTextField
+        {/* <VMTextField
           label="Monitor Size"
           defaultValue={trackingSettings.monitorInch}
           adornment={{ position: 'end', value: 'inch' }}
@@ -82,14 +82,14 @@ const TrackingSettingWindow: React.FC = () => {
           adornment={{ position: 'end', value: 'cm' }}
           inputRef={distanceToMonitorRef}
           inputProps={{ pattern: '^[0-9]+$' }}
-        />
-        <VMTextField
+        /> */}
+        {/* <VMTextField
           label="Eye Rotation Offset (yaw)"
           defaultValue={trackingSettings.eyeRotationOffset}
           adornment={{ position: 'end', value: '°' }}
           inputRef={eyeRotOffsetRef}
           inputProps={{ pattern: '^[-+]?[0-9]+$' }}
-        />
+        /> */}
         <FormControlLabel
           control={
             <Switch
