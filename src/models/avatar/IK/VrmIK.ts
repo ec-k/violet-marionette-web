@@ -1,16 +1,16 @@
 import {
   Object3D,
-  Vector3,
+  // Vector3,
   // Quaternion
 } from 'three'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as IKSolver from './IKSolver'
 import { defaultIKConfig } from './DefaultConfig'
 import { IkTargetTracker } from './ikTargetTracker'
-import {
-  // HumanoidBoneNameKey,
-  aiRim,
-} from 'types'
+// import {
+//   // HumanoidBoneNameKey,
+//   aiRim,
+// } from 'types'
 
 export class VrmIK {
   private _chains: Array<IKSolver.IKChain>
@@ -31,18 +31,18 @@ export class VrmIK {
     return this._chains
   }
 
-  pushPose(handPos: aiRim, elbowPos: aiRim, headPos: Vector3 | undefined) {
-    this.ikTargetTracker.trackTargets(handPos, elbowPos, headPos)
-    return this._solve()
-  }
+  // pushPose(handPos: aiRim, elbowPos: aiRim, offset: Vector3 | undefined) {
+  //   this.ikTargetTracker.trackTargets(handPos, elbowPos, headPos)
+  //   return this._solve()
+  // }
 
   _solve() {
     // const rotations = new Map<HumanoidBoneNameKey, Quaternion>()
     // FIX: ただ，肘からsolveしたいだけ．もっといい書き方があるはず
     this._chains.forEach((chain) => {
       if (
-        chain.effector.name === 'J_Bip_L_LowerArm' ||
-        chain.effector.name === 'J_Bip_R_LowerArm'
+        chain.effector.name !== 'J_Bip_L_Hand' &&
+        chain.effector.name !== 'J_Bip_R_Hand'
       ) {
         IKSolver.solve(chain, this._iteration)
         // const results = IKSolver.solve(chain, this._iteration)

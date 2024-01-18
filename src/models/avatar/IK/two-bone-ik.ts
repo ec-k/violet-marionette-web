@@ -1,4 +1,3 @@
-import { local2world } from 'models/utils'
 import { MathUtils, Object3D, Quaternion, Vector3 } from 'three'
 
 export class TwoBoneIK {
