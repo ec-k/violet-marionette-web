@@ -225,7 +225,7 @@ export class VrmFK {
 
     // Animate Pose
     if (rig.pose) {
-      if (rig.pose.Hips.rotation)
+      if (rig.pose.Hips.rotation && !trackingSettings.sit)
         setRotation('Hips', { y: rig.pose.Hips.rotation.y, x: 0, z: 0 }, 0.7)
       // this._rigPosition(
       //   vrm,
@@ -254,6 +254,13 @@ export class VrmFK {
         setRotation('LeftLowerLeg', rig.pose.LeftLowerLeg, 1, 0.3)
         setRotation('RightUpperLeg', rig.pose.RightUpperLeg, 1, 0.3)
         setRotation('RightLowerLeg', rig.pose.RightLowerLeg, 1, 0.3)
+      } else if (trackingSettings.sit) {
+        const upperLegRot = new THREE.Euler(Math.PI / 2, 0, 0)
+        const lowerLegRot = new THREE.Euler(-Math.PI / 2, 0, 0)
+        setRotation('LeftUpperLeg', upperLegRot, 1, 0.3)
+        setRotation('LeftLowerLeg', lowerLegRot, 1, 0.3)
+        setRotation('RightUpperLeg', upperLegRot, 1, 0.3)
+        setRotation('RightLowerLeg', lowerLegRot, 1, 0.3)
       } else {
         const defaultRot = new THREE.Quaternion(0, 0, 0, 1)
         setRotation('LeftUpperLeg', defaultRot, 1, 0.3)

@@ -37,10 +37,6 @@ const TrackingSettingWindow: React.FC = () => {
     trackingSettings.sit = !sit
     setSit(!sit)
   }
-  const toggleSit = () => {
-    trackingSettings.sit = !sit
-    setSit(!sit)
-  }
 
   return (
     <>
