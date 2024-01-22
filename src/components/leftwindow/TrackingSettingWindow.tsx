@@ -14,6 +14,7 @@ const TrackingSettingWindow: React.FC = () => {
     trackingSettings.enabledIK,
   )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
+  const [sit, setSit] = React.useState<boolean>(trackingSettings.sit)
   // const distanceToMonitorRef = React.useRef<HTMLInputElement | null>(null)
   // const monitorSizeRef = React.useRef<HTMLInputElement | null>(null)
   // const eyeRotOffsetRef = React.useRef<HTMLInputElement | null>(null)
@@ -31,6 +32,14 @@ const TrackingSettingWindow: React.FC = () => {
     //   trackingSettings.distanceToMonitor = disToMonitor
     // if (!Number.isNaN(eyeRotOffsetRef))
     //   trackingSettings.eyeRotationOffset = eyeRotOffset
+  }
+  const toggleSit = () => {
+    trackingSettings.sit = !sit
+    setSit(!sit)
+  }
+  const toggleSit = () => {
+    trackingSettings.sit = !sit
+    setSit(!sit)
   }
 
   return (
@@ -116,6 +125,13 @@ const TrackingSettingWindow: React.FC = () => {
             />
           }
           label="Use IK (arm)"
+          sx={{ color: purple[50] }}
+        />
+        <FormControlLabel
+          control={
+            <Switch color="primary" defaultChecked={sit} onChange={toggleSit} />
+          }
+          label="sit"
           sx={{ color: purple[50] }}
         />
         {/* {activatedLeg ? (
