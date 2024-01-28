@@ -171,7 +171,8 @@ const setArmResults = (results: any) => {
   // Compensate for mis-estimating in depth positions of hands when the distance of hands getting close.
   if (!!lHand && !!rHand) {
     const len = Math.abs(lHand.x - rHand.x)
-    const adj = MathUtils.clamp(-len + 0.25, 0, 0.25)
+    const adjAmount = 0.3
+    const adj = MathUtils.clamp(-len + adjAmount, 0, adjAmount)
     lHand.z -= adj
     rHand.z -= adj
   }

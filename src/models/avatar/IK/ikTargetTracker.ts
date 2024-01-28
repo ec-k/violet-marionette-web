@@ -31,11 +31,23 @@ export class IkTargetTracker {
 
     // Track L_Hand IK Target
     if (!!handPos.l) {
-      this._trackIkTarget(handPos.l, offset, this._offset, 'J_Bip_L_Hand')
+      this._trackIkTarget(
+        handPos.l,
+        offset,
+        this._offset,
+        'J_Bip_L_Hand',
+        new THREE.Vector3(-0.03, 0.05, 0),
+      )
     }
     // Track R_Hand IK Target
     if (!!handPos.r) {
-      this._trackIkTarget(handPos.r, offset, this._offset, 'J_Bip_R_Hand')
+      this._trackIkTarget(
+        handPos.r,
+        offset,
+        this._offset,
+        'J_Bip_R_Hand',
+        new THREE.Vector3(0.03, 0.05, 0),
+      )
     }
     // Track L_Elbow IK Target
     if (!!elbowPos.l) {
@@ -52,6 +64,7 @@ export class IkTargetTracker {
     ai_root: THREE.Vector3 | undefined,
     boneRoot: THREE.Vector3,
     effectorName: string,
+    offset?: THREE.Vector3,
     lerpAmount: number = 0.3,
   ) {
     if (!ai_effector || !ai_root) return
@@ -61,7 +74,11 @@ export class IkTargetTracker {
       if (chain.effector.name === effectorName) target = chain.goal
     })
     if (target) {
-      const pos = this._adjustTargetPos(ai_effector, ai_root, boneRoot)
+      const pos = (() => {
+        if (!!offset)
+          return this._adjustTargetPos(ai_effector, ai_root, boneRoot, offset)
+        return this._adjustTargetPos(ai_effector, ai_root, boneRoot)
+      })()
       ;(target as THREE.Object3D).position.lerp(pos, lerpAmount)
     }
   }
@@ -70,9 +87,14 @@ export class IkTargetTracker {
     ai_effector: THREE.Vector3,
     ai_root: THREE.Vector3,
     root: THREE.Vector3,
+    offset?: THREE.Vector3,
     coef: number = 1,
   ): THREE.Vector3 {
-    const headToTarget = ai_effector.clone().sub(ai_root).multiplyScalar(coef)
+    const headToTarget = (() => {
+      if (!!offset)
+        return ai_effector.clone().sub(ai_root).multiplyScalar(coef).add(offset)
+      return ai_effector.clone().sub(ai_root).multiplyScalar(coef)
+    })()
     this._rotateTargetByHipsRotation(headToTarget)
     return headToTarget.add(root)
   }
