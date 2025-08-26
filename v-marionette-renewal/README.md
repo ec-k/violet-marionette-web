@@ -1,69 +1,55 @@
-# React + TypeScript + Vite
+# V-Marionette
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+V-Marionette は，Neos および Resonite のアバターを Web カメラによるトラッキングで動かせるアプリケーションです．
 
-Currently, two official plugins are available:
+V-Marionette は，以下の技術を使用しています．
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- web カメラによるトラッキング
+  - [Mediapipe](https://mediapipe.dev/)
+- VRM への solver
+  - [kalidokit](https://github.com/yeemachine/kalidokit)
+- VRM の表示
+  - [three-vrm](https://github.com/pixiv/three-vrm)
+- トラッキングデータの送信
+  - [Websocket](https://developer.mozilla.org/ja/docs/Web/API/WebSocket)
 
-## Expanding the ESLint configuration
+<img src="resources/violetMarionette_usage.gif" width="600px">
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 実行
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Web アプリケーションの実行
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+現在（2023-04-30）はまだデモページが公開できていないので，ローカルで実行する他ありません．
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+ローカルで実行する場合は，このリポジトリをクローンしてください．
+
+```bash
+git clone git@github.com:ec-k/violet-marionette.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+必要なパッケージをインストールしてください．
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+アプリケーションの立ち上げには，次の 2 つを行ってください
+
+1. サーバーを立ち上げる
+2. クライアントアプリを立ち上げる
+
+```bash
+node bridge-server.js
+npm run
+```
+
+実行後，以下の URL にアクセスしてください
+[http://localhost:3000](http://localhost:3000)
+
+以上で web アプリケーション側の実行が完了します．
+しかし，V-Marionette は NeosVR 側でレシーバーの設定を行う必要があります．
+
+### Neos Receiver の設定
+
+現在はテスト用の非常に汚い状態であり，おそらく私しか使えない状態です．動きはします．
+UI 周りを整えたら，ここに`neosdb`のリンクを貼り，設定方法を書きます．
