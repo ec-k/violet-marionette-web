@@ -31,8 +31,8 @@ faceMesh.setOptions({
   refineLandmarks: true,
 })
 
-let fps = 60
-let timeInterval = 1000 / fps
+const fps = 60
+const timeInterval = 1000 / fps
 let videoElement: HTMLVideoElement | undefined
 let isMediapipeActive: boolean = false
 
