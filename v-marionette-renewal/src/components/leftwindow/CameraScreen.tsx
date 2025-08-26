@@ -2,7 +2,7 @@ import React from 'react'
 import { autorun, IReactionDisposer } from 'mobx'
 import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
 import { DrawResults } from 'models/MediapipeAction'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 
 const Video = styled.video`
   max-width: 100%;
@@ -48,11 +48,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ showVideo }) => {
     dispo.push(
       autorun(() => {
         if (canvasRef.current && videoRef.current)
-          DrawResults(
-            mediapipeLandmarks.resultLandmarks,
-            canvasRef.current,
-            videoRef.current,
-          )
+          DrawResults(mediapipeLandmarks.resultLandmarks, canvasRef.current, videoRef.current)
       }),
     )
 

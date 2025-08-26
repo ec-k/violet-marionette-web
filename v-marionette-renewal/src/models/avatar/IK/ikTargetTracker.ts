@@ -21,13 +21,8 @@ export class IkTargetTracker {
     this._chains = chains
   }
 
-  trackTargets(
-    handPos: aiRim,
-    elbowPos: aiRim,
-    offset: THREE.Vector3 | undefined,
-  ) {
-    if (!!this._anchor)
-      localPosToWorldPos(this._offset.set(0, 0.06, 0), this._anchor)
+  trackTargets(handPos: aiRim, elbowPos: aiRim, offset: THREE.Vector3 | undefined) {
+    if (!!this._anchor) localPosToWorldPos(this._offset.set(0, 0.06, 0), this._anchor)
 
     // Track L_Hand IK Target
     if (!!handPos.l) {
@@ -75,8 +70,7 @@ export class IkTargetTracker {
     })
     if (target) {
       const pos = (() => {
-        if (!!offset)
-          return this._adjustTargetPos(ai_effector, ai_root, boneRoot, offset)
+        if (!!offset) return this._adjustTargetPos(ai_effector, ai_root, boneRoot, offset)
         return this._adjustTargetPos(ai_effector, ai_root, boneRoot)
       })()
       ;(target as THREE.Object3D).position.lerp(pos, lerpAmount)
@@ -91,8 +85,7 @@ export class IkTargetTracker {
     coef: number = 1,
   ): THREE.Vector3 {
     const headToTarget = (() => {
-      if (!!offset)
-        return ai_effector.clone().sub(ai_root).multiplyScalar(coef).add(offset)
+      if (!!offset) return ai_effector.clone().sub(ai_root).multiplyScalar(coef).add(offset)
       return ai_effector.clone().sub(ai_root).multiplyScalar(coef)
     })()
     this._rotateTargetByHipsRotation(headToTarget)

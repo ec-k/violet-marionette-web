@@ -1,21 +1,10 @@
 import { createTheme } from '@mui/material/styles'
-import purple from '@mui/material/colors/purple'
-import orange from '@mui/material/colors/orange'
+import { purple, orange } from '@mui/material/colors'
 
 declare module '@mui/material/styles' {
   interface Theme {
-    palette: {
-      mode: string
-      primary: {
-        light: string
-        main: string
-        dark: string
-      }
-      secondary: {
-        light: string
-        main: string
-        dark: string
-      }
+    customeFonts: {
+      jelly: string
     }
   }
 }

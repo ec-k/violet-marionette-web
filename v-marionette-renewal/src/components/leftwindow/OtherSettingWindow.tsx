@@ -2,14 +2,12 @@ import React from 'react'
 import { Stack, Button, FormControlLabel, Switch } from '@mui/material'
 import { avatar } from 'models/avatar'
 import { enableIKController, disableIKController } from 'models/avatar/UI'
-import purple from '@mui/material/colors/purple'
+import { purple } from '@mui/material/colors'
 import { mainSceneViewer } from 'stores/scene'
 import { otherSenttings } from 'stores/userSettings'
 
 const OtherSettings: React.FC = () => {
-  const [showIkTarget, setShowIkTarget] = React.useState<boolean>(
-    otherSenttings.showIKTarget,
-  )
+  const [showIkTarget, setShowIkTarget] = React.useState<boolean>(otherSenttings.showIKTarget)
   const [showGrid, setShowGrid] = React.useState<boolean>(false)
 
   const loadVRM = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,8 +45,7 @@ const OtherSettings: React.FC = () => {
             color="primary"
             defaultChecked={showGrid}
             onChange={() => {
-              if (mainSceneViewer.current)
-                mainSceneViewer.current.showHelper(!showGrid)
+              if (mainSceneViewer.current) mainSceneViewer.current.showHelper(!showGrid)
               setShowGrid(!showGrid)
             }}
           />
