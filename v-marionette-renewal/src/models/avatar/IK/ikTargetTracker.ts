@@ -1,6 +1,6 @@
 import { GLTFNode, VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
-import { aiRim } from 'types'
+import type { aiRim } from 'types'
 import * as IKSolver from './iKSolver'
 import { localPosToWorldPos } from 'models/utils'
 

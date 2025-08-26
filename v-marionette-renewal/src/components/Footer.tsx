@@ -9,7 +9,8 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff'
 import WifiIcon from '@mui/icons-material/Wifi'
 import WifiOffIcon from '@mui/icons-material/WifiOff'
 import CircularProgress from '@mui/material/CircularProgress'
-import { autorun, IReactionDisposer } from 'mobx'
+import { autorun } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
 
 type MediapipeState = 'stop' | 'loading' | 'active'
 

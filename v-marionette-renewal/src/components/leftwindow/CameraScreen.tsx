@@ -1,5 +1,6 @@
 import React from 'react'
-import { autorun, IReactionDisposer } from 'mobx'
+import { autorun } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
 import { mediapipeLandmarks } from 'stores/mpLandmarksObserver'
 import { DrawResults } from 'models/mediapipeAction'
 import styled from '@emotion/styled'
@@ -31,7 +32,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ showVideo }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const videoRef = React.useRef<HTMLVideoElement>(null)
 
-  if (!!videoRef.current) {
+  if (videoRef.current) {
     if (showVideo) videoRef.current.play()
     else videoRef.current.srcObject = null
   }

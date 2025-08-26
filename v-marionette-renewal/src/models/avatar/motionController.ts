@@ -4,11 +4,12 @@ import { RotateHand } from './rotateHand'
 import {
   MotionLPF,
   // ConvertedMotion,
-  MotionFilter,
   RawMotion,
 } from 'models/avatar/motion-filter'
+import type { MotionFilter } from 'models/avatar/motion-filter'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
-import { HumanoidBoneNameKey, avatarPose } from 'types'
+import { avatarPose } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
 import { Vector3 } from 'three'
 
 export class MotionController {
@@ -49,11 +50,7 @@ export class MotionController {
       // ikRots.forEach((q, key) => {
       //   rotations.set(key, q)
       // })
-      const handRotation = this._rotateHand.setHandTargets(
-        wrists,
-        middleProximals,
-        pinkyProximals,
-      )
+      const handRotation = this._rotateHand.setHandTargets(wrists, middleProximals, pinkyProximals)
       if (!!handRotation.l) rotations.set('LeftHand', handRotation.l)
       if (!!handRotation.r) rotations.set('RightHand', handRotation.r)
     }
@@ -74,14 +71,9 @@ export class MotionController {
           boneName === 'RightLowerArm')
       )
         return
-      const boneNode = vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName[boneName],
-      )
+      const boneNode = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName[boneName])
       if (!boneNode) return
-      boneNode.quaternion.slerp(
-        this._motionFilter.filteredRotation(boneName),
-        0.3,
-      )
+      boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 0.3)
     })
     this._IK._solve()
   }

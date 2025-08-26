@@ -1,6 +1,7 @@
 import { Quaternion } from 'three'
-import { MotionFilter } from './motion-filter'
-import { HumanoidBoneNameKey, avatarPose } from 'types'
+import type { MotionFilter } from './motion-filter'
+import { avatarPose } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
 
 export class RawMotion implements MotionFilter {
   private _bones: { [key in HumanoidBoneNameKey]: Quaternion }

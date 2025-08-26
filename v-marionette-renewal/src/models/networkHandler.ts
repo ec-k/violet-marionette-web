@@ -2,14 +2,10 @@ import { networkSettings } from 'stores/userSettings'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { ConvertBoneName /*, local2world */ } from './utils'
 import { Euler, Quaternion } from 'three'
-import { HumanoidBoneNameKey } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
 
 type ConnectionType = 'resoniteClient' | 'webClient' | 'server'
-type MessageType =
-  | 'trackingData'
-  | 'websocketSetting'
-  | 'connectionCheck'
-  | 'notification'
+type MessageType = 'trackingData' | 'websocketSetting' | 'connectionCheck' | 'notification'
 interface VmMessage {
   userName: string
   connectionType: ConnectionType
@@ -56,8 +52,7 @@ class NetworkHandler {
             }
             break
           case 'notification':
-            if (Notification.permission === 'granted')
-              new Notification(data as string)
+            if (Notification.permission === 'granted') new Notification(data as string)
             break
           default:
             break
@@ -105,15 +100,11 @@ class NetworkHandler {
     if (trackingTargetName === 'LeftBlink') {
       const Blendshape = vrm.blendShapeProxy
       const PresetName = VRMSchema.BlendShapePresetName
-      return `#LeftBlink,${Blendshape?.getValue(PresetName.BlinkL)?.toFixed(
-        this._numberOfDigits,
-      )}`
+      return `#LeftBlink,${Blendshape?.getValue(PresetName.BlinkL)?.toFixed(this._numberOfDigits)}`
     } else if (trackingTargetName === 'RightBlink') {
       const Blendshape = vrm.blendShapeProxy
       const PresetName = VRMSchema.BlendShapePresetName
-      return `#RightBlink,${Blendshape?.getValue(PresetName.BlinkR)?.toFixed(
-        this._numberOfDigits,
-      )}`
+      return `#RightBlink,${Blendshape?.getValue(PresetName.BlinkR)?.toFixed(this._numberOfDigits)}`
     } else {
       const bodyNodeName = VRMSchema.HumanoidBoneName[trackingTargetName]
       // const boneWorldRot = this.motionLPF

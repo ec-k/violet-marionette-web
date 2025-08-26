@@ -1,7 +1,8 @@
 import { Euler, MathUtils, Quaternion, Vector2 } from 'three'
 import { GLTFNode, VRM, VRMSchema } from '@pixiv/three-vrm'
-import { MotionFilter } from './motion-filter'
-import { HumanoidBoneNameKey, avatarPose } from 'types'
+import type { MotionFilter } from './motion-filter'
+import { avatarPose } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
 import { trackingSettings } from 'stores/userSettings'
 import { world2Local, local2world, squareBezier } from 'models/utils'
 
@@ -82,12 +83,7 @@ export class ConvertedMotion implements MotionFilter {
     const y_th = trackingSettings.headRotConversionThreshold
     const _coef = trackingSettings.headRotCoef
 
-    if (
-      !isFinite(_coef) ||
-      !isFinite(y_th) ||
-      y_max < -y_th * _coef ||
-      y_min > y_th * _coef
-    )
+    if (!isFinite(_coef) || !isFinite(y_th) || y_max < -y_th * _coef || y_min > y_th * _coef)
       return y
 
     const clamp = MathUtils.clamp
@@ -131,11 +127,7 @@ export class ConvertedMotion implements MotionFilter {
       const max = MathUtils.degToRad(15)
       const offset = MathUtils.degToRad(trackingSettings.eyeRotationOffset)
       const euler = new Euler().setFromQuaternion(quat)
-      euler.y = MathUtils.clamp(
-        euler.y * trackingSettings.headRotCoef + offset,
-        -max,
-        max,
-      )
+      euler.y = MathUtils.clamp(euler.y * trackingSettings.headRotCoef + offset, -max, max)
       quat.setFromEuler(euler)
     }
     this._bones[key] = quat

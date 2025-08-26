@@ -1,6 +1,6 @@
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import { Quaternion, Vector3 } from 'three'
-import { aiRim, avatarRim, side } from 'types'
+import type { aiRim, avatarRim, side } from 'types'
 import { world2Local } from 'models/utils'
 
 export class RotateHand {
@@ -10,20 +10,12 @@ export class RotateHand {
 
   constructor(vrm: VRM) {
     this._middleFingerProximal = {
-      l: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.LeftMiddleProximal,
-      )!,
-      r: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.RightMiddleProximal,
-      )!,
+      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftMiddleProximal)!,
+      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightMiddleProximal)!,
     }
     this._pinkyFingerProximal = {
-      l: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.LeftLittleProximal,
-      )!,
-      r: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.RightLittleProximal,
-      )!,
+      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftLittleProximal)!,
+      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightLittleProximal)!,
     }
     this._hands = {
       l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftHand)!,
@@ -37,12 +29,7 @@ export class RotateHand {
       r: undefined,
     }
     if (!!wrists.l || !!middleProximals.l || !!pinkyProximals.l)
-      targets.l = this._setHandTargetRotation(
-        wrists.l,
-        middleProximals.l,
-        pinkyProximals.l,
-        'left',
-      )
+      targets.l = this._setHandTargetRotation(wrists.l, middleProximals.l, pinkyProximals.l, 'left')
     if (!!wrists.r || !!middleProximals.r || !!pinkyProximals.r)
       targets.r = this._setHandTargetRotation(
         wrists.r,
@@ -78,11 +65,7 @@ export class RotateHand {
       this._pinkyFingerProximal.r.getWorldPosition(avatar_pinkyFinger)
     }
 
-    const [ai_front, ai_up] = this._getFrontUp(
-      ai_wrist,
-      ai_middleFinger,
-      ai_pinkyFinger,
-    )
+    const [ai_front, ai_up] = this._getFrontUp(ai_wrist, ai_middleFinger, ai_pinkyFinger)
 
     const targetQuat = this._getQuaternionFromFrontUp(ai_front, ai_up, side)
 
@@ -95,11 +78,7 @@ export class RotateHand {
     }
   }
 
-  private _getQuaternionFromFrontUp(
-    front: Vector3,
-    up: Vector3,
-    side: side = 'left',
-  ) {
+  private _getQuaternionFromFrontUp(front: Vector3, up: Vector3, side: side = 'left') {
     const isLeft = side === 'left'
     const defaultFrontUp = isLeft
       ? {
@@ -126,14 +105,9 @@ export class RotateHand {
     pinkyFingerProximal: Vector3,
     side: side = 'left',
   ) {
-    const front = new Vector3()
-      .subVectors(middleFingerProximal, wrist)
-      .normalize()
+    const front = new Vector3().subVectors(middleFingerProximal, wrist).normalize()
     const up = new Vector3()
-      .crossVectors(
-        front.clone(),
-        new Vector3().subVectors(pinkyFingerProximal, wrist),
-      )
+      .crossVectors(front.clone(), new Vector3().subVectors(pinkyFingerProximal, wrist))
       .normalize()
     if (side === 'right') up.negate()
     return [front, up]

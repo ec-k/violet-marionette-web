@@ -1,10 +1,5 @@
-import {
-  FormControl,
-  InputLabel,
-  Input,
-  InputAdornment,
-  InputBaseComponentProps,
-} from '@mui/material'
+import { FormControl, InputLabel, Input, InputAdornment } from '@mui/material'
+import type { InputBaseComponentProps } from '@mui/material'
 import { purple } from '@mui/material/colors'
 import React from 'react'
 

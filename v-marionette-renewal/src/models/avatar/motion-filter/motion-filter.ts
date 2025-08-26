@@ -1,5 +1,6 @@
 import { Quaternion } from 'three'
-import { HumanoidBoneNameKey, avatarPose } from 'types'
+import { avatarPose } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
 
 export interface RotationFilter {
   get current(): Quaternion

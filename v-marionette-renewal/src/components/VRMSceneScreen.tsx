@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import React from 'react'
-import { IReactionDisposer, reaction } from 'mobx'
+import { reaction } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
 import styled from '@emotion/styled'
 import networkHandler from 'models/networkHandler'
 import { uiStores } from 'stores/uiStores'
@@ -126,5 +127,3 @@ export const VRMSceneScreen: React.FC = () => {
     </Div>
   )
 }
-
-export default VRMScene

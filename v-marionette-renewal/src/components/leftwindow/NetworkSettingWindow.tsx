@@ -3,7 +3,8 @@ import { Stack, Button } from '@mui/material'
 import { networkSettings } from 'stores/userSettings'
 import VMTextField from 'components/leftwindow/VMTextField'
 import networkHandler from 'models/networkHandler'
-import { IReactionDisposer, reaction } from 'mobx'
+import { reaction } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
 
 const NetworkSettingWindow: React.FC = () => {
   const userNameInputRef = React.useRef<HTMLInputElement | null>(null)

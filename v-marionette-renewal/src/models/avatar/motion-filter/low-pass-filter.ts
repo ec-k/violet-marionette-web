@@ -1,6 +1,8 @@
 import { Euler, Quaternion } from 'three'
-import { HumanoidBoneNameKey, avatarPose } from 'types'
-import { MotionFilter, RotationFilter, RotationQueue } from './motion-filter'
+import { avatarPose } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
+import { RotationQueue } from './motion-filter'
+import type { MotionFilter, RotationFilter } from './motion-filter'
 
 interface RotRange {
   x: {

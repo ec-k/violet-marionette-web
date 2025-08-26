@@ -1,5 +1,5 @@
 import { Vector3, Quaternion, Object3D } from 'three'
-import { HumanoidBoneNameKey } from 'types'
+import type { HumanoidBoneNameKey } from 'types'
 
 // 計算用の一時的な変数
 // 不要なインスタンス化をさける
@@ -28,11 +28,7 @@ export const solve = (ikChain: IKChain, iteration: number) => {
     let didConverge = true
     ikChain.joints.forEach((joint) => {
       // 注目関節のワールド座標・姿勢等を取得する
-      joint.bone.matrixWorld.decompose(
-        _jointPosition,
-        _jointQuaternionInverse,
-        _jointScale,
-      )
+      joint.bone.matrixWorld.decompose(_jointPosition, _jointQuaternionInverse, _jointScale)
       _jointQuaternionInverse.invert()
 
       //  注目関節 -> エフェクタのベクトル
@@ -75,10 +71,7 @@ export const solve = (ikChain: IKChain, iteration: number) => {
 
       // 回転角・軸制限
       joint.bone.rotation.setFromVector3(
-        joint.bone.rotation
-          .toVector3(_vector)
-          .max(joint.rotationMin)
-          .min(joint.rotationMax),
+        joint.bone.rotation.toVector3(_vector).max(joint.rotationMin).min(joint.rotationMax),
         joint.order,
       ) // This is SIDE EFFECT
 

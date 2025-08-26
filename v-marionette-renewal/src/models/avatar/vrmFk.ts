@@ -2,7 +2,7 @@ import * as Kalidokit from 'kalidokit'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { trackingSettings } from '../../stores/userSettings'
-import { KalidokitRig, HumanoidBoneNameKey, avatarPose } from 'types'
+import type { KalidokitRig, HumanoidBoneNameKey, avatarPose } from 'types'
 import { NormalizedLandmarkList } from '@mediapipe/holistic'
 
 export class VrmFK {
@@ -64,11 +64,7 @@ export class VrmFK {
     const Part = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName[name])
     if (!Part) return
 
-    let euler = new THREE.Euler(
-      rotation.x * dampener,
-      rotation.y * dampener,
-      rotation.z * dampener,
-    )
+    let euler = new THREE.Euler(rotation.x * dampener, rotation.y * dampener, rotation.z * dampener)
 
     return new THREE.Quaternion().setFromEuler(euler)
     // Part.quaternion.slerp(quaternion, _lerpAmount) // interpolate
@@ -126,51 +122,29 @@ export class VrmFK {
     // Interpolate and set mouth expression
     Blendshape.setValue(
       PresetName.I,
-      this._lerp(
-        riggedFace.mouth.shape.I,
-        Blendshape.getValue(PresetName.I)!,
-        0.5,
-      ),
+      this._lerp(riggedFace.mouth.shape.I, Blendshape.getValue(PresetName.I)!, 0.5),
     )
     Blendshape.setValue(
       PresetName.A,
-      this._lerp(
-        riggedFace.mouth.shape.A,
-        Blendshape.getValue(PresetName.A)!,
-        0.5,
-      ),
+      this._lerp(riggedFace.mouth.shape.A, Blendshape.getValue(PresetName.A)!, 0.5),
     )
     Blendshape.setValue(
       PresetName.E,
-      this._lerp(
-        riggedFace.mouth.shape.E,
-        Blendshape.getValue(PresetName.E)!,
-        0.5,
-      ),
+      this._lerp(riggedFace.mouth.shape.E, Blendshape.getValue(PresetName.E)!, 0.5),
     )
     Blendshape.setValue(
       PresetName.O,
-      this._lerp(
-        riggedFace.mouth.shape.O,
-        Blendshape.getValue(PresetName.O)!,
-        0.5,
-      ),
+      this._lerp(riggedFace.mouth.shape.O, Blendshape.getValue(PresetName.O)!, 0.5),
     )
     Blendshape.setValue(
       PresetName.U,
-      this._lerp(
-        riggedFace.mouth.shape.U,
-        Blendshape.getValue(PresetName.U)!,
-        0.5,
-      ),
+      this._lerp(riggedFace.mouth.shape.U, Blendshape.getValue(PresetName.U)!, 0.5),
     )
 
     // PUPILS
     const eyeRots = {
-      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftEye)
-        ?.quaternion,
-      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightEye)
-        ?.quaternion,
+      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftEye)?.quaternion,
+      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightEye)?.quaternion,
     }
     const prevRots = {
       l: eyeRots.l?.clone(),
@@ -283,10 +257,7 @@ export class VrmFK {
         setRotation('LeftIndexIntermediate', rig.leftHand.LeftIndexIntermediate)
         setRotation('LeftIndexDistal', rig.leftHand.LeftIndexDistal)
         setRotation('LeftMiddleProximal', rig.leftHand.LeftMiddleProximal)
-        setRotation(
-          'LeftMiddleIntermediate',
-          rig.leftHand.LeftMiddleIntermediate,
-        )
+        setRotation('LeftMiddleIntermediate', rig.leftHand.LeftMiddleIntermediate)
         setRotation('LeftMiddleDistal', rig.leftHand.LeftMiddleDistal)
         setRotation('LeftThumbProximal', rig.leftHand.LeftThumbProximal)
         setRotation('LeftThumbIntermediate', rig.leftHand.LeftThumbIntermediate)
@@ -294,10 +265,7 @@ export class VrmFK {
         // setRotation(LeftThumbProximal', this._rig.leftHand.LeftThumbIntermediate)
         setRotation('LeftThumbDistal', rig.leftHand.LeftThumbDistal)
         setRotation('LeftLittleProximal', rig.leftHand.LeftLittleProximal)
-        setRotation(
-          'LeftLittleIntermediate',
-          rig.leftHand.LeftLittleIntermediate,
-        )
+        setRotation('LeftLittleIntermediate', rig.leftHand.LeftLittleIntermediate)
         setRotation('LeftLittleDistal', rig.leftHand.LeftLittleDistal)
       }
       if (rig.rightHand) {
@@ -309,36 +277,21 @@ export class VrmFK {
             x: rig.rightHand.RightWrist.x,
           })
         setRotation('RightRingProximal', rig.rightHand.RightRingProximal)
-        setRotation(
-          'RightRingIntermediate',
-          rig.rightHand.RightRingIntermediate,
-        )
+        setRotation('RightRingIntermediate', rig.rightHand.RightRingIntermediate)
         setRotation('RightRingDistal', rig.rightHand.RightRingDistal)
         setRotation('RightIndexProximal', rig.rightHand.RightIndexProximal)
-        setRotation(
-          'RightIndexIntermediate',
-          rig.rightHand.RightIndexIntermediate,
-        )
+        setRotation('RightIndexIntermediate', rig.rightHand.RightIndexIntermediate)
         setRotation('RightIndexDistal', rig.rightHand.RightIndexDistal)
         setRotation('RightMiddleProximal', rig.rightHand.RightMiddleProximal)
-        setRotation(
-          'RightMiddleIntermediate',
-          rig.rightHand.RightMiddleIntermediate,
-        )
+        setRotation('RightMiddleIntermediate', rig.rightHand.RightMiddleIntermediate)
         setRotation('RightMiddleDistal', rig.rightHand.RightMiddleDistal)
         setRotation('RightThumbProximal', rig.rightHand.RightThumbProximal)
-        setRotation(
-          'RightThumbIntermediate',
-          rig.rightHand.RightThumbIntermediate,
-        )
+        setRotation('RightThumbIntermediate', rig.rightHand.RightThumbIntermediate)
         // setRotation(RightThumbMetacarpal', this._rig.rightHand.RightThumbProximal)
         // setRotation(RightThumbProximal', this._rig.rightHand.RightThumbIntermediate)
         setRotation('RightThumbDistal', rig.rightHand.RightThumbDistal)
         setRotation('RightLittleProximal', rig.rightHand.RightLittleProximal)
-        setRotation(
-          'RightLittleIntermediate',
-          rig.rightHand.RightLittleIntermediate,
-        )
+        setRotation('RightLittleIntermediate', rig.rightHand.RightLittleIntermediate)
         setRotation('RightLittleDistal', rig.rightHand.RightLittleDistal)
       }
     }

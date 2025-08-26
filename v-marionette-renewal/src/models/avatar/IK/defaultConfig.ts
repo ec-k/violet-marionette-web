@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { IKConfig } from './iKSolver'
+import type { IKConfig } from './iKSolver'
 
 /*
 example
