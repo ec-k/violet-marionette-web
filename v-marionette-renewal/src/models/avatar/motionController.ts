@@ -1,6 +1,6 @@
-import { VrmFK } from './VrmFK'
+import { VrmFK } from './vrmFk'
 import { VrmIK } from './IK'
-import { RotateHand } from './RotateHand'
+import { RotateHand } from './rotateHand'
 import {
   MotionLPF,
   // ConvertedMotion,

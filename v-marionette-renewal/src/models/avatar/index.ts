@@ -1,2 +1,2 @@
-export * from './Avatar'
-export * from './Viewer'
+export * from './avatar'
+export * from './viewer'

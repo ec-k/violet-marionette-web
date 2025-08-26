@@ -1,7 +1,7 @@
 import React from 'react'
 import { Stack, Button, FormControlLabel, Switch } from '@mui/material'
 import { avatar } from 'models/avatar'
-import { enableIKController, disableIKController } from 'models/avatar/UI'
+import { enableIKController, disableIKController } from 'models/avatar/ui'
 import { purple } from '@mui/material/colors'
 import { mainSceneViewer } from 'stores/scene'
 import { otherSenttings } from 'stores/userSettings'

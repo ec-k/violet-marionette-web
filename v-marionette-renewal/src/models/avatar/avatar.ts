@@ -3,9 +3,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { VRM } from '@pixiv/three-vrm'
 import { makeObservable, observable, action } from 'mobx'
 import { otherSenttings } from 'stores/userSettings'
-import * as UI from './UI'
+import * as UI from './ui'
 import { mainSceneViewer } from 'stores/scene'
-import { MotionController } from 'models/avatar/motion-controller'
+import { MotionController } from 'models/avatar/motionController'
 
 export class Avatar {
   private _scene: THREE.Scene | null = null
@@ -58,11 +58,7 @@ export class Avatar {
 
     // Setup IK target for debugging.
     if (mainSceneViewer.current)
-      UI.setupIKController(
-        mainSceneViewer.current,
-        avatar,
-        otherSenttings.showIKTarget,
-      )
+      UI.setupIKController(mainSceneViewer.current, avatar, otherSenttings.showIKTarget)
   }
 
   private _removeSpringBone(vrm: VRM) {

@@ -1,6 +1,6 @@
 import { Holistic, NormalizedLandmark } from '@mediapipe/holistic/'
 import { FaceMesh } from '@mediapipe/face_mesh'
-import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
+import { mediapipeLandmarks } from 'stores/mpLandmarksObserver'
 import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
 import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
@@ -72,9 +72,7 @@ export function startMpActions(avatar: Avatar): Promise<void> {
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
-        videoElement = window.document.createElement(
-          'video',
-        ) as HTMLVideoElement
+        videoElement = window.document.createElement('video') as HTMLVideoElement
         videoElement.srcObject = stream
         videoElement.autoplay = true
 
@@ -98,21 +96,10 @@ export function startMpActions(avatar: Avatar): Promise<void> {
             offset.current = transformResultsByCameraAngle(face.sub(adj))
           } catch {}
 
-          avatar.pushPose(
-            trackingSettings.enabledIK,
-            offset.current,
-            setArmResults(results),
-          )
+          avatar.pushPose(trackingSettings.enabledIK, offset.current, setArmResults(results))
           // TODO: Integrate this into avatar.pushPose().
-          if (
-            videoElement &&
-            avatar.motionController &&
-            avatar.motionController.FK
-          ) {
-            avatar.motionController.FK.setRig(
-              mediapipeLandmarks.resultLandmarks,
-              videoElement,
-            )
+          if (videoElement && avatar.motionController && avatar.motionController.FK) {
+            avatar.motionController.FK.setRig(mediapipeLandmarks.resultLandmarks, videoElement)
           }
         })
         function timer(detector: Holistic | FaceMesh) {
@@ -181,54 +168,42 @@ const setArmResults = (results: any) => {
 
   const lMiddleProximal = (() => {
     try {
-      return transformResultsByCameraAngle(
-        toVector3(results.leftHandLandmarks[9]),
-      )
+      return transformResultsByCameraAngle(toVector3(results.leftHandLandmarks[9]))
     } catch {
       return undefined
     }
   })()
   const rMiddleProximal = (() => {
     try {
-      return transformResultsByCameraAngle(
-        toVector3(results.rightHandLandmarks[9]),
-      )
+      return transformResultsByCameraAngle(toVector3(results.rightHandLandmarks[9]))
     } catch {
       return undefined
     }
   })()
   const lPinkyProximal = (() => {
     try {
-      return transformResultsByCameraAngle(
-        toVector3(results.leftHandLandmarks[17]),
-      )
+      return transformResultsByCameraAngle(toVector3(results.leftHandLandmarks[17]))
     } catch {
       return undefined
     }
   })()
   const rPinkyProximal = (() => {
     try {
-      return transformResultsByCameraAngle(
-        toVector3(results.rightHandLandmarks[17]),
-      )
+      return transformResultsByCameraAngle(toVector3(results.rightHandLandmarks[17]))
     } catch {
       return undefined
     }
   })()
   const lWrist = (() => {
     try {
-      return transformResultsByCameraAngle(
-        toVector3(results.leftHandLandmarks[0]),
-      )
+      return transformResultsByCameraAngle(toVector3(results.leftHandLandmarks[0]))
     } catch {
       return undefined
     }
   })()
   const rWrist = (() => {
     try {
-      return transformResultsByCameraAngle(
-        toVector3(results.rightHandLandmarks[0]),
-      )
+      return transformResultsByCameraAngle(toVector3(results.rightHandLandmarks[0]))
     } catch {
       return undefined
     }

@@ -4,8 +4,8 @@ import {
   // Quaternion
 } from 'three'
 import { VRM, VRMSchema } from '@pixiv/three-vrm'
-import * as IKSolver from './IKSolver'
-import { defaultIKConfig } from './DefaultConfig'
+import * as IKSolver from './iKSolver'
+import { defaultIKConfig } from './defaultConfig'
 import { IkTargetTracker } from './ikTargetTracker'
 // import {
 //   // HumanoidBoneNameKey,

@@ -1,17 +1,12 @@
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
-import { Viewer } from './Viewer'
-import { Avatar } from './Avatar'
+import { Viewer } from './viewer'
+import { Avatar } from './avatar'
 
 const transCtrlList: TransformControls[] = []
 
-export const setupIKController = (
-  viewer: Viewer,
-  avatar: Avatar,
-  isEnable = false,
-) => {
+export const setupIKController = (viewer: Viewer, avatar: Avatar, isEnable = false) => {
   if (transCtrlList.length > 0) _deleteIKController()
-  if (!avatar.motionController || !avatar.motionController.IK || !avatar.vrm)
-    return
+  if (!avatar.motionController || !avatar.motionController.IK || !avatar.vrm) return
   avatar.motionController.IK.ikChains.forEach((chain) => {
     const transCtrl = new TransformControls(viewer.camera, viewer.canvas)
     transCtrl.size = 0.5
