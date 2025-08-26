@@ -12,11 +12,15 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.2.6",
     "@mediapipe/pose": "^0.5.1675469404",
+    "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
     "@pixiv/three-vrm": "^3.4.2",
     "@react-three/drei": "^10.7.4",
     "@react-three/fiber": "^9.3.0",
+    "kalidokit": "https://github.com/ec-k/kalidokit_nonMirror",
+    "lodash": "^4.17.21",
     "mobx": "^6.13.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -24,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/lodash": "^4.17.20",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@types/three": "^0.179.0",
