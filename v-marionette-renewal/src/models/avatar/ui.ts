@@ -1,4 +1,4 @@
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
+import { TransformControls } from 'three/addons/controls/TransformControls.js'
 import { Viewer } from './viewer'
 import { Avatar } from './avatar'
 
@@ -10,11 +10,10 @@ export const setupIKController = (viewer: Viewer, avatar: Avatar, isEnable = fal
   avatar.motionController.IK.ikChains.forEach((chain) => {
     const transCtrl = new TransformControls(viewer.camera, viewer.canvas)
     transCtrl.size = 0.5
-    transCtrl.attach(chain.goal)
+    if (chain.goal) transCtrl.attach(chain.goal)
     transCtrl.addEventListener('dragging-changed', (event) => {
       viewer.orbitControl.enabled = !event.value
     })
-    avatar.vrm?.scene.add(transCtrl)
     transCtrlList.push(transCtrl)
     if (!isEnable) disableIKController()
   })
@@ -22,14 +21,14 @@ export const setupIKController = (viewer: Viewer, avatar: Avatar, isEnable = fal
 
 export const enableIKController = () => {
   transCtrlList.forEach((transCtrl) => {
-    transCtrl.visible = true
+    transCtrl.object.visible = true
     transCtrl.enabled = true
   })
 }
 export const disableIKController = () => {
   transCtrlList.forEach((transCtrl) => {
     transCtrl.enabled = false
-    transCtrl.visible = false
+    transCtrl.object.visible = false
   })
 }
 

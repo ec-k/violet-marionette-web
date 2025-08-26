@@ -1,9 +1,9 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 export class Viewer {
   private _canvas: HTMLCanvasElement
-  private _renderer: THREE.WebGL1Renderer
+  private _renderer: THREE.WebGLRenderer
   private _scene: THREE.Scene
   private _camera: THREE.PerspectiveCamera
   private _controls: OrbitControls
@@ -11,7 +11,7 @@ export class Viewer {
 
   constructor(canvas: HTMLCanvasElement) {
     //レンダラーの設定
-    this._renderer = new THREE.WebGL1Renderer({
+    this._renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
       canvas: canvas,
@@ -80,7 +80,7 @@ export class Viewer {
   get orbitControl(): OrbitControls {
     return this._controls
   }
-  get renderer(): THREE.WebGL1Renderer {
+  get renderer(): THREE.WebGLRenderer {
     return this._renderer
   }
 

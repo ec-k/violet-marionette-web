@@ -1,79 +1,78 @@
-import { Euler, MathUtils, Quaternion, Vector2 } from 'three'
-import { GLTFNode, VRM, VRMSchema } from '@pixiv/three-vrm'
+import { Object3D, Euler, MathUtils, Quaternion, Vector2 } from 'three'
+import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
 import type { MotionFilter } from './motion-filter'
 import { avatarPose } from 'types'
-import type { HumanoidBoneNameKey } from 'types'
 import { trackingSettings } from 'stores/userSettings'
 import { world2Local, local2world, squareBezier } from 'models/utils'
 
 export class ConvertedMotion implements MotionFilter {
-  private _bones: { [key in HumanoidBoneNameKey]: Quaternion }
+  private _bones: { [value in VRMHumanBoneName]: Quaternion }
 
   private _neck
 
   constructor(vrm: VRM) {
-    this._neck = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Neck)
+    this._neck = vrm.humanoid?.getRawBoneNode('neck')
 
     this._bones = {
-      Hips: new Quaternion().identity(),
-      Spine: new Quaternion().identity(),
-      Chest: new Quaternion().identity(),
-      UpperChest: new Quaternion().identity(),
-      Neck: new Quaternion().identity(),
-      Head: new Quaternion().identity(),
-      Jaw: new Quaternion().identity(),
-      LeftShoulder: new Quaternion().identity(),
-      LeftUpperArm: new Quaternion().identity(),
-      LeftLowerArm: new Quaternion().identity(),
-      LeftUpperLeg: new Quaternion().identity(),
-      LeftLowerLeg: new Quaternion().identity(),
-      LeftFoot: new Quaternion().identity(),
-      LeftToes: new Quaternion().identity(),
-      RightShoulder: new Quaternion().identity(),
-      RightUpperArm: new Quaternion().identity(),
-      RightLowerArm: new Quaternion().identity(),
-      RightUpperLeg: new Quaternion().identity(),
-      RightLowerLeg: new Quaternion().identity(),
-      RightFoot: new Quaternion().identity(),
-      RightToes: new Quaternion().identity(),
-      LeftHand: new Quaternion().identity(),
-      LeftThumbProximal: new Quaternion().identity(),
-      LeftThumbDistal: new Quaternion().identity(),
-      LeftThumbIntermediate: new Quaternion().identity(),
-      LeftIndexProximal: new Quaternion().identity(),
-      LeftIndexIntermediate: new Quaternion().identity(),
-      LeftIndexDistal: new Quaternion().identity(),
-      LeftMiddleProximal: new Quaternion().identity(),
-      LeftMiddleIntermediate: new Quaternion().identity(),
-      LeftMiddleDistal: new Quaternion().identity(),
-      LeftRingProximal: new Quaternion().identity(),
-      LeftRingIntermediate: new Quaternion().identity(),
-      LeftRingDistal: new Quaternion().identity(),
-      LeftLittleProximal: new Quaternion().identity(),
-      LeftLittleIntermediate: new Quaternion().identity(),
-      LeftLittleDistal: new Quaternion().identity(),
-      RightHand: new Quaternion().identity(),
-      RightThumbProximal: new Quaternion().identity(),
-      RightThumbIntermediate: new Quaternion().identity(),
-      RightThumbDistal: new Quaternion().identity(),
-      RightIndexProximal: new Quaternion().identity(),
-      RightIndexIntermediate: new Quaternion().identity(),
-      RightIndexDistal: new Quaternion().identity(),
-      RightMiddleProximal: new Quaternion().identity(),
-      RightMiddleIntermediate: new Quaternion().identity(),
-      RightMiddleDistal: new Quaternion().identity(),
-      RightRingProximal: new Quaternion().identity(),
-      RightRingIntermediate: new Quaternion().identity(),
-      RightRingDistal: new Quaternion().identity(),
-      RightLittleProximal: new Quaternion().identity(),
-      RightLittleIntermediate: new Quaternion().identity(),
-      RightLittleDistal: new Quaternion().identity(),
-      LeftEye: new Quaternion().identity(),
-      RightEye: new Quaternion().identity(),
+      hips: new Quaternion().identity(),
+      spine: new Quaternion().identity(),
+      chest: new Quaternion().identity(),
+      upperChest: new Quaternion().identity(),
+      neck: new Quaternion().identity(),
+      head: new Quaternion().identity(),
+      jaw: new Quaternion().identity(),
+      leftShoulder: new Quaternion().identity(),
+      leftUpperArm: new Quaternion().identity(),
+      leftLowerArm: new Quaternion().identity(),
+      leftUpperLeg: new Quaternion().identity(),
+      leftLowerLeg: new Quaternion().identity(),
+      leftFoot: new Quaternion().identity(),
+      leftToes: new Quaternion().identity(),
+      rightShoulder: new Quaternion().identity(),
+      rightUpperArm: new Quaternion().identity(),
+      rightLowerArm: new Quaternion().identity(),
+      rightUpperLeg: new Quaternion().identity(),
+      rightLowerLeg: new Quaternion().identity(),
+      rightFoot: new Quaternion().identity(),
+      rightToes: new Quaternion().identity(),
+      leftHand: new Quaternion().identity(),
+      leftThumbProximal: new Quaternion().identity(),
+      leftThumbDistal: new Quaternion().identity(),
+      leftThumbMetacarpal: new Quaternion().identity(),
+      leftIndexProximal: new Quaternion().identity(),
+      leftIndexIntermediate: new Quaternion().identity(),
+      leftIndexDistal: new Quaternion().identity(),
+      leftMiddleProximal: new Quaternion().identity(),
+      leftMiddleIntermediate: new Quaternion().identity(),
+      leftMiddleDistal: new Quaternion().identity(),
+      leftRingProximal: new Quaternion().identity(),
+      leftRingIntermediate: new Quaternion().identity(),
+      leftRingDistal: new Quaternion().identity(),
+      leftLittleProximal: new Quaternion().identity(),
+      leftLittleIntermediate: new Quaternion().identity(),
+      leftLittleDistal: new Quaternion().identity(),
+      rightHand: new Quaternion().identity(),
+      rightThumbProximal: new Quaternion().identity(),
+      rightThumbMetacarpal: new Quaternion().identity(),
+      rightThumbDistal: new Quaternion().identity(),
+      rightIndexProximal: new Quaternion().identity(),
+      rightIndexIntermediate: new Quaternion().identity(),
+      rightIndexDistal: new Quaternion().identity(),
+      rightMiddleProximal: new Quaternion().identity(),
+      rightMiddleIntermediate: new Quaternion().identity(),
+      rightMiddleDistal: new Quaternion().identity(),
+      rightRingProximal: new Quaternion().identity(),
+      rightRingIntermediate: new Quaternion().identity(),
+      rightRingDistal: new Quaternion().identity(),
+      rightLittleProximal: new Quaternion().identity(),
+      rightLittleIntermediate: new Quaternion().identity(),
+      rightLittleDistal: new Quaternion().identity(),
+      leftEye: new Quaternion().identity(),
+      rightEye: new Quaternion().identity(),
     }
   }
 
-  private _convertY(y: number, bone: GLTFNode | null): number {
+  private _convertY(y: number, bone: Object3D | null): number {
     if (!bone) return y
     const y_max_local = MathUtils.degToRad(90)
     const center = new Quaternion().identity()
@@ -104,15 +103,15 @@ export class ConvertedMotion implements MotionFilter {
     }
   }
 
-  push(q: Quaternion | undefined, key: HumanoidBoneNameKey) {
+  push(q: Quaternion | undefined, key: VRMHumanBoneName) {
     if (!q) return
     const quat = q.clone()
 
     // Exaggerate the orientation of head according to the difference in viewing angle.
-    if (key === 'Neck') {
+    if (key === 'neck') {
       const bone = this._neck
 
-      if (!!bone) {
+      if (bone) {
         local2world(quat, bone)
 
         const euler = new Euler().setFromQuaternion(quat)
@@ -123,7 +122,7 @@ export class ConvertedMotion implements MotionFilter {
       }
     }
     // Exaggerate the orientation of eyes according to the difference in viewing angle.
-    if (key === 'LeftEye' || key === 'RightEye') {
+    if (key === 'leftEye' || key === 'rightEye') {
       const max = MathUtils.degToRad(15)
       const offset = MathUtils.degToRad(trackingSettings.eyeRotationOffset)
       const euler = new Euler().setFromQuaternion(quat)
@@ -135,12 +134,12 @@ export class ConvertedMotion implements MotionFilter {
 
   pushAll(pose: avatarPose): void {
     Object.keys(pose.bones).forEach((key) => {
-      const bn = key as HumanoidBoneNameKey
+      const bn = key as VRMHumanBoneName
       this.push(pose.bones[bn], bn)
     })
   }
 
-  filteredRotation(key: HumanoidBoneNameKey) {
+  filteredRotation(key: VRMHumanBoneName) {
     return this._bones[key]
   }
 }

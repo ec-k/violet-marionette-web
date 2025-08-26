@@ -1,4 +1,4 @@
-import { VRM, VRMSchema } from '@pixiv/three-vrm'
+import { VRM } from '@pixiv/three-vrm'
 import { Quaternion, Vector3 } from 'three'
 import type { aiRim, avatarRim, side } from 'types'
 import { world2Local } from 'models/utils'
@@ -10,16 +10,16 @@ export class RotateHand {
 
   constructor(vrm: VRM) {
     this._middleFingerProximal = {
-      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftMiddleProximal)!,
-      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightMiddleProximal)!,
+      l: vrm.humanoid?.getRawBoneNode('leftMiddleProximal'),
+      r: vrm.humanoid?.getRawBoneNode('rightMiddleProximal'),
     }
     this._pinkyFingerProximal = {
-      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftLittleProximal)!,
-      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightLittleProximal)!,
+      l: vrm.humanoid?.getRawBoneNode('leftLittleProximal'),
+      r: vrm.humanoid?.getRawBoneNode('rightLittleProximal'),
     }
     this._hands = {
-      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftHand)!,
-      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightHand)!,
+      l: vrm.humanoid?.getRawBoneNode('leftHand'),
+      r: vrm.humanoid?.getRawBoneNode('rightHand'),
     }
   }
 
@@ -56,13 +56,13 @@ export class RotateHand {
       new Vector3(),
     ]
     if (isLeft) {
-      this._hands.l.getWorldPosition(avatar_wrist)
-      this._middleFingerProximal.l.getWorldPosition(avatar_middleFinger)
-      this._pinkyFingerProximal.l.getWorldPosition(avatar_pinkyFinger)
+      this._hands.l?.getWorldPosition(avatar_wrist)
+      this._middleFingerProximal.l?.getWorldPosition(avatar_middleFinger)
+      this._pinkyFingerProximal.l?.getWorldPosition(avatar_pinkyFinger)
     } else {
-      this._hands.r.getWorldPosition(avatar_wrist)
-      this._middleFingerProximal.r.getWorldPosition(avatar_middleFinger)
-      this._pinkyFingerProximal.r.getWorldPosition(avatar_pinkyFinger)
+      this._hands.r?.getWorldPosition(avatar_wrist)
+      this._middleFingerProximal.r?.getWorldPosition(avatar_middleFinger)
+      this._pinkyFingerProximal.r?.getWorldPosition(avatar_pinkyFinger)
     }
 
     const [ai_front, ai_up] = this._getFrontUp(ai_wrist, ai_middleFinger, ai_pinkyFinger)
@@ -70,10 +70,10 @@ export class RotateHand {
     const targetQuat = this._getQuaternionFromFrontUp(ai_front, ai_up, side)
 
     if (isLeft) {
-      world2Local(targetQuat, this._hands.l)
+      if (this._hands.l !== null) world2Local(targetQuat, this._hands.l)
       return targetQuat
     } else {
-      world2Local(targetQuat, this._hands.r)
+      if (this._hands.r !== null) world2Local(targetQuat, this._hands.r)
       return targetQuat
     }
   }

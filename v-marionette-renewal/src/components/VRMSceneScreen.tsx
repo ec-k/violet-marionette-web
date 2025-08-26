@@ -35,11 +35,11 @@ const createScene = (
     createScene(sceneRef, canvas)
   })
 
-  async function loadVRM(url: string) {
+  function loadVRM(url: string) {
     const _avatar = sceneRef.current?.avatar
     if (!_avatar) return
     if (!sceneRef.current) return
-    await avatar.loadVRM(url)
+    avatar.loadVRM(url)
   }
   avatar.setScene(sceneRef.current.viewer.scene)
   loadVRM('./first_loaded_avatar.vrm')
@@ -74,13 +74,13 @@ export const VRMSceneScreen: React.FC = () => {
       viewer.renderer.render(viewer.scene, viewer.camera)
     }
   }
-  let sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+  let sendPose = throttle((vrm: VRM | null | undefined, sendActive: boolean) => {
     if (!vrm) return
     if (sendActive) networkHandler.SendPoseMessage(vrm)
   }, 1000 / networkSettings.sendRate)
   const mainRoop = () => {
     render3d()
-    sendPose(sceneRef.current?.avatar.vrm!, uiStores.startSendMotion)
+    sendPose(sceneRef.current?.avatar.vrm, uiStores.startSendMotion)
     requestAnimationFrame(mainRoop)
   }
   React.useEffect(() => {
@@ -104,7 +104,7 @@ export const VRMSceneScreen: React.FC = () => {
       reaction(
         () => networkSettings.sendRate,
         () => {
-          sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+          sendPose = throttle((vrm: VRM | null | undefined, sendActive: boolean) => {
             if (!vrm) return
             if (sendActive) networkHandler.SendPoseMessage(vrm)
           }, 1000 / networkSettings.sendRate)

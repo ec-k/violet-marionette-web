@@ -1,4 +1,4 @@
-import { GLTFNode, VRM, VRMSchema } from '@pixiv/three-vrm'
+import { VRM } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import type { aiRim } from 'types'
 import * as IKSolver from './iKSolver'
@@ -7,25 +7,25 @@ import { localPosToWorldPos } from 'models/utils'
 export class IkTargetTracker {
   private _offset: THREE.Vector3
 
-  private _anchor: GLTFNode | null
-  private _hips: GLTFNode | null
+  private _anchor: THREE.Object3D | null
+  private _hips: THREE.Object3D | null
 
   private _chains: Array<IKSolver.IKChain>
 
   constructor(vrm: VRM, chains: Array<IKSolver.IKChain>) {
     this._offset = new THREE.Vector3(0, 0, 0)
 
-    this._anchor = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Head)!
-    this._hips = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.Hips)!
+    this._anchor = vrm.humanoid?.getRawBoneNode('head')
+    this._hips = vrm.humanoid?.getRawBoneNode('hips')
 
     this._chains = chains
   }
 
   trackTargets(handPos: aiRim, elbowPos: aiRim, offset: THREE.Vector3 | undefined) {
-    if (!!this._anchor) localPosToWorldPos(this._offset.set(0, 0.06, 0), this._anchor)
+    if (this._anchor) localPosToWorldPos(this._offset.set(0, 0.06, 0), this._anchor)
 
     // Track L_Hand IK Target
-    if (!!handPos.l) {
+    if (handPos.l) {
       this._trackIkTarget(
         handPos.l,
         offset,
@@ -35,7 +35,7 @@ export class IkTargetTracker {
       )
     }
     // Track R_Hand IK Target
-    if (!!handPos.r) {
+    if (handPos.r) {
       this._trackIkTarget(
         handPos.r,
         offset,
@@ -45,11 +45,11 @@ export class IkTargetTracker {
       )
     }
     // Track L_Elbow IK Target
-    if (!!elbowPos.l) {
+    if (elbowPos.l) {
       this._trackIkTarget(elbowPos.l, offset, this._offset, 'J_Bip_L_LowerArm')
     }
     // Track R_Elbow IK Target
-    if (!!elbowPos.r) {
+    if (elbowPos.r) {
       this._trackIkTarget(elbowPos.r, offset, this._offset, 'J_Bip_R_LowerArm')
     }
   }
@@ -66,11 +66,11 @@ export class IkTargetTracker {
 
     let target: THREE.Object3D | null = null
     this._chains.forEach((chain) => {
-      if (chain.effector.name === effectorName) target = chain.goal
+      if (chain.effector?.name === effectorName) target = chain.goal
     })
     if (target) {
       const pos = (() => {
-        if (!!offset) return this._adjustTargetPos(ai_effector, ai_root, boneRoot, offset)
+        if (offset) return this._adjustTargetPos(ai_effector, ai_root, boneRoot, offset)
         return this._adjustTargetPos(ai_effector, ai_root, boneRoot)
       })()
       ;(target as THREE.Object3D).position.lerp(pos, lerpAmount)
@@ -85,7 +85,7 @@ export class IkTargetTracker {
     coef: number = 1,
   ): THREE.Vector3 {
     const headToTarget = (() => {
-      if (!!offset) return ai_effector.clone().sub(ai_root).multiplyScalar(coef).add(offset)
+      if (offset) return ai_effector.clone().sub(ai_root).multiplyScalar(coef).add(offset)
       return ai_effector.clone().sub(ai_root).multiplyScalar(coef)
     })()
     this._rotateTargetByHipsRotation(headToTarget)

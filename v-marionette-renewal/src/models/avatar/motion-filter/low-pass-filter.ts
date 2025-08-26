@@ -1,6 +1,6 @@
 import { Euler, Quaternion } from 'three'
+import { VRMHumanBoneName } from '@pixiv/three-vrm'
 import { avatarPose } from 'types'
-import type { HumanoidBoneNameKey } from 'types'
 import { RotationQueue } from './motion-filter'
 import type { MotionFilter, RotationFilter } from './motion-filter'
 
@@ -99,86 +99,86 @@ export class MotionLPF implements MotionFilter {
 
   constructor(maxLength: number) {
     this._boneQueues = {
-      Hips: new RotationLPF(maxLength),
-      Spine: new RotationLPF(maxLength),
-      Chest: new RotationLPF(maxLength),
-      UpperChest: new RotationLPF(maxLength),
-      Neck: new RotationLPF(maxLength),
-      Head: new RotationLPF(maxLength),
-      Jaw: new RotationLPF(maxLength),
-      LeftShoulder: new RotationLPF(maxLength),
-      LeftUpperArm: new RotationLPF(maxLength),
-      LeftLowerArm: new RotationLPF(maxLength),
-      LeftUpperLeg: new RotationLPF(maxLength),
-      LeftLowerLeg: new RotationLPF(maxLength),
-      LeftFoot: new RotationLPF(maxLength),
-      LeftToes: new RotationLPF(maxLength),
-      RightShoulder: new RotationLPF(maxLength),
-      RightUpperArm: new RotationLPF(maxLength),
-      RightLowerArm: new RotationLPF(maxLength),
-      RightUpperLeg: new RotationLPF(maxLength),
-      RightLowerLeg: new RotationLPF(maxLength),
-      RightFoot: new RotationLPF(maxLength),
-      RightToes: new RotationLPF(maxLength),
-      LeftHand: new RotationLPF(maxLength),
-      LeftThumbProximal: new RotationLPF(maxLength),
-      LeftThumbDistal: new RotationLPF(maxLength),
-      LeftThumbIntermediate: new RotationLPF(maxLength),
-      LeftIndexProximal: new RotationLPF(maxLength),
-      LeftIndexIntermediate: new RotationLPF(maxLength),
-      LeftIndexDistal: new RotationLPF(maxLength),
-      LeftMiddleProximal: new RotationLPF(maxLength),
-      LeftMiddleIntermediate: new RotationLPF(maxLength),
-      LeftMiddleDistal: new RotationLPF(maxLength),
-      LeftRingProximal: new RotationLPF(maxLength),
-      LeftRingIntermediate: new RotationLPF(maxLength),
-      LeftRingDistal: new RotationLPF(maxLength),
-      LeftLittleProximal: new RotationLPF(maxLength),
-      LeftLittleIntermediate: new RotationLPF(maxLength),
-      LeftLittleDistal: new RotationLPF(maxLength),
-      RightHand: new RotationLPF(maxLength),
-      RightThumbProximal: new RotationLPF(maxLength),
-      RightThumbIntermediate: new RotationLPF(maxLength),
-      RightThumbDistal: new RotationLPF(maxLength),
-      RightIndexProximal: new RotationLPF(maxLength),
-      RightIndexIntermediate: new RotationLPF(maxLength),
-      RightIndexDistal: new RotationLPF(maxLength),
-      RightMiddleProximal: new RotationLPF(maxLength),
-      RightMiddleIntermediate: new RotationLPF(maxLength),
-      RightMiddleDistal: new RotationLPF(maxLength),
-      RightRingProximal: new RotationLPF(maxLength),
-      RightRingIntermediate: new RotationLPF(maxLength),
-      RightRingDistal: new RotationLPF(maxLength),
-      RightLittleProximal: new RotationLPF(maxLength),
-      RightLittleIntermediate: new RotationLPF(maxLength),
-      RightLittleDistal: new RotationLPF(maxLength),
-      LeftEye: new RotationLPF(maxLength),
-      RightEye: new RotationLPF(maxLength),
+      hips: new RotationLPF(maxLength),
+      spine: new RotationLPF(maxLength),
+      chest: new RotationLPF(maxLength),
+      upperChest: new RotationLPF(maxLength),
+      neck: new RotationLPF(maxLength),
+      head: new RotationLPF(maxLength),
+      jaw: new RotationLPF(maxLength),
+      leftShoulder: new RotationLPF(maxLength),
+      leftUpperArm: new RotationLPF(maxLength),
+      leftLowerArm: new RotationLPF(maxLength),
+      leftUpperLeg: new RotationLPF(maxLength),
+      leftLowerLeg: new RotationLPF(maxLength),
+      leftFoot: new RotationLPF(maxLength),
+      leftToes: new RotationLPF(maxLength),
+      rightShoulder: new RotationLPF(maxLength),
+      rightUpperArm: new RotationLPF(maxLength),
+      rightLowerArm: new RotationLPF(maxLength),
+      rightUpperLeg: new RotationLPF(maxLength),
+      rightLowerLeg: new RotationLPF(maxLength),
+      rightFoot: new RotationLPF(maxLength),
+      rightToes: new RotationLPF(maxLength),
+      leftHand: new RotationLPF(maxLength),
+      leftThumbProximal: new RotationLPF(maxLength),
+      leftThumbDistal: new RotationLPF(maxLength),
+      leftThumbMetacarpal: new RotationLPF(maxLength),
+      leftIndexProximal: new RotationLPF(maxLength),
+      leftIndexIntermediate: new RotationLPF(maxLength),
+      leftIndexDistal: new RotationLPF(maxLength),
+      leftMiddleProximal: new RotationLPF(maxLength),
+      leftMiddleIntermediate: new RotationLPF(maxLength),
+      leftMiddleDistal: new RotationLPF(maxLength),
+      leftRingProximal: new RotationLPF(maxLength),
+      leftRingIntermediate: new RotationLPF(maxLength),
+      leftRingDistal: new RotationLPF(maxLength),
+      leftLittleProximal: new RotationLPF(maxLength),
+      leftLittleIntermediate: new RotationLPF(maxLength),
+      leftLittleDistal: new RotationLPF(maxLength),
+      rightHand: new RotationLPF(maxLength),
+      rightThumbProximal: new RotationLPF(maxLength),
+      rightThumbMetacarpal: new RotationLPF(maxLength),
+      rightThumbDistal: new RotationLPF(maxLength),
+      rightIndexProximal: new RotationLPF(maxLength),
+      rightIndexIntermediate: new RotationLPF(maxLength),
+      rightIndexDistal: new RotationLPF(maxLength),
+      rightMiddleProximal: new RotationLPF(maxLength),
+      rightMiddleIntermediate: new RotationLPF(maxLength),
+      rightMiddleDistal: new RotationLPF(maxLength),
+      rightRingProximal: new RotationLPF(maxLength),
+      rightRingIntermediate: new RotationLPF(maxLength),
+      rightRingDistal: new RotationLPF(maxLength),
+      rightLittleProximal: new RotationLPF(maxLength),
+      rightLittleIntermediate: new RotationLPF(maxLength),
+      rightLittleDistal: new RotationLPF(maxLength),
+      leftEye: new RotationLPF(maxLength),
+      rightEye: new RotationLPF(maxLength),
     }
   }
 
-  push(q: Quaternion | undefined, key: HumanoidBoneNameKey) {
+  push(q: Quaternion | undefined, key: VRMHumanBoneName) {
     if (!q) return
     this._boneQueues[key].push(q)
   }
   pushAll(pose: avatarPose) {
     Object.keys(pose.bones).forEach((key) => {
-      const bn = key as HumanoidBoneNameKey
+      const bn = key as VRMHumanBoneName
       this.push(pose.bones[bn], bn)
     })
   }
   //   rotate(vrm: VRM) {
   //     Object.keys(this.boneQueues).forEach((boneName) => {
-  //       const bn = boneName as HumanoidBoneNameKey
+  //       const bn = boneName as VRMHumanBoneName
   //       const bone = vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName[bn])
   //       this.boneQueues[bn].rotate(bone)
   //     })
   //   }
-  filteredRotation(key: HumanoidBoneNameKey) {
+  filteredRotation(key: VRMHumanBoneName) {
     return this._boneQueues[key].current
   }
 }
 
 type BoneQueues = {
-  [key in HumanoidBoneNameKey]: RotationLPF
+  [key in VRMHumanBoneName]: RotationLPF
 }

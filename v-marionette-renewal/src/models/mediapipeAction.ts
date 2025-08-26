@@ -54,7 +54,7 @@ const toVector3 = (pos: NormalizedLandmark | undefined) => {
   // (-direction.x, -direction.y, direction.z)
   return new Vector3(-pos.x, -pos.y, pos.z)
 }
-const transformResultsByCameraAngle = (pos: THREE.Vector3 | undefined) => {
+const transformResultsByCameraAngle = (pos: Vector3 | undefined) => {
   if (!pos) return
   const angle = trackingSettings.angleWithRadian
   pos.y = pos.y * Math.cos(angle) - pos.z * Math.sin(angle)
