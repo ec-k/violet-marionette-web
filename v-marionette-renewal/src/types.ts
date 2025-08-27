@@ -1,7 +1,6 @@
 import * as Kalidokit from 'kalidokit'
 import { VRMHumanBoneName } from '@pixiv/three-vrm'
-import { GLTFNode } from '@pixiv/three-vrm'
-import { Vector3, Quaternion } from 'three'
+import { Object3D, Vector3, Quaternion } from 'three'
 
 export declare type KalidokitRig = {
   face?: Kalidokit.TFace
@@ -16,8 +15,8 @@ export declare type aiRim = {
 }
 
 export declare type avatarRim = {
-  l: GLTFNode
-  r: GLTFNode
+  l: Object3D
+  r: Object3D
 }
 
 export declare type hand = {
