@@ -1,6 +1,6 @@
 import { VRMHumanBoneName } from '@pixiv/three-vrm'
 import { Quaternion } from 'three'
-import { avatarPose } from 'types'
+import { avatarPose } from '@/types'
 
 export interface RotationFilter {
   get current(): Quaternion

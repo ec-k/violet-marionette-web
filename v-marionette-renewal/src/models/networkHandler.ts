@@ -1,4 +1,4 @@
-import { networkSettings } from 'stores/userSettings'
+import { networkSettings } from '@/stores/userSettings'
 import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
 import { ConvertBoneName /*, local2world */ } from './utils'
 import { Euler, Quaternion } from 'three'
@@ -19,7 +19,7 @@ class NetworkHandler {
   private _ws: WebSocket | undefined = undefined
   private _numberOfDigits = 7
   private _connectionCheckInterval = 5 * 1000 // [ms]
-  private _checkTimer: NodeJS.Timeout | undefined
+  private _checkTimer: number | undefined
 
   get existWebsocket() {
     return !!this._ws

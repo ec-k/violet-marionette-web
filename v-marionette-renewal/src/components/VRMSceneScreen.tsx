@@ -3,13 +3,13 @@ import React from 'react'
 import { reaction } from 'mobx'
 import type { IReactionDisposer } from 'mobx'
 import styled from '@emotion/styled'
-import networkHandler from 'models/networkHandler'
-import { uiStores } from 'stores/uiStores'
-import { Viewer, Avatar, avatar } from 'models/avatar/'
+import networkHandler from '@/models/networkHandler'
+import { uiStores } from '@/stores/uiStores'
+import { Viewer, Avatar, avatar } from '@/models/avatar/'
 import { throttle } from 'lodash'
 import { VRM } from '@pixiv/three-vrm'
 import { mainSceneViewer } from '../stores/scene'
-import { networkSettings, trackingSettings } from 'stores/userSettings'
+import { networkSettings, trackingSettings } from '@/stores/userSettings'
 
 type VRMScene = {
   clock: THREE.Clock

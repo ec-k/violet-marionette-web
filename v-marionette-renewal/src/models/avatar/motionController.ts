@@ -5,10 +5,10 @@ import {
   MotionLPF,
   // ConvertedMotion,
   RawMotion,
-} from 'models/avatar/motion-filter'
-import type { MotionFilter } from 'models/avatar/motion-filter'
+} from '@/models/avatar/motion-filter'
+import type { MotionFilter } from '@/models/avatar/motion-filter'
 import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
-import { avatarPose } from 'types'
+import { avatarPose } from '@/types'
 import { Vector3 } from 'three'
 
 export class MotionController {

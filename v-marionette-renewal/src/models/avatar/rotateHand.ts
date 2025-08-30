@@ -1,7 +1,7 @@
 import { VRM } from '@pixiv/three-vrm'
 import { Quaternion, Vector3 } from 'three'
-import type { aiRim, avatarRim, side } from 'types'
-import { world2Local } from 'models/utils'
+import type { aiRim, avatarRim, side } from '@/types'
+import { world2Local } from '@/models/utils'
 
 export class RotateHand {
   private _hands: avatarRim

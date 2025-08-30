@@ -1,8 +1,8 @@
 import { VRM } from '@pixiv/three-vrm'
 import * as THREE from 'three'
-import type { aiRim } from 'types'
+import type { aiRim } from '@/types'
 import * as IKSolver from './iKSolver'
-import { localPosToWorldPos } from 'models/utils'
+import { localPosToWorldPos } from '@/models/utils'
 
 export class IkTargetTracker {
   private _offset: THREE.Vector3

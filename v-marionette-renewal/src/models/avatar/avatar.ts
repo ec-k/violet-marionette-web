@@ -2,10 +2,10 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { VRM, VRMHumanoidHelper, VRMLoaderPlugin } from '@pixiv/three-vrm'
 import { makeObservable, observable, action } from 'mobx'
-import { otherSenttings } from 'stores/userSettings'
+import { otherSenttings } from '@/stores/userSettings'
 import * as UI from './ui'
-import { mainSceneViewer } from 'stores/scene'
-import { MotionController } from 'models/avatar/motionController'
+import { mainSceneViewer } from '@/stores/scene'
+import { MotionController } from '@/models/avatar/motionController'
 
 export class Avatar {
   private scene: THREE.Scene | null = null

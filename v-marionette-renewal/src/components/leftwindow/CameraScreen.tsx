@@ -1,8 +1,8 @@
 import React from 'react'
 import { autorun } from 'mobx'
 import type { IReactionDisposer } from 'mobx'
-import { mediapipeLandmarks } from 'stores/mpLandmarksObserver'
-import { DrawResults } from 'models/mediapipeAction'
+import { mediapipeLandmarks } from '@/stores/mpLandmarksObserver'
+import { DrawResults } from '@/models/mediapipeAction'
 import styled from '@emotion/styled'
 
 const Video = styled.video`

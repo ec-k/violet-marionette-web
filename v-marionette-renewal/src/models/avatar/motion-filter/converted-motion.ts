@@ -1,9 +1,9 @@
 import { Object3D, Euler, MathUtils, Quaternion, Vector2 } from 'three'
 import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
 import type { MotionFilter } from './motion-filter'
-import { avatarPose } from 'types'
-import { trackingSettings } from 'stores/userSettings'
-import { world2Local, local2world, squareBezier } from 'models/utils'
+import { avatarPose } from '@/types'
+import { trackingSettings } from '@/stores/userSettings'
+import { world2Local, local2world, squareBezier } from '@/models/utils'
 
 export class ConvertedMotion implements MotionFilter {
   private _bones: { [value in VRMHumanBoneName]: Quaternion }

@@ -1,6 +1,6 @@
 import { Euler, Quaternion } from 'three'
 import { VRMHumanBoneName } from '@pixiv/three-vrm'
-import { avatarPose } from 'types'
+import { avatarPose } from '@/types'
 import { RotationQueue } from './motion-filter'
 import type { MotionFilter, RotationFilter } from './motion-filter'
 

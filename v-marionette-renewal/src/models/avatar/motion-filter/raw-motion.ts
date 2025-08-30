@@ -1,6 +1,6 @@
 import { Quaternion } from 'three'
 import type { MotionFilter } from './motion-filter'
-import { avatarPose } from 'types'
+import { avatarPose } from '@/types'
 import type { VRMHumanBoneName } from '@pixiv/three-vrm'
 
 export class RawMotion implements MotionFilter {

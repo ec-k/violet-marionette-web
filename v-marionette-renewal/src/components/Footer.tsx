@@ -1,5 +1,5 @@
 import React from 'react'
-import { uiStores } from 'stores/uiStores'
+import { uiStores } from '@/stores/uiStores'
 import styled from '@emotion/styled'
 import { Fab } from '@mui/material'
 import SettingIcon from '@mui/icons-material/Settings'

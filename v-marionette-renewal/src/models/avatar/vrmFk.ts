@@ -2,8 +2,8 @@ import * as Kalidokit from 'kalidokit'
 import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
 import * as THREE from 'three'
 import { trackingSettings } from '../../stores/userSettings'
-import { avatarPose } from 'types'
-import type { KalidokitRig } from 'types'
+import { avatarPose } from '@/types'
+import type { KalidokitRig } from '@/types'
 import type { NormalizedLandmarkList } from '@mediapipe/holistic'
 
 export class VrmFK {

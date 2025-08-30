@@ -1,8 +1,8 @@
 import React from 'react'
 import { Stack, Button } from '@mui/material'
-import { networkSettings } from 'stores/userSettings'
-import VMTextField from 'components/leftwindow/VMTextField'
-import networkHandler from 'models/networkHandler'
+import { networkSettings } from '@/stores/userSettings'
+import VMTextField from '@/components/leftwindow/VMTextField'
+import networkHandler from '@/models/networkHandler'
 import { reaction } from 'mobx'
 import type { IReactionDisposer } from 'mobx'
 

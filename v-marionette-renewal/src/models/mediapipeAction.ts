@@ -1,14 +1,14 @@
 import { Holistic } from '@mediapipe/holistic/'
 import type { NormalizedLandmark } from '@mediapipe/holistic/'
 import { FaceMesh } from '@mediapipe/face_mesh'
-import { mediapipeLandmarks } from 'stores/mpLandmarksObserver'
+import { mediapipeLandmarks } from '@/stores/mpLandmarksObserver'
 import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
 import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
-import { uiStores } from 'stores/uiStores'
+import { uiStores } from '@/stores/uiStores'
 import { MathUtils, Vector3 } from 'three'
 import { Avatar } from './avatar'
-import { trackingSettings } from 'stores/userSettings'
+import { trackingSettings } from '@/stores/userSettings'
 
 export const holistic = new Holistic({
   locateFile: (file) => {
