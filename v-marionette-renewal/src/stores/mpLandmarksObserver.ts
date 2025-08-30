@@ -1,4 +1,4 @@
-import { NormalizedLandmarkList, Results } from '@mediapipe/holistic'
+import type { NormalizedLandmarkList, Results } from '@mediapipe/holistic'
 import { makeObservable, observable, action } from 'mobx'
 
 export type PoseResults = {

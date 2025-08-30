@@ -1,4 +1,5 @@
-import { Holistic, NormalizedLandmark } from '@mediapipe/holistic/'
+import { Holistic } from '@mediapipe/holistic/'
+import type { NormalizedLandmark } from '@mediapipe/holistic/'
 import { FaceMesh } from '@mediapipe/face_mesh'
 import { mediapipeLandmarks } from 'stores/mpLandmarksObserver'
 import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
@@ -94,7 +95,9 @@ export function startMpActions(avatar: Avatar): Promise<void> {
 
             // apply
             offset.current = transformResultsByCameraAngle(face.sub(adj))
-          } catch {}
+          } catch {
+            console.log('Failed to handle holistic results.')
+          }
 
           avatar.pushPose(trackingSettings.enabledIK, offset.current, setArmResults(results))
           // TODO: Integrate this into avatar.pushPose().
@@ -228,7 +231,7 @@ export function DrawResults(
   if (!videoEl) return
   guideCanvas.width = videoEl.videoWidth
   guideCanvas.height = videoEl.videoHeight
-  let canvasCtx = guideCanvas.getContext('2d')
+  const canvasCtx = guideCanvas.getContext('2d')
   if (!canvasCtx) return
   canvasCtx.save()
   canvasCtx.clearRect(0, 0, guideCanvas.width, guideCanvas.height)

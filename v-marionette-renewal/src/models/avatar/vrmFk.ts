@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { trackingSettings } from '../../stores/userSettings'
 import { avatarPose } from 'types'
 import type { KalidokitRig } from 'types'
-import { NormalizedLandmarkList } from '@mediapipe/holistic'
+import type { NormalizedLandmarkList } from '@mediapipe/holistic'
 
 export class VrmFK {
   private _lerp = Kalidokit.Vector.lerp
