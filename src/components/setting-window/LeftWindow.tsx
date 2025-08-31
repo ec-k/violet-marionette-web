@@ -3,9 +3,9 @@ import styled from '@emotion/styled'
 import { uiStores } from '@/stores/uiStores'
 import { autorun } from 'mobx'
 import { Box, Tabs, Tab } from '@mui/material'
-import TrackingSettingWindow from '@/components/left-window/TrackingSettingWindow'
-import NetworkSettingWindow from '@/components/left-window/NetworkSettingWindow'
-import OtherSettings from '@/components/left-window/OtherSettingWindow'
+import TrackingSettingWindow from '@/components/setting-window/TrackingSettingWindow'
+import NetworkSettingWindow from '@/components/setting-window/NetworkSettingWindow'
+import OtherSettings from '@/components/setting-window/OtherSettingWindow'
 
 const tabPanelHeight = 10 // %
 const Div = styled.div`
