@@ -1,7 +1,7 @@
-import { VRM, VRMSchema } from '@pixiv/three-vrm'
+import { VRM } from '@pixiv/three-vrm'
 import { Quaternion, Vector3 } from 'three'
-import { aiRim, avatarRim, side } from 'types'
-import { world2Local } from 'models/utils'
+import type { aiRim, avatarRim, side } from '@/types'
+import { world2Local } from '@/models/utils'
 
 export class RotateHand {
   private _hands: avatarRim
@@ -10,24 +10,16 @@ export class RotateHand {
 
   constructor(vrm: VRM) {
     this._middleFingerProximal = {
-      l: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.LeftMiddleProximal,
-      )!,
-      r: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.RightMiddleProximal,
-      )!,
+      l: vrm.humanoid?.getRawBoneNode('leftMiddleProximal'),
+      r: vrm.humanoid?.getRawBoneNode('rightMiddleProximal'),
     }
     this._pinkyFingerProximal = {
-      l: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.LeftLittleProximal,
-      )!,
-      r: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName.RightLittleProximal,
-      )!,
+      l: vrm.humanoid?.getRawBoneNode('leftLittleProximal'),
+      r: vrm.humanoid?.getRawBoneNode('rightLittleProximal'),
     }
     this._hands = {
-      l: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.LeftHand)!,
-      r: vrm.humanoid?.getBoneNode(VRMSchema.HumanoidBoneName.RightHand)!,
+      l: vrm.humanoid?.getRawBoneNode('leftHand'),
+      r: vrm.humanoid?.getRawBoneNode('rightHand'),
     }
   }
 
@@ -37,12 +29,7 @@ export class RotateHand {
       r: undefined,
     }
     if (!!wrists.l || !!middleProximals.l || !!pinkyProximals.l)
-      targets.l = this._setHandTargetRotation(
-        wrists.l,
-        middleProximals.l,
-        pinkyProximals.l,
-        'left',
-      )
+      targets.l = this._setHandTargetRotation(wrists.l, middleProximals.l, pinkyProximals.l, 'left')
     if (!!wrists.r || !!middleProximals.r || !!pinkyProximals.r)
       targets.r = this._setHandTargetRotation(
         wrists.r,
@@ -69,37 +56,29 @@ export class RotateHand {
       new Vector3(),
     ]
     if (isLeft) {
-      this._hands.l.getWorldPosition(avatar_wrist)
-      this._middleFingerProximal.l.getWorldPosition(avatar_middleFinger)
-      this._pinkyFingerProximal.l.getWorldPosition(avatar_pinkyFinger)
+      this._hands.l?.getWorldPosition(avatar_wrist)
+      this._middleFingerProximal.l?.getWorldPosition(avatar_middleFinger)
+      this._pinkyFingerProximal.l?.getWorldPosition(avatar_pinkyFinger)
     } else {
-      this._hands.r.getWorldPosition(avatar_wrist)
-      this._middleFingerProximal.r.getWorldPosition(avatar_middleFinger)
-      this._pinkyFingerProximal.r.getWorldPosition(avatar_pinkyFinger)
+      this._hands.r?.getWorldPosition(avatar_wrist)
+      this._middleFingerProximal.r?.getWorldPosition(avatar_middleFinger)
+      this._pinkyFingerProximal.r?.getWorldPosition(avatar_pinkyFinger)
     }
 
-    const [ai_front, ai_up] = this._getFrontUp(
-      ai_wrist,
-      ai_middleFinger,
-      ai_pinkyFinger,
-    )
+    const [ai_front, ai_up] = this._getFrontUp(ai_wrist, ai_middleFinger, ai_pinkyFinger)
 
     const targetQuat = this._getQuaternionFromFrontUp(ai_front, ai_up, side)
 
     if (isLeft) {
-      world2Local(targetQuat, this._hands.l)
+      if (this._hands.l !== null) world2Local(targetQuat, this._hands.l)
       return targetQuat
     } else {
-      world2Local(targetQuat, this._hands.r)
+      if (this._hands.r !== null) world2Local(targetQuat, this._hands.r)
       return targetQuat
     }
   }
 
-  private _getQuaternionFromFrontUp(
-    front: Vector3,
-    up: Vector3,
-    side: side = 'left',
-  ) {
+  private _getQuaternionFromFrontUp(front: Vector3, up: Vector3, side: side = 'left') {
     const isLeft = side === 'left'
     const defaultFrontUp = isLeft
       ? {
@@ -126,14 +105,9 @@ export class RotateHand {
     pinkyFingerProximal: Vector3,
     side: side = 'left',
   ) {
-    const front = new Vector3()
-      .subVectors(middleFingerProximal, wrist)
-      .normalize()
+    const front = new Vector3().subVectors(middleFingerProximal, wrist).normalize()
     const up = new Vector3()
-      .crossVectors(
-        front.clone(),
-        new Vector3().subVectors(pinkyFingerProximal, wrist),
-      )
+      .crossVectors(front.clone(), new Vector3().subVectors(pinkyFingerProximal, wrist))
       .normalize()
     if (side === 'right') up.negate()
     return [front, up]

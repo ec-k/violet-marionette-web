@@ -1,5 +1,12 @@
+import { VRMHumanBoneName } from '@pixiv/three-vrm'
 import { Vector3, Quaternion, Object3D } from 'three'
-import { HumanoidBoneNameKey } from 'types'
+
+import * as THREE from 'three'
+declare module 'three' {
+  interface Euler {
+    toVector3(target: THREE.Vector3): THREE.Vector3
+  }
+}
 
 // 計算用の一時的な変数
 // 不要なインスタンス化をさける
@@ -16,7 +23,7 @@ const _quarternion = new Quaternion()
 
 export const solve = (ikChain: IKChain, iteration: number) => {
   // 目標位置のワールド座標
-  ikChain.goal.getWorldPosition(_goalPosition)
+  ikChain.goal?.getWorldPosition(_goalPosition)
 
   // To remove side effect.
   // let initialRot = new Map<HumanoidBoneNameKey, Quaternion>()
@@ -27,16 +34,13 @@ export const solve = (ikChain: IKChain, iteration: number) => {
   for (let i = iteration; i > 0; i--) {
     let didConverge = true
     ikChain.joints.forEach((joint) => {
+      if (!joint || !joint.bone) return
       // 注目関節のワールド座標・姿勢等を取得する
-      joint.bone.matrixWorld.decompose(
-        _jointPosition,
-        _jointQuaternionInverse,
-        _jointScale,
-      )
+      joint.bone?.matrixWorld.decompose(_jointPosition, _jointQuaternionInverse, _jointScale)
       _jointQuaternionInverse.invert()
 
       //  注目関節 -> エフェクタのベクトル
-      ikChain.effector.getWorldPosition(_effectorPosition)
+      ikChain.effector?.getWorldPosition(_effectorPosition)
       _joint2EffectorVector.subVectors(_effectorPosition, _jointPosition)
       _joint2EffectorVector.applyQuaternion(_jointQuaternionInverse)
       _joint2EffectorVector.normalize()
@@ -71,16 +75,14 @@ export const solve = (ikChain: IKChain, iteration: number) => {
 
       // 回転
       _quarternion.setFromAxisAngle(_axis, deltaAngle)
-      joint.bone.quaternion.multiply(_quarternion)
+      joint.bone?.quaternion.multiply(_quarternion)
 
       // 回転角・軸制限
-      joint.bone.rotation.setFromVector3(
-        joint.bone.rotation
-          .toVector3(_vector)
-          .max(joint.rotationMin)
-          .min(joint.rotationMax),
-        joint.order,
-      ) // This is SIDE EFFECT
+      _vector
+        .set(joint.bone.rotation.x, joint.bone.rotation.y, joint.bone.rotation.z)
+        .max(joint.rotationMin)
+        .min(joint.rotationMax)
+      joint.bone.rotation.setFromVector3(_vector, joint.order) // This is SIDE EFFECT
 
       joint.bone.updateMatrixWorld(true)
       didConverge = false
@@ -102,17 +104,17 @@ export const solve = (ikChain: IKChain, iteration: number) => {
 }
 
 export interface IKChain {
-  goal: Object3D
-  effector: Object3D // VRM.VRMHumanoid.getBoneNode() で取得することを想定
+  goal: Object3D | null
+  effector: Object3D | null
   joints: Array<Joint>
 }
 
 export interface Joint {
-  bone: Object3D
+  bone: Object3D | null | undefined
   order: 'XYZ' | 'YZX' | 'ZXY' | 'XZY' | 'YXZ' | 'ZYX'
   rotationMin: Vector3
   rotationMax: Vector3
-  boneName: HumanoidBoneNameKey
+  boneName: VRMHumanBoneName
 }
 
 // VRM から IKChainを生成するための情報
@@ -123,11 +125,11 @@ export interface IKConfig {
 
 export interface ChainConfig {
   jointConfigs: Array<JointConfig>
-  effectorBoneName: HumanoidBoneNameKey // IKChain.effectorに設定するボーン
+  effectorBoneName: VRMHumanBoneName // IKChain.effectorに設定するボーン
 }
 
 export interface JointConfig {
-  boneName: HumanoidBoneNameKey
+  boneName: VRMHumanBoneName
 
   // オイラー角の回転順序
   order: 'XYZ' | 'YZX' | 'ZXY' | 'XZY' | 'YXZ' | 'ZYX'

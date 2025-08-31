@@ -1,11 +1,11 @@
 import React from 'react'
-import styled from 'styled-components'
-import { uiStores } from 'stores/uiStores'
+import styled from '@emotion/styled'
+import { uiStores } from '@/stores/uiStores'
 import { autorun } from 'mobx'
 import { Box, Tabs, Tab } from '@mui/material'
-import TrackingSettingWindow from 'components/leftwindow/TrackingSettingWindow'
-import NetworkSettingWindow from 'components/leftwindow/NetworkSettingWindow'
-import OtherSettings from 'components/leftwindow/OtherSettingWindow'
+import TrackingSettingWindow from '@/components/leftwindow/TrackingSettingWindow'
+import NetworkSettingWindow from '@/components/leftwindow/NetworkSettingWindow'
+import OtherSettings from '@/components/leftwindow/OtherSettingWindow'
 
 const tabPanelHeight = 10 // %
 const Div = styled.div`
@@ -33,11 +33,7 @@ interface TabPanelProps {
 function TabPanel(props: TabPanelProps) {
   const { children, value, index } = props
 
-  return (
-    <SettingPanel hidden={value !== index}>
-      {value === index && <>{children}</>}
-    </SettingPanel>
-  )
+  return <SettingPanel hidden={value !== index}>{value === index && <>{children}</>}</SettingPanel>
 }
 
 interface Props {

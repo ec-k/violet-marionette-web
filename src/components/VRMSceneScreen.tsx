@@ -1,14 +1,15 @@
 import * as THREE from 'three'
 import React from 'react'
-import { IReactionDisposer, reaction } from 'mobx'
-import styled from 'styled-components'
-import networkHandler from 'models/NetworkHandler'
-import { uiStores } from 'stores/uiStores'
-import { Viewer, Avatar, avatar } from 'models/avatar/'
+import { reaction } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
+import styled from '@emotion/styled'
+import networkHandler from '@/models/networkHandler'
+import { uiStores } from '@/stores/uiStores'
+import { Viewer, Avatar, avatar } from '@/models/avatar/'
 import { throttle } from 'lodash'
 import { VRM } from '@pixiv/three-vrm'
 import { mainSceneViewer } from '../stores/scene'
-import { networkSettings, trackingSettings } from 'stores/userSettings'
+import { networkSettings, trackingSettings } from '@/stores/userSettings'
 
 type VRMScene = {
   clock: THREE.Clock
@@ -34,11 +35,11 @@ const createScene = (
     createScene(sceneRef, canvas)
   })
 
-  async function loadVRM(url: string) {
+  function loadVRM(url: string) {
     const _avatar = sceneRef.current?.avatar
     if (!_avatar) return
     if (!sceneRef.current) return
-    await avatar.loadVRM(url)
+    avatar.loadVRM(url)
   }
   avatar.setScene(sceneRef.current.viewer.scene)
   loadVRM('./first_loaded_avatar.vrm')
@@ -73,13 +74,13 @@ export const VRMSceneScreen: React.FC = () => {
       viewer.renderer.render(viewer.scene, viewer.camera)
     }
   }
-  let sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+  let sendPose = throttle((vrm: VRM | null | undefined, sendActive: boolean) => {
     if (!vrm) return
     if (sendActive) networkHandler.SendPoseMessage(vrm)
   }, 1000 / networkSettings.sendRate)
   const mainRoop = () => {
     render3d()
-    sendPose(sceneRef.current?.avatar.vrm!, uiStores.startSendMotion)
+    sendPose(sceneRef.current?.avatar.vrm, uiStores.startSendMotion)
     requestAnimationFrame(mainRoop)
   }
   React.useEffect(() => {
@@ -103,7 +104,7 @@ export const VRMSceneScreen: React.FC = () => {
       reaction(
         () => networkSettings.sendRate,
         () => {
-          sendPose = throttle((vrm: VRM, sendActive: boolean) => {
+          sendPose = throttle((vrm: VRM | null | undefined, sendActive: boolean) => {
             if (!vrm) return
             if (sendActive) networkHandler.SendPoseMessage(vrm)
           }, 1000 / networkSettings.sendRate)
@@ -126,5 +127,3 @@ export const VRMSceneScreen: React.FC = () => {
     </Div>
   )
 }
-
-export default VRMScene

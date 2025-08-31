@@ -1,15 +1,16 @@
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { VRM } from '@pixiv/three-vrm'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { VRM, VRMHumanoidHelper, VRMLoaderPlugin } from '@pixiv/three-vrm'
 import { makeObservable, observable, action } from 'mobx'
-import { otherSenttings } from 'stores/userSettings'
-import * as UI from './UI'
-import { mainSceneViewer } from 'stores/scene'
-import { MotionController } from 'models/avatar/motion-controller'
+import { otherSenttings } from '@/stores/userSettings'
+import * as UI from './ui'
+import { mainSceneViewer } from '@/stores/scene'
+import { MotionController } from '@/models/avatar/motionController'
+import type { Arms } from '@/types'
 
 export class Avatar {
-  private _scene: THREE.Scene | null = null
-  private _motionController: MotionController | null = null
+  private scene: THREE.Scene | null = null
+  private motionControllerInternal: MotionController | null = null
   vrm: VRM | null
   avatarSrc: string | null = null
 
@@ -21,12 +22,12 @@ export class Avatar {
       setAvatarSrc: action,
     })
     this.setAvatarSrc('./first_loaded_avatar.vrm')
-    if (scene) this._scene = scene
+    if (scene) this.scene = scene
     this.vrm = null
   }
 
   get motionController() {
-    return this._motionController
+    return this.motionControllerInternal
   }
 
   setAvatarSrc(url: string) {
@@ -37,65 +38,73 @@ export class Avatar {
   }
 
   setScene(scene: THREE.Scene) {
-    this._scene = scene
+    this.scene = scene
   }
 
-  async loadVRM(url: string) {
-    if (!this._scene) return
+  loadVRM(url: string) {
+    if (!this.scene) return
     if (this.vrm) {
-      this._scene.remove(this.vrm.scene)
-      this.vrm.dispose()
+      this.scene.remove(this.vrm.scene)
+      new VRMHumanoidHelper(this.vrm.humanoid).dispose()
+      this.vrm = null
     }
 
     const loader = new GLTFLoader()
-    const gltf = await loader.loadAsync(url)
-    const vrm = await VRM.from(gltf)
-    this._scene.add(vrm.scene)
-    this.setVRM(vrm)
+    loader.register((parser) => {
+      return new VRMLoaderPlugin(parser)
+    })
+    loader.load(
+      url,
+      (gltf) => {
+        const vrm = gltf.userData.vrm
+        vrm.humanoid.autoUpdateHumanBones = false
+        this.scene?.add(vrm.scene)
+        this.setVRM(vrm)
+        this.motionControllerInternal = new MotionController(vrm)
+        this.removeSpringBone(vrm)
+      },
+      (progress) =>
+        console.log('Loading model...', 100.0 * (progress.loaded / progress.total), '%'),
+      (error) => console.error(error),
+    )
 
-    this._motionController = new MotionController(vrm)
-    this._removeSpringBone(vrm)
+    // TODO: replace ubove with this WebGPURenderer compatible one
+    // // Register a VRMLoaderPlugin
+    // loader.register((parser) => {
+    //   // create a WebGPU compatible MToonMaterialLoaderPlugin
+    //   const mtoonMaterialPlugin = new MToonMaterialLoaderPlugin(parser, {
+    //     // set the material type to MToonNodeMaterial
+    //     materialType: MToonNodeMaterial,
+    //   });
+
+    //   return new VRMLoaderPlugin(parser, {
+    //     // Specify the MToonMaterialLoaderPlugin to use in the VRMLoaderPlugin instance
+    //     mtoonMaterialPlugin,
+    //   });
+    // });
 
     // Setup IK target for debugging.
     if (mainSceneViewer.current)
-      UI.setupIKController(
-        mainSceneViewer.current,
-        avatar,
-        otherSenttings.showIKTarget,
-      )
+      UI.setupIKController(mainSceneViewer.current, avatar, otherSenttings.showIKTarget)
   }
 
-  private _removeSpringBone(vrm: VRM) {
-    const list = vrm.springBoneManager?.springBoneGroupList
+  private removeSpringBone(vrm: VRM) {
+    const list = vrm.springBoneManager?.colliderGroups
     if (!list) return
     while (list.length > 0) {
       list.pop()
     }
   }
 
-  pushPose(
-    enabledIK: boolean,
-    offset: THREE.Vector3 | undefined,
-    [elbows, hands, middleProximals, pinkyProximals, wrists]: rimPosition[],
-  ) {
-    if (!this._motionController || !this.vrm) return
-    this._motionController.pushPose2Filter(this.vrm, enabledIK, offset, [
-      elbows,
-      hands,
-      middleProximals,
-      pinkyProximals,
-      wrists,
-    ])
+  pushPose(enabledIK: boolean, offset: THREE.Vector3 | undefined, arms: Arms | undefined) {
+    if (!this.motionControllerInternal || !this.vrm || !arms) return
+    this.motionControllerInternal.pushPose2Filter(this.vrm, enabledIK, offset, arms)
   }
 
   updatePose(enabledIK: boolean) {
-    if (!this._motionController || !this.vrm) return
-    this._motionController.updatePose(this.vrm, enabledIK)
+    if (!this.motionControllerInternal || !this.vrm) return
+    this.motionControllerInternal.updatePose(this.vrm, enabledIK)
   }
 }
 
 export const avatar = new Avatar()
-type rimPosition = {
-  l: THREE.Vector3 | undefined
-  r: THREE.Vector3 | undefined
-}

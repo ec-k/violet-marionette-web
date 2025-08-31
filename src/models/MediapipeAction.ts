@@ -1,38 +1,65 @@
-import { Holistic, NormalizedLandmark } from '@mediapipe/holistic/'
-import { FaceMesh } from '@mediapipe/face_mesh'
-import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
-import { POSE_CONNECTIONS, HAND_CONNECTIONS } from '@mediapipe/holistic'
-import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh'
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
-import { uiStores } from 'stores/uiStores'
+import {
+  DrawingUtils,
+  FaceLandmarker,
+  FilesetResolver,
+  HandLandmarker,
+  PoseLandmarker,
+} from '@mediapipe/tasks-vision'
+import type { NormalizedLandmark } from '@mediapipe/tasks-vision'
+import { mediapipeLandmarks, type HolisticResult } from '@/stores/mpLandmarksObserver'
+import { uiStores } from '@/stores/uiStores'
 import { MathUtils, Vector3 } from 'three'
 import { Avatar } from './avatar'
-import { trackingSettings } from 'stores/userSettings'
+import { trackingSettings } from '@/stores/userSettings'
+import type { ArmLandmarkPositions, Arms } from '@/types'
 
-export const holistic = new Holistic({
-  locateFile: (file) => {
-    return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`
-  },
-})
-holistic.setOptions({
-  modelComplexity: 1,
-  smoothLandmarks: true,
-  refineFaceLandmarks: true,
-  minDetectionConfidence: 0.7,
-  minTrackingConfidence: 0.7,
-})
-export const faceMesh = new FaceMesh({
-  locateFile: (file) => {
-    return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-  },
-})
-faceMesh.setOptions({
-  maxNumFaces: 1,
-  refineLandmarks: true,
-})
+const minDetectionConfidence = 0.7
+const minTrackingConfidence = 0.7
+const vision = await FilesetResolver.forVisionTasks(
+  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+)
 
-let fps = 60
-let timeInterval = 1000 / fps
+const createPoseLandmarker = async () => {
+  return await PoseLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: '/models/pose_landmarker_full.task',
+      delegate: 'GPU',
+    },
+    runningMode: 'VIDEO',
+    numPoses: 1,
+    minPoseDetectionConfidence: minDetectionConfidence,
+    minTrackingConfidence: minTrackingConfidence,
+  })
+}
+
+const createFaceLandmarker = async () => {
+  return await FaceLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: '/models/face_landmarker.task',
+      delegate: 'GPU',
+    },
+    runningMode: 'VIDEO',
+    numFaces: 1,
+    minFaceDetectionConfidence: minDetectionConfidence,
+    minTrackingConfidence: minTrackingConfidence,
+  })
+}
+
+const createHandLandmarker = async () => {
+  return await HandLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: '/models/hand_landmarker.task',
+      delegate: 'GPU',
+    },
+    runningMode: 'VIDEO',
+    numHands: 2,
+    minHandDetectionConfidence: minDetectionConfidence,
+    minTrackingConfidence: minTrackingConfidence,
+  })
+}
+
+const fps = 60
+const timeInterval = 1000 / fps
 let videoElement: HTMLVideoElement | undefined
 let isMediapipeActive: boolean = false
 
@@ -51,10 +78,10 @@ export function stopMpActions() {
 
 const toVector3 = (pos: NormalizedLandmark | undefined) => {
   if (!pos) return
-  // (-direction.x, -direction.y, direction.z)
   return new Vector3(-pos.x, -pos.y, pos.z)
 }
-const transformResultsByCameraAngle = (pos: THREE.Vector3 | undefined) => {
+
+const transformResultsByCameraAngle = (pos: Vector3 | undefined) => {
   if (!pos) return
   const angle = trackingSettings.angleWithRadian
   pos.y = pos.y * Math.cos(angle) - pos.z * Math.sin(angle)
@@ -66,108 +93,96 @@ const offset: { current: Vector3 | undefined } = {
   current: new Vector3(0, 0, 0),
 }
 
-export function startMpActions(avatar: Avatar): Promise<void> {
+export async function startMpActions(avatar: Avatar): Promise<void> {
+  const poseLandmarker = await createPoseLandmarker()
+  const handLandmarker = await createHandLandmarker()
+  const faceLandmarker = await createFaceLandmarker()
   stopMpActions()
   const promise = new Promise<void>((resolve) => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
-        videoElement = window.document.createElement(
-          'video',
-        ) as HTMLVideoElement
+        videoElement = window.document.createElement('video') as HTMLVideoElement
         videoElement.srcObject = stream
         videoElement.autoplay = true
-
-        holistic.onResults((results) => {
+        videoElement.onloadeddata = () => {
           if (uiStores.startTrack === 'loading') uiStores.toggleStartTrack()
-          mediapipeLandmarks.setLandmarks(results)
+        }
 
-          try {
-            // Since results.poselandmark[0] is the position of the face surface, manually adjust so that it is at the centre of the head.
-            const face = toVector3(results.poseLandmarks[0])
-            const tmp_1 = toVector3(results.poseLandmarks[10])
-            const tmp_2 = toVector3(results.poseLandmarks[9])
-            if (!face || !tmp_1 || !tmp_2) return
-            const adjAmount = 0.1
-            const adj = new Vector3()
-              .crossVectors(tmp_1?.sub(face), tmp_2?.sub(face))
-              .normalize()
-              .multiplyScalar(adjAmount)
-
-            // apply
-            offset.current = transformResultsByCameraAngle(face.sub(adj))
-          } catch {}
-
-          avatar.pushPose(
-            trackingSettings.enabledIK,
-            offset.current,
-            setArmResults(results),
-          )
-          // TODO: Integrate this into avatar.pushPose().
-          if (
-            videoElement &&
-            avatar.motionController &&
-            avatar.motionController.FK
-          ) {
-            avatar.motionController.FK.setRig(
-              mediapipeLandmarks.resultLandmarks,
-              videoElement,
-            )
-          }
-        })
-        function timer(detector: Holistic | FaceMesh) {
+        function timer() {
           if (isMediapipeActive) {
-            if (videoElement?.videoWidth) {
-              detector.send({ image: videoElement }).then(() => {
-                window.setTimeout(() => {
-                  timer(detector)
-                }, timeInterval)
-              })
-            } else {
-              window.setTimeout(() => {
-                timer(detector)
-              }, timeInterval)
+            if (videoElement?.videoWidth && videoElement?.videoHeight) {
+              const currentTimeMs = videoElement.currentTime * 1000
+
+              const poseResult = poseLandmarker.detectForVideo(videoElement, currentTimeMs)
+              const handResult = handLandmarker.detectForVideo(videoElement, currentTimeMs)
+              const faceResult = faceLandmarker.detectForVideo(videoElement, currentTimeMs)
+
+              try {
+                // Since results.poselandmark[0] is the position of the face surface, manually adjust so that it is at the centre of the head.
+                const detectedPerson = poseResult.worldLandmarks[0]
+                const face = toVector3(detectedPerson[0])
+                const mouthRight = toVector3(detectedPerson[10])
+                const mouthLeft = toVector3(detectedPerson[9])
+                if (!face || !mouthRight || !mouthLeft) {
+                  window.setTimeout(timer, timeInterval)
+                  return
+                }
+                const adjAmount = 0.1
+                const adj = new Vector3()
+                  .crossVectors(mouthRight?.sub(face), mouthLeft?.sub(face))
+                  .normalize()
+                  .multiplyScalar(adjAmount)
+
+                // apply
+                offset.current = transformResultsByCameraAngle(face.sub(adj))
+              } catch (e) {
+                console.log('Failed to handle new results in timer: ', e)
+                window.setTimeout(timer, timeInterval)
+                return
+              }
+
+              const results: HolisticResult = {
+                poseLandmarks: poseResult,
+                handLandmarks: handResult,
+                faceResults: faceResult,
+              }
+
+              mediapipeLandmarks.setLandmarks(results)
+
+              avatar.pushPose(trackingSettings.enabledIK, offset.current, setArmResults(results))
+              // TODO: Integrate this into avatar.pushPose().
+              if (videoElement && avatar.motionController && avatar.motionController.FK) {
+                avatar.motionController.FK.setRig(mediapipeLandmarks.resultLandmarks, videoElement)
+              }
             }
+            window.setTimeout(timer, timeInterval)
           }
         }
         isMediapipeActive = true
-        timer(holistic)
+        window.setTimeout(timer, timeInterval)
         resolve()
       })
-      .catch()
+      .catch((err) => {
+        console.error('Failed to get camera stream:', err)
+      })
   })
   return promise
 }
 
-const setArmResults = (results: any) => {
-  const lElbow = (() => {
-    try {
-      return transformResultsByCameraAngle(toVector3(results.poseLandmarks[13]))
-    } catch {
-      return undefined
-    }
-  })()
-  const rElbow = (() => {
-    try {
-      return transformResultsByCameraAngle(toVector3(results.poseLandmarks[14]))
-    } catch {
-      return undefined
-    }
-  })()
-  const lHand = (() => {
-    try {
-      return toVector3(results.poseLandmarks[15])
-    } catch {
-      return undefined
-    }
-  })()
-  const rHand = (() => {
-    try {
-      return toVector3(results.poseLandmarks[16])
-    } catch {
-      return undefined
-    }
-  })()
+const setArmResults = (results: HolisticResult) => {
+  if (!results || !results.poseLandmarks || !results.handLandmarks) return
+
+  const transformLandmark = (landmark: NormalizedLandmark | undefined) => {
+    const nullableLandamrk = landmark
+    if (landmark) return transformResultsByCameraAngle(toVector3(nullableLandamrk))
+    else return undefined
+  }
+
+  const lElbow = transformLandmark(results.poseLandmarks.worldLandmarks[0][13])
+  const rElbow = transformLandmark(results.poseLandmarks.worldLandmarks[0][14])
+  const lHand = transformLandmark(results.poseLandmarks.worldLandmarks[0][15])
+  const rHand = transformLandmark(results.poseLandmarks.worldLandmarks[0][16])
   // Compensate for mis-estimating in depth positions of hands when the distance of hands getting close.
   if (!!lHand && !!rHand) {
     const len = Math.abs(lHand.x - rHand.x)
@@ -179,118 +194,119 @@ const setArmResults = (results: any) => {
   transformResultsByCameraAngle(lHand)
   transformResultsByCameraAngle(rHand)
 
-  const lMiddleProximal = (() => {
-    try {
-      return transformResultsByCameraAngle(
-        toVector3(results.leftHandLandmarks[9]),
-      )
-    } catch {
-      return undefined
-    }
-  })()
-  const rMiddleProximal = (() => {
-    try {
-      return transformResultsByCameraAngle(
-        toVector3(results.rightHandLandmarks[9]),
-      )
-    } catch {
-      return undefined
-    }
-  })()
-  const lPinkyProximal = (() => {
-    try {
-      return transformResultsByCameraAngle(
-        toVector3(results.leftHandLandmarks[17]),
-      )
-    } catch {
-      return undefined
-    }
-  })()
-  const rPinkyProximal = (() => {
-    try {
-      return transformResultsByCameraAngle(
-        toVector3(results.rightHandLandmarks[17]),
-      )
-    } catch {
-      return undefined
-    }
-  })()
-  const lWrist = (() => {
-    try {
-      return transformResultsByCameraAngle(
-        toVector3(results.leftHandLandmarks[0]),
-      )
-    } catch {
-      return undefined
-    }
-  })()
-  const rWrist = (() => {
-    try {
-      return transformResultsByCameraAngle(
-        toVector3(results.rightHandLandmarks[0]),
-      )
-    } catch {
-      return undefined
-    }
-  })()
+  const handedness = results.handLandmarks.handedness
+  let leftHandLandmarks: NormalizedLandmark[] | undefined = undefined
+  let rightHandLandmarks: NormalizedLandmark[] | undefined = undefined
+  if (handedness && handedness[0] && handedness[0][0].categoryName === 'Left') {
+    leftHandLandmarks = results.handLandmarks.worldLandmarks[0]
+    rightHandLandmarks = results.handLandmarks.worldLandmarks[1]
+  } else {
+    leftHandLandmarks = results.handLandmarks.worldLandmarks[1]
+    rightHandLandmarks = results.handLandmarks.worldLandmarks[0]
+  }
+  let lMiddleProximal = undefined
+  let lPinkyProximal = undefined
+  let lWrist = undefined
+  if (leftHandLandmarks) {
+    lMiddleProximal = transformLandmark(leftHandLandmarks[9])
+    lPinkyProximal = transformLandmark(leftHandLandmarks[17])
+    lWrist = transformLandmark(leftHandLandmarks[0])
+  }
+  let rMiddleProximal = undefined
+  let rPinkyProximal = undefined
+  let rWrist = undefined
+  if (rightHandLandmarks) {
+    rMiddleProximal = transformLandmark(rightHandLandmarks[9])
+    rPinkyProximal = transformLandmark(rightHandLandmarks[17])
+    rWrist = transformLandmark(rightHandLandmarks[0])
+  }
 
-  const elbows = { l: lElbow, r: rElbow }
-  const hands = { l: lHand, r: rHand }
-  const middleProximals = { l: lMiddleProximal, r: rMiddleProximal }
-  const pinkyProximals = { l: lPinkyProximal, r: rPinkyProximal }
-  const wrist = { l: lWrist, r: rWrist }
+  const leftArm: ArmLandmarkPositions = {
+    elbow: lElbow,
+    hand: lHand,
+    wrist: lWrist,
+    middleProximal: lMiddleProximal,
+    pinkyProximal: lPinkyProximal,
+  }
+  const rightArm: ArmLandmarkPositions = {
+    elbow: rElbow,
+    hand: rHand,
+    wrist: rWrist,
+    middleProximal: rMiddleProximal,
+    pinkyProximal: rPinkyProximal,
+  }
 
-  return [elbows, hands, middleProximals, pinkyProximals, wrist]
+  const arms: Arms = {
+    l: leftArm,
+    r: rightArm,
+  }
+
+  return arms
 }
+
+let drawingUtils: DrawingUtils | undefined = undefined
 
 export function DrawResults(
   // results: PoseResults,
-  results: any,
+  results: HolisticResult,
   guideCanvas: HTMLCanvasElement,
   videoEl: HTMLVideoElement,
 ) {
-  if (!guideCanvas) return
-  if (!videoEl) return
+  if (!guideCanvas || !videoEl) return
   guideCanvas.width = videoEl.videoWidth
   guideCanvas.height = videoEl.videoHeight
-  let canvasCtx = guideCanvas.getContext('2d')
+  const canvasCtx = guideCanvas.getContext('2d')
   if (!canvasCtx) return
+  if (!drawingUtils) drawingUtils = new DrawingUtils(canvasCtx)
   canvasCtx.save()
   canvasCtx.clearRect(0, 0, guideCanvas.width, guideCanvas.height)
-  // Use `Mediapipe` drawing function
-  drawConnectors(canvasCtx, results.poselm, POSE_CONNECTIONS, {
-    color: '#00cff7',
-    lineWidth: 4,
-  })
-  drawLandmarks(canvasCtx, results.poselm, {
-    color: '#ff0364',
-    lineWidth: 2,
-  })
-  drawConnectors(canvasCtx, results.facelm, FACEMESH_TESSELATION, {
-    color: '#C0C0C070',
-    lineWidth: 1,
-  })
-  if (results.facelm && results.facelm.length === 478) {
+
+  const pose = results.poseLandmarks?.landmarks
+  const face = results.faceResults?.faceLandmarks
+  const hand1 = results.handLandmarks?.landmarks
+  const hand2 = results.handLandmarks?.landmarks
+
+  if (pose) {
+    for (const lm of pose) {
+      drawingUtils.drawLandmarks(lm, {
+        color: '#ff0364',
+        lineWidth: 2,
+      })
+      drawingUtils.drawConnectors(lm, PoseLandmarker.POSE_CONNECTIONS)
+    }
+  }
+  if (face) {
+    for (const lm of face) {
+      drawingUtils.drawLandmarks(lm, {
+        color: '#C0C0C070',
+        lineWidth: 1,
+      })
+      drawingUtils.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_TESSELATION)
+    }
+  }
+  if (face && face.length === 478) {
     // draw pupils
-    drawLandmarks(canvasCtx, [results.facelm[468], results.facelm[468 + 5]], {
+    drawingUtils.drawLandmarks([face[0][468], face[0][468 + 5]], {
       color: '#',
       lineWidth: 2,
     })
   }
-  drawConnectors(canvasCtx, results.leftHandlm, HAND_CONNECTIONS, {
-    color: '#eb1064',
-    lineWidth: 5,
-  })
-  drawLandmarks(canvasCtx, results.leftHandlm, {
-    color: '#00cff7',
-    lineWidth: 5,
-  })
-  drawConnectors(canvasCtx, results.rightHandlm, HAND_CONNECTIONS, {
-    color: '#22c3e3',
-    lineWidth: 5,
-  })
-  drawLandmarks(canvasCtx, results.rightHandlm, {
-    color: '#ff0364',
-    lineWidth: 2,
-  })
+  if (hand1) {
+    for (const lm of hand1) {
+      drawingUtils.drawLandmarks(lm, {
+        color: '#eb1064',
+        lineWidth: 5,
+      })
+      drawingUtils.drawConnectors(lm, HandLandmarker.HAND_CONNECTIONS)
+    }
+  }
+  if (hand2) {
+    for (const lm of hand2) {
+      drawingUtils.drawLandmarks(lm, {
+        color: '#00cff7',
+        lineWidth: 5,
+      })
+      drawingUtils.drawConnectors(lm, HandLandmarker.HAND_CONNECTIONS)
+    }
+  }
 }

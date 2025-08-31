@@ -1,21 +1,21 @@
-import { NormalizedLandmarkList, Results } from '@mediapipe/holistic'
+import type {
+  PoseLandmarkerResult,
+  HandLandmarkerResult,
+  FaceLandmarkerResult,
+} from '@mediapipe/tasks-vision'
 import { makeObservable, observable, action } from 'mobx'
 
-export type PoseResults = {
-  facelm: NormalizedLandmarkList | undefined
-  poselm: NormalizedLandmarkList | undefined
-  poselm3d: any
-  rightHandlm: NormalizedLandmarkList | undefined
-  leftHandlm: NormalizedLandmarkList | undefined
+export type HolisticResult = {
+  poseLandmarks: PoseLandmarkerResult | undefined
+  handLandmarks: HandLandmarkerResult | undefined
+  faceResults: FaceLandmarkerResult | undefined
 }
 
-class MediapipeLandmarksObserver {
-  resultLandmarks: PoseResults = {
-    facelm: undefined,
-    poselm: undefined,
-    poselm3d: undefined,
-    rightHandlm: undefined,
-    leftHandlm: undefined,
+class HolisticResultsObserver {
+  resultLandmarks: HolisticResult = {
+    poseLandmarks: undefined,
+    handLandmarks: undefined,
+    faceResults: undefined,
   }
 
   constructor() {
@@ -25,15 +25,13 @@ class MediapipeLandmarksObserver {
     })
   }
 
-  setLandmarks(results: Results) {
+  setLandmarks(results: HolisticResult) {
     this.resultLandmarks = {
-      facelm: results.faceLandmarks,
-      poselm: results.poseLandmarks,
-      poselm3d: (results as any).za,
-      rightHandlm: results.rightHandLandmarks,
-      leftHandlm: results.leftHandLandmarks,
+      faceResults: results.faceResults,
+      poseLandmarks: results.poseLandmarks,
+      handLandmarks: results.handLandmarks,
     }
   }
 }
 
-export const mediapipeLandmarks = new MediapipeLandmarksObserver()
+export const mediapipeLandmarks = new HolisticResultsObserver()

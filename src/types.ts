@@ -1,6 +1,6 @@
 import * as Kalidokit from 'kalidokit'
-import { VRMSchema, GLTFNode } from '@pixiv/three-vrm'
-import { Vector3, Quaternion } from 'three'
+import { VRMHumanBoneName } from '@pixiv/three-vrm'
+import { Object3D, Vector3, Quaternion } from 'three'
 
 export declare type KalidokitRig = {
   face?: Kalidokit.TFace
@@ -9,17 +9,27 @@ export declare type KalidokitRig = {
   rightHand?: Kalidokit.THand<'Right'>
 }
 
-export declare type HumanoidBoneNameKey =
-  keyof typeof VRMSchema.HumanoidBoneName
-
 export declare type aiRim = {
-  l: THREE.Vector3 | undefined
-  r: THREE.Vector3 | undefined
+  l: Vector3 | undefined
+  r: Vector3 | undefined
+}
+
+export type ArmLandmarkPositions = {
+  elbow: Vector3 | undefined
+  hand: Vector3 | undefined
+  wrist: Vector3 | undefined
+  middleProximal: Vector3 | undefined
+  pinkyProximal: Vector3 | undefined
+}
+
+export type Arms = {
+  l: ArmLandmarkPositions | undefined
+  r: ArmLandmarkPositions | undefined
 }
 
 export declare type avatarRim = {
-  l: GLTFNode
-  r: GLTFNode
+  l: Object3D | null
+  r: Object3D | null
 }
 
 export declare type hand = {
@@ -37,61 +47,61 @@ export class avatarPose {
 
   constructor() {
     this._bones = {
-      Hips: new Quaternion().identity(),
-      Spine: new Quaternion().identity(),
-      Chest: new Quaternion().identity(),
-      UpperChest: new Quaternion().identity(),
-      Neck: new Quaternion().identity(),
-      Head: new Quaternion().identity(),
-      Jaw: new Quaternion().identity(),
-      LeftShoulder: new Quaternion().identity(),
-      LeftUpperArm: new Quaternion().identity(),
-      LeftLowerArm: new Quaternion().identity(),
-      LeftUpperLeg: new Quaternion().identity(),
-      LeftLowerLeg: new Quaternion().identity(),
-      LeftFoot: new Quaternion().identity(),
-      LeftToes: new Quaternion().identity(),
-      RightShoulder: new Quaternion().identity(),
-      RightUpperArm: new Quaternion().identity(),
-      RightLowerArm: new Quaternion().identity(),
-      RightUpperLeg: new Quaternion().identity(),
-      RightLowerLeg: new Quaternion().identity(),
-      RightFoot: new Quaternion().identity(),
-      RightToes: new Quaternion().identity(),
-      LeftHand: new Quaternion().identity(),
-      LeftThumbProximal: new Quaternion().identity(),
-      LeftThumbDistal: new Quaternion().identity(),
-      LeftThumbIntermediate: new Quaternion().identity(),
-      LeftIndexProximal: new Quaternion().identity(),
-      LeftIndexIntermediate: new Quaternion().identity(),
-      LeftIndexDistal: new Quaternion().identity(),
-      LeftMiddleProximal: new Quaternion().identity(),
-      LeftMiddleIntermediate: new Quaternion().identity(),
-      LeftMiddleDistal: new Quaternion().identity(),
-      LeftRingProximal: new Quaternion().identity(),
-      LeftRingIntermediate: new Quaternion().identity(),
-      LeftRingDistal: new Quaternion().identity(),
-      LeftLittleProximal: new Quaternion().identity(),
-      LeftLittleIntermediate: new Quaternion().identity(),
-      LeftLittleDistal: new Quaternion().identity(),
-      RightHand: new Quaternion().identity(),
-      RightThumbProximal: new Quaternion().identity(),
-      RightThumbIntermediate: new Quaternion().identity(),
-      RightThumbDistal: new Quaternion().identity(),
-      RightIndexProximal: new Quaternion().identity(),
-      RightIndexIntermediate: new Quaternion().identity(),
-      RightIndexDistal: new Quaternion().identity(),
-      RightMiddleProximal: new Quaternion().identity(),
-      RightMiddleIntermediate: new Quaternion().identity(),
-      RightMiddleDistal: new Quaternion().identity(),
-      RightRingProximal: new Quaternion().identity(),
-      RightRingIntermediate: new Quaternion().identity(),
-      RightRingDistal: new Quaternion().identity(),
-      RightLittleProximal: new Quaternion().identity(),
-      RightLittleIntermediate: new Quaternion().identity(),
-      RightLittleDistal: new Quaternion().identity(),
-      LeftEye: new Quaternion().identity(),
-      RightEye: new Quaternion().identity(),
+      hips: new Quaternion().identity(),
+      spine: new Quaternion().identity(),
+      chest: new Quaternion().identity(),
+      upperChest: new Quaternion().identity(),
+      neck: new Quaternion().identity(),
+      head: new Quaternion().identity(),
+      jaw: new Quaternion().identity(),
+      leftShoulder: new Quaternion().identity(),
+      leftUpperArm: new Quaternion().identity(),
+      leftLowerArm: new Quaternion().identity(),
+      leftUpperLeg: new Quaternion().identity(),
+      leftLowerLeg: new Quaternion().identity(),
+      leftFoot: new Quaternion().identity(),
+      leftToes: new Quaternion().identity(),
+      rightShoulder: new Quaternion().identity(),
+      rightUpperArm: new Quaternion().identity(),
+      rightLowerArm: new Quaternion().identity(),
+      rightUpperLeg: new Quaternion().identity(),
+      rightLowerLeg: new Quaternion().identity(),
+      rightFoot: new Quaternion().identity(),
+      rightToes: new Quaternion().identity(),
+      leftHand: new Quaternion().identity(),
+      leftThumbProximal: new Quaternion().identity(),
+      leftThumbDistal: new Quaternion().identity(),
+      leftThumbMetacarpal: new Quaternion().identity(),
+      leftIndexProximal: new Quaternion().identity(),
+      leftIndexIntermediate: new Quaternion().identity(),
+      leftIndexDistal: new Quaternion().identity(),
+      leftMiddleProximal: new Quaternion().identity(),
+      leftMiddleIntermediate: new Quaternion().identity(),
+      leftMiddleDistal: new Quaternion().identity(),
+      leftRingProximal: new Quaternion().identity(),
+      leftRingIntermediate: new Quaternion().identity(),
+      leftRingDistal: new Quaternion().identity(),
+      leftLittleProximal: new Quaternion().identity(),
+      leftLittleIntermediate: new Quaternion().identity(),
+      leftLittleDistal: new Quaternion().identity(),
+      rightHand: new Quaternion().identity(),
+      rightThumbProximal: new Quaternion().identity(),
+      rightThumbMetacarpal: new Quaternion().identity(),
+      rightThumbDistal: new Quaternion().identity(),
+      rightIndexProximal: new Quaternion().identity(),
+      rightIndexIntermediate: new Quaternion().identity(),
+      rightIndexDistal: new Quaternion().identity(),
+      rightMiddleProximal: new Quaternion().identity(),
+      rightMiddleIntermediate: new Quaternion().identity(),
+      rightMiddleDistal: new Quaternion().identity(),
+      rightRingProximal: new Quaternion().identity(),
+      rightRingIntermediate: new Quaternion().identity(),
+      rightRingDistal: new Quaternion().identity(),
+      rightLittleProximal: new Quaternion().identity(),
+      rightLittleIntermediate: new Quaternion().identity(),
+      rightLittleDistal: new Quaternion().identity(),
+      leftEye: new Quaternion().identity(),
+      rightEye: new Quaternion().identity(),
     }
   }
 
@@ -99,11 +109,11 @@ export class avatarPose {
     return this._bones
   }
 
-  set(key: HumanoidBoneNameKey, q: Quaternion) {
+  set(key: VRMHumanBoneName, q: Quaternion) {
     this._bones[key] = q
   }
 }
 
 type rotations = {
-  [key in HumanoidBoneNameKey]: Quaternion
+  [key in VRMHumanBoneName]: Quaternion
 }

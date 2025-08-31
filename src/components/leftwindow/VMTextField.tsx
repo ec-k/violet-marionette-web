@@ -1,11 +1,6 @@
-import {
-  FormControl,
-  InputLabel,
-  Input,
-  InputAdornment,
-  InputBaseComponentProps,
-} from '@mui/material'
-import purple from '@mui/material/colors/purple'
+import { FormControl, InputLabel, Input, InputAdornment } from '@mui/material'
+import type { InputBaseComponentProps } from '@mui/material'
+import { purple } from '@mui/material/colors'
 import React from 'react'
 
 interface VMTextFieldProps {
@@ -46,9 +41,7 @@ const VMTextField = ({
           sx={{ color: '#fff' }}
           defaultValue={defaultValue}
           inputRef={inputRef}
-          startAdornment={
-            <InputAdornment position="start">{adornment?.value}</InputAdornment>
-          }
+          startAdornment={<InputAdornment position="start">{adornment?.value}</InputAdornment>}
           onChange={handleChange}
         />
       ) : (
@@ -58,9 +51,7 @@ const VMTextField = ({
           sx={{ color: '#fff' }}
           defaultValue={defaultValue}
           inputRef={inputRef}
-          endAdornment={
-            <InputAdornment position="end">{adornment?.value}</InputAdornment>
-          }
+          endAdornment={<InputAdornment position="end">{adornment?.value}</InputAdornment>}
           onChange={handleChange}
         />
       )}

@@ -1,1 +1,1 @@
-export * from './VrmIK'
+export * from './vrmIk'
