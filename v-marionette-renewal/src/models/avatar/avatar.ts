@@ -6,6 +6,7 @@ import { otherSenttings } from '@/stores/userSettings'
 import * as UI from './ui'
 import { mainSceneViewer } from '@/stores/scene'
 import { MotionController } from '@/models/avatar/motionController'
+import type { Arms } from '@/types'
 
 export class Avatar {
   private scene: THREE.Scene | null = null
@@ -45,6 +46,7 @@ export class Avatar {
     if (this.vrm) {
       this.scene.remove(this.vrm.scene)
       new VRMHumanoidHelper(this.vrm.humanoid).dispose()
+      this.vrm = null
     }
 
     const loader = new GLTFLoader()
@@ -55,6 +57,7 @@ export class Avatar {
       url,
       (gltf) => {
         const vrm = gltf.userData.vrm
+        vrm.humanoid.autoUpdateHumanBones = false
         this.scene?.add(vrm.scene)
         this.setVRM(vrm)
         this.motionControllerInternal = new MotionController(vrm)
@@ -93,19 +96,9 @@ export class Avatar {
     }
   }
 
-  pushPose(
-    enabledIK: boolean,
-    offset: THREE.Vector3 | undefined,
-    [elbows, hands, middleProximals, pinkyProximals, wrists]: rimPosition[],
-  ) {
-    if (!this.motionControllerInternal || !this.vrm) return
-    this.motionControllerInternal.pushPose2Filter(this.vrm, enabledIK, offset, [
-      elbows,
-      hands,
-      middleProximals,
-      pinkyProximals,
-      wrists,
-    ])
+  pushPose(enabledIK: boolean, offset: THREE.Vector3 | undefined, arms: Arms | undefined) {
+    if (!this.motionControllerInternal || !this.vrm || !arms) return
+    this.motionControllerInternal.pushPose2Filter(this.vrm, enabledIK, offset, arms)
   }
 
   updatePose(enabledIK: boolean) {
@@ -115,7 +108,3 @@ export class Avatar {
 }
 
 export const avatar = new Avatar()
-type rimPosition = {
-  l: THREE.Vector3 | undefined
-  r: THREE.Vector3 | undefined
-}

@@ -8,7 +8,7 @@ import {
 } from '@/models/avatar/motion-filter'
 import type { MotionFilter } from '@/models/avatar/motion-filter'
 import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm'
-import { avatarPose } from '@/types'
+import { avatarPose, type aiRim, type Arms } from '@/types'
 import { Vector3 } from 'three'
 
 export class MotionController {
@@ -39,11 +39,32 @@ export class MotionController {
     vrm: VRM,
     enabledIK: boolean,
     offset: Vector3 | undefined,
-    [elbows, hands, middleProximals, pinkyProximals, wrists]: rimPosition[],
+    armResults: Arms | undefined,
   ) {
+    if (!armResults) return
     const rots = this._FK.pushPose(vrm, !enabledIK)
     const rotations = rots ? rots : new avatarPose()
     if (enabledIK && !!this._IK && !!this._IK.ikTargetTracker) {
+      const hands: aiRim = {
+        l: armResults.l?.hand,
+        r: armResults.r?.hand,
+      }
+      const elbows: aiRim = {
+        l: armResults.l?.elbow,
+        r: armResults.r?.elbow,
+      }
+      const wrists: aiRim = {
+        l: armResults.l?.wrist,
+        r: armResults.r?.wrist,
+      }
+      const middleProximals: aiRim = {
+        l: armResults.l?.middleProximal,
+        r: armResults.r?.middleProximal,
+      }
+      const pinkyProximals: aiRim = {
+        l: armResults.l?.pinkyProximal,
+        r: armResults.r?.pinkyProximal,
+      }
       this._IK.ikTargetTracker.trackTargets(hands, elbows, offset)
       // const ikRots = this._IK.pushPose(hands, elbows, shoulders)
       // ikRots.forEach((q, key) => {
@@ -71,13 +92,10 @@ export class MotionController {
         return
       const boneNode = vrm.humanoid?.getRawBoneNode(boneName)
       if (!boneNode) return
-      boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 0.3)
-    })
-    this._IK._solve()
-  }
-}
 
-type rimPosition = {
-  l: Vector3 | undefined
-  r: Vector3 | undefined
+      // boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 0.3)
+      boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 1)
+    })
+    if (enabledIK) this._IK._solve()
+  }
 }

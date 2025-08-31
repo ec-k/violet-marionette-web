@@ -14,9 +14,22 @@ export declare type aiRim = {
   r: Vector3 | undefined
 }
 
+export type ArmLandmarkPositions = {
+  elbow: Vector3 | undefined
+  hand: Vector3 | undefined
+  wrist: Vector3 | undefined
+  middleProximal: Vector3 | undefined
+  pinkyProximal: Vector3 | undefined
+}
+
+export type Arms = {
+  l: ArmLandmarkPositions | undefined
+  r: ArmLandmarkPositions | undefined
+}
+
 export declare type avatarRim = {
-  l: Object3D
-  r: Object3D
+  l: Object3D | null
+  r: Object3D | null
 }
 
 export declare type hand = {

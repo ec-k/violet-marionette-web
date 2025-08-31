@@ -4,48 +4,59 @@ import * as THREE from 'three'
 import { trackingSettings } from '../../stores/userSettings'
 import { avatarPose } from '@/types'
 import type { KalidokitRig } from '@/types'
-import type { NormalizedLandmarkList } from '@mediapipe/holistic'
+import type { HolisticResult } from '@/stores/mpLandmarksObserver'
+import type { NormalizedLandmark } from '@mediapipe/tasks-vision'
 
 export class VrmFK {
   private _lerp = Kalidokit.Vector.lerp
   private _clamp = Kalidokit.Utils.clamp
   private _rig: KalidokitRig | null = null
 
-  setRig(results: any, videoEl: HTMLVideoElement) {
-    const facelm = results.facelm
-    const poselm = results.poselm
-    const poselm3d = results.poselm3d
-    const rightHandlm = results.rightHandlm
-    const leftHandlm = results.leftHandlm
+  setRig(results: HolisticResult, videoEl: HTMLVideoElement) {
+    const facelm = results.faceResults?.faceLandmarks
+    const poselm = results.poseLandmarks?.landmarks
+    const poselm3d = results.poseLandmarks?.worldLandmarks
+    let rightHandlm = undefined
+    let leftHandlm = undefined
+    if (results.handLandmarks?.handedness && results.handLandmarks.handedness.length > 0) {
+      const index0IsLeft = results.handLandmarks.handedness[0][0].categoryName === 'Left'
+      const leftHandIndex = index0IsLeft ? 0 : 1
+      const rightHandIndex = 1 - leftHandIndex
+      rightHandlm = results.handLandmarks.worldLandmarks[leftHandIndex]
+      leftHandlm = results.handLandmarks.worldLandmarks[rightHandIndex]
+    }
 
-    this._rotateResults(poselm)
-    this._rotateResults(poselm3d)
+    if (poselm && poselm[0]) this._rotateResults(poselm[0])
+    if (poselm3d && poselm3d[0]) this._rotateResults(poselm3d[0])
     this._rotateResults(rightHandlm)
     this._rotateResults(leftHandlm)
 
     const vrmRigs: KalidokitRig = {
       face:
         facelm &&
-        Kalidokit.Face.solve(facelm, {
+        facelm[0] &&
+        Kalidokit.Face.solve(facelm[0], {
           runtime: 'mediapipe',
           video: videoEl,
         }),
       pose:
         poselm &&
+        poselm[0] &&
         poselm3d &&
-        Kalidokit.Pose.solve(poselm3d, poselm, {
+        poselm3d[0] &&
+        Kalidokit.Pose.solve(poselm3d[0], poselm[0], {
           runtime: 'mediapipe',
           video: videoEl,
           enableLegs: true,
         }),
-      leftHand: leftHandlm && Kalidokit.Hand.solve(leftHandlm, 'Left'),
-      rightHand: rightHandlm && Kalidokit.Hand.solve(rightHandlm, 'Right'),
+      leftHand: leftHandlm && leftHandlm[0] && Kalidokit.Hand.solve(leftHandlm, 'Left'),
+      rightHand: rightHandlm && rightHandlm[0] && Kalidokit.Hand.solve(rightHandlm, 'Right'),
     }
     this._rig = vrmRigs
   }
 
   // Coordinate transformation with camera angle.
-  private _rotateResults(LMs: NormalizedLandmarkList | undefined) {
+  private _rotateResults(LMs: NormalizedLandmark[] | undefined) {
     if (!LMs) return
     LMs.forEach((lm) => {
       const angle = trackingSettings.angleWithRadian
