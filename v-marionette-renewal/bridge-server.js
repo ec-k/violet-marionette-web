@@ -1,12 +1,13 @@
-const server = require('ws').Server
-const crypto = require('crypto')
-const ws = new server({ port: 23000 })
+import { WebSocketServer } from 'ws'
+import crypto from 'crypto'
+
+const wsServer = new WebSocketServer({ port: 23000 })
 
 const connectionMap = {}
 
 console.log('Start server')
 
-ws.on('connection', (socket) => {
+wsServer.on('connection', (socket) => {
   const uuid = crypto.randomUUID()
   socket.send(
     JSON.stringify({
@@ -27,35 +28,22 @@ ws.on('connection', (socket) => {
         if (!(message.userName in connectionMap)) break
         Object.keys(connectionMap[message.userName]).forEach((uuid) => {
           const client = connectionMap[message.userName][uuid]
-          if (client.connectionType === 'resoniteClient')
-            client.socket.send(data)
+          if (client.connectionType === 'resoniteClient') client.socket.send(data)
         })
         break
       case 'websocketSetting':
-        setVmConnectionAttribute(
-          data.userName,
-          data.connectionType,
-          socket,
-          userName,
-          uuid,
-        )
-        console.log(
-          `connected: {user:${data.userName}, type:${data.connectionType}}`,
-        )
+        setVmConnectionAttribute(data.userName, data.connectionType, socket, userName, uuid)
+        console.log(`connected: {user:${data.userName}, type:${data.connectionType}}`)
         break
       case 'connectionCheck':
-        socket.send(
-          JSON.stringify({ messageType: 'connectionCheck', data: 'pong' }),
-        )
+        socket.send(JSON.stringify({ messageType: 'connectionCheck', data: 'pong' }))
         break
       case 'notification':
         if (message.userName.length <= 0) break
         Object.keys(connectionMap[message.userName]).forEach((uuid) => {
           const client = connectionMap[message.userName][uuid]
           if (client.connectionType === 'webClient')
-            client.socket.send(
-              JSON.stringify({ messageType: 'notification', data: data }),
-            )
+            client.socket.send(JSON.stringify({ messageType: 'notification', data: data }))
         })
         break
       default:
@@ -66,9 +54,7 @@ ws.on('connection', (socket) => {
   socket.on('close', () => {
     if (userName.current in connectionMap) {
       const connection = connectionMap[userName.current][uuid]
-      console.log(
-        `closed: {user:${userName.current}, type:${connection.connectionType}}`,
-      )
+      console.log(`closed: {user:${userName.current}, type:${connection.connectionType}}`)
       delete connectionMap[userName.current][uuid]
     }
   })
@@ -84,16 +70,9 @@ const checkConnectionType = (connectionType) => {
   return false
 }
 
-const setVmConnectionAttribute = (
-  newUserName,
-  connectionType,
-  socket,
-  userName,
-  uuid,
-) => {
+const setVmConnectionAttribute = (newUserName, connectionType, socket, userName, uuid) => {
   if (checkConnectionType(connectionType)) {
-    if (userName.current in connectionMap)
-      delete connectionMap[userName.current][uuid]
+    if (userName.current in connectionMap) delete connectionMap[userName.current][uuid]
     if (!(newUserName in connectionMap)) connectionMap[newUserName] = {}
     connectionMap[newUserName][uuid] = {
       connectionType: connectionType,
@@ -107,7 +86,6 @@ const setVmConnectionAttribute = (
 
 const deleteEmptyList = () => {
   Object.keys(connectionMap).forEach((userName) => {
-    if (Object.keys(connectionMap[userName]).length <= 0)
-      delete connectionMap[userName]
+    if (Object.keys(connectionMap[userName]).length <= 0) delete connectionMap[userName]
   })
 }
