@@ -20,15 +20,12 @@ importers:
       '@mediapipe/drawing_utils':
         specifier: ^0.3.1675466124
         version: 0.3.1675466124
-      '@mediapipe/face_mesh':
-        specifier: ^0.4.1633559619
-        version: 0.4.1633559619
-      '@mediapipe/holistic':
-        specifier: ^0.5.1675471629
-        version: 0.5.1675471629
       '@mediapipe/pose':
         specifier: ^0.5.1675469404
         version: 0.5.1675469404
+      '@mediapipe/tasks-vision':
+        specifier: 0.10.22-rc.20250304
+        version: 0.10.22-rc.20250304
       '@mui/icons-material':
         specifier: ^7.3.1
         version: 7.3.1(@mui/material@7.3.1(@emotion/react@11.14.0(@types/react@19.1.11)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.11)(react@19.1.1))(@types/react@19.1.11)(react@19.1.1))(@types/react@19.1.11)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@types/react@19.1.11)(react@19.1.1)
@@ -65,6 +62,9 @@ importers:
       three:
         specifier: ^0.179.1
         version: 0.179.1
+      ws:
+        specifier: ^8.18.3
+        version: 8.18.3
     devDependencies:
       '@eslint/js':
         specifier: ^9.33.0
@@ -464,17 +464,14 @@ packages:
   '@mediapipe/drawing_utils@0.3.1675466124':
     resolution: {integrity: sha512-/IWIB/iYRMtiUKe3k7yGqvwseWHCOqzVpRDfMgZ6gv9z7EEimg6iZbRluoPbcNKHbYSxN5yOvYTzUYb8KVf22Q==}
 
-  '@mediapipe/face_mesh@0.4.1633559619':
-    resolution: {integrity: sha512-Vc8cdjxS5+O2gnjWH9KncYpUCVXT0h714KlWAsyqJvJbIgUJBqpppbIx8yWcAzBDxm/5cYSuBI5p5ySIPxzcEg==}
-
-  '@mediapipe/holistic@0.5.1675471629':
-    resolution: {integrity: sha512-qY+cxtDeSOvVtevrLgnodiwXYaAtPi7dHZtNv/bUCGEjFicAOYtMmrZSqMmbPkTB2+4jLnPF1vgshkAqQRSYAw==}
-
   '@mediapipe/pose@0.5.1675469404':
     resolution: {integrity: sha512-DFZsNWTsSphRIZppnUCuunzBiHP2FdJXR9ehc7mMi4KG+oPaOH0Em3d6kr7Py+TSyTXC1doH88KcF28k2sBxsQ==}
 
   '@mediapipe/tasks-vision@0.10.17':
     resolution: {integrity: sha512-CZWV/q6TTe8ta61cZXjfnnHsfWIdFhms03M9T7Cnd5y2mdpylJM0rF1qRq+wsQVRMLz1OYPVEBU9ph2Bx8cxrg==}
+
+  '@mediapipe/tasks-vision@0.10.22-rc.20250304':
+    resolution: {integrity: sha512-dElxVXMFGthshfIj+qAVm8KE2jmNo2p8oXFib8WzEjb7GNaX/ClWBc8UJfoSZwjEMVrdHJ4YUfa7P3ifl6MIWw==}
 
   '@monogrid/gainmap-js@3.1.0':
     resolution: {integrity: sha512-Obb0/gEd/HReTlg8ttaYk+0m62gQJmCblMOjHSMHRrBP2zdfKMHLCRbh/6ex9fSUJMKdjjIEiohwkbGD3wj2Nw==}
@@ -2216,6 +2213,18 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
+  ws@8.18.3:
+    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   yaml@1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
@@ -2553,13 +2562,11 @@ snapshots:
 
   '@mediapipe/drawing_utils@0.3.1675466124': {}
 
-  '@mediapipe/face_mesh@0.4.1633559619': {}
-
-  '@mediapipe/holistic@0.5.1675471629': {}
-
   '@mediapipe/pose@0.5.1675469404': {}
 
   '@mediapipe/tasks-vision@0.10.17': {}
+
+  '@mediapipe/tasks-vision@0.10.22-rc.20250304': {}
 
   '@monogrid/gainmap-js@3.1.0(three@0.179.1)':
     dependencies:
@@ -4514,6 +4521,8 @@ snapshots:
       isexe: 2.0.0
 
   word-wrap@1.2.5: {}
+
+  ws@8.18.3: {}
 
   yaml@1.10.2: {}
 
