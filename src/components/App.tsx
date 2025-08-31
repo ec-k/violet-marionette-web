@@ -1,5 +1,8 @@
+/** @jsxImportSource @emotion/react */
+
 import React from 'react'
 import { ThemeProvider } from '@mui/material'
+import { css } from '@emotion/react'
 import theme from '@/styles/theme'
 import LeftWindow from '@/components/setting-window/LeftWindow'
 import { uiStores } from '@/stores/uiStores'
@@ -24,7 +27,13 @@ const App: React.FC = () => {
     <>
       <ThemeProvider theme={theme}>
         <LeftWindow open={uiStores.openLeftWindow} />
-        <div className="MainScreen">
+        <div
+          className="MainScreen"
+          css={css`
+            height: 100%;
+            width: 100%;
+          `}
+        >
           <VRMSceneScreen />
           <Footer />
         </div>
