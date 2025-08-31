@@ -1,18 +1,14 @@
 import React from 'react'
-import { CameraScreen } from 'components/leftwindow/CameraScreen'
+import { CameraScreen } from '@/components/leftwindow/CameraScreen'
 import { Stack, Box, Switch, FormControlLabel, Button } from '@mui/material'
-import VMTextField from 'components/leftwindow/VMTextField'
-import purple from '@mui/material/colors/purple'
-import { trackingSettings } from 'stores/userSettings'
+import VMTextField from '@/components/leftwindow/VMTextField'
+import { purple } from '@mui/material/colors'
+import { trackingSettings } from '@/stores/userSettings'
 
 const TrackingSettingWindow: React.FC = () => {
   const [showVideo, setShowVideo] = React.useState<boolean>(false)
-  const [enabledLeg, setActivatedLeg] = React.useState<boolean>(
-    trackingSettings.enableLeg,
-  )
-  const [enabledIK, setEnabledIK] = React.useState<boolean>(
-    trackingSettings.enabledIK,
-  )
+  const [enabledLeg, setActivatedLeg] = React.useState<boolean>(trackingSettings.enableLeg)
+  const [enabledIK, setEnabledIK] = React.useState<boolean>(trackingSettings.enabledIK)
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
   const [sit, setSit] = React.useState<boolean>(trackingSettings.sit)
   // const distanceToMonitorRef = React.useRef<HTMLInputElement | null>(null)
@@ -25,8 +21,7 @@ const TrackingSettingWindow: React.FC = () => {
     // const disToMonitor = Number(distanceToMonitorRef.current?.value)
     // const eyeRotOffset = Number(eyeRotOffsetRef.current?.value)
 
-    if (!Number.isNaN(cameraDepAngle))
-      trackingSettings.cameraDepressionAngle = cameraDepAngle
+    if (!Number.isNaN(cameraDepAngle)) trackingSettings.cameraDepressionAngle = cameraDepAngle
     // if (!Number.isNaN(monitorSize)) trackingSettings.monitorInch = monitorSize
     // if (!Number.isNaN(disToMonitor))
     //   trackingSettings.distanceToMonitor = disToMonitor
@@ -124,9 +119,7 @@ const TrackingSettingWindow: React.FC = () => {
           sx={{ color: purple[50] }}
         />
         <FormControlLabel
-          control={
-            <Switch color="primary" defaultChecked={sit} onChange={toggleSit} />
-          }
+          control={<Switch color="primary" defaultChecked={sit} onChange={toggleSit} />}
           label="sit"
           sx={{ color: purple[50] }}
         />

@@ -1,8 +1,9 @@
 import React from 'react'
-import { autorun, IReactionDisposer } from 'mobx'
-import { mediapipeLandmarks } from 'stores/MpLandmarksObserver'
-import { DrawResults } from 'models/MediapipeAction'
-import styled from 'styled-components'
+import { autorun } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
+import { mediapipeLandmarks } from '@/stores/mpLandmarksObserver'
+import { DrawResults } from '@/models/mediapipeAction'
+import styled from '@emotion/styled'
 
 const Video = styled.video`
   max-width: 100%;
@@ -31,7 +32,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ showVideo }) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const videoRef = React.useRef<HTMLVideoElement>(null)
 
-  if (!!videoRef.current) {
+  if (videoRef.current) {
     if (showVideo) videoRef.current.play()
     else videoRef.current.srcObject = null
   }
@@ -48,11 +49,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ showVideo }) => {
     dispo.push(
       autorun(() => {
         if (canvasRef.current && videoRef.current)
-          DrawResults(
-            mediapipeLandmarks.resultLandmarks,
-            canvasRef.current,
-            videoRef.current,
-          )
+          DrawResults(mediapipeLandmarks.resultLandmarks, canvasRef.current, videoRef.current)
       }),
     )
 

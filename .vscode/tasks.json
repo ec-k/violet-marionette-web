@@ -1,48 +1,34 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "react-start",
-            "detail": "react-scripts start for debug",
-            "type": "npm",
-            "script": "start",
-            "isBackground": true,
-            "problemMatcher": [
-                {
-                    "pattern": [
-                        {
-                            "regexp": ".",
-                            "file": 1,
-                            "line": 1,
-                            "message": 1
-                        }
-                    ],
-                    "background": {
-                        "activeOnStart": true,
-                        "beginsPattern": "^Starting.*$",
-                        "endsPattern": "^Compiled.*$"
-                    },
-                }
-            ],
-            "options": {
-                "env": {
-                    "BROWSER": "none"
-                }
-            }
-        },
-        {
-            "label": "terminate-react-start",
-            "command": "${input:terminate}",
-            "type": "shell",
-            "problemMatcher": []
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "start vite dev server",
+      "type": "shell",
+      "command": "pnpm run dev",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "vite-dev-server"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": {
+        "pattern": [
+          {
+            "regexp": ".*",
+            "file": 1,
+            "location": 2,
+            "message": 3
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Local:\\s+(http:\\/\\/localhost:[0-9]+)",
+          "endsPattern": "(ready in \\d+ms|finished in \\d+ms)"
         }
-    ],
-    "inputs": [
-        {
-            "id": "terminate",
-            "type": "command",
-            "command": "workbench.action.tasks.terminate",
-            "args": "react-start"
-        }
-    ]
+      }
+    }
+  ]
 }

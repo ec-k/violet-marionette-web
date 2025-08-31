@@ -1,6 +1,6 @@
 import React from 'react'
-import { uiStores } from 'stores/uiStores'
-import styled from 'styled-components'
+import { uiStores } from '@/stores/uiStores'
+import styled from '@emotion/styled'
 import { Fab } from '@mui/material'
 import SettingIcon from '@mui/icons-material/Settings'
 import SettingIconOutlined from '@mui/icons-material/SettingsOutlined'
@@ -9,7 +9,8 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff'
 import WifiIcon from '@mui/icons-material/Wifi'
 import WifiOffIcon from '@mui/icons-material/WifiOff'
 import CircularProgress from '@mui/material/CircularProgress'
-import { autorun, IReactionDisposer } from 'mobx'
+import { autorun } from 'mobx'
+import type { IReactionDisposer } from 'mobx'
 
 type MediapipeState = 'stop' | 'loading' | 'active'
 
@@ -25,10 +26,8 @@ const Div = styled.div`
 //       It is better if useState can be removed.
 const Footer: React.FC = () => {
   const [openSettings, setOpenSettings] = React.useState<boolean>(false)
-  const [startTracking, setStartTracking] =
-    React.useState<MediapipeState>('stop')
-  const [startSendingMotion, setStartSendingMotion] =
-    React.useState<boolean>(false)
+  const [startTracking, setStartTracking] = React.useState<MediapipeState>('stop')
+  const [startSendingMotion, setStartSendingMotion] = React.useState<boolean>(false)
 
   function toggleOpenSettings() {
     setOpenSettings(!openSettings)
@@ -63,12 +62,7 @@ const Footer: React.FC = () => {
     <Div className="footer">
       {/* Setting button */}
       {openSettings ? (
-        <Fab
-          color="primary"
-          onClick={toggleOpenSettings}
-          size="small"
-          style={{ left: '1%' }}
-        >
+        <Fab color="primary" onClick={toggleOpenSettings} size="small" style={{ left: '1%' }}>
           <SettingIcon />
         </Fab>
       ) : (
@@ -101,11 +95,7 @@ const Footer: React.FC = () => {
 
       {/* Start Send Pose button */}
       {startSendingMotion ? (
-        <Fab
-          color="primary"
-          onClick={toggleStartSendPose}
-          style={{ left: '46%' }}
-        >
+        <Fab color="primary" onClick={toggleStartSendPose} style={{ left: '46%' }}>
           <WifiIcon />
         </Fab>
       ) : (

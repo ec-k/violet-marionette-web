@@ -3,9 +3,9 @@ import {
   // Vector3,
   // Quaternion
 } from 'three'
-import { VRM, VRMSchema } from '@pixiv/three-vrm'
-import * as IKSolver from './IKSolver'
-import { defaultIKConfig } from './DefaultConfig'
+import { VRM } from '@pixiv/three-vrm'
+import * as IKSolver from './iKSolver'
+import { defaultIKConfig } from './defaultConfig'
 import { IkTargetTracker } from './ikTargetTracker'
 // import {
 //   // HumanoidBoneNameKey,
@@ -40,10 +40,7 @@ export class VrmIK {
     // const rotations = new Map<HumanoidBoneNameKey, Quaternion>()
     // FIX: ただ，肘からsolveしたいだけ．もっといい書き方があるはず
     this._chains.forEach((chain) => {
-      if (
-        chain.effector.name !== 'J_Bip_L_Hand' &&
-        chain.effector.name !== 'J_Bip_R_Hand'
-      ) {
+      if (chain.effector?.name !== 'J_Bip_L_Hand' && chain.effector?.name !== 'J_Bip_R_Hand') {
         IKSolver.solve(chain, this._iteration)
         // const results = IKSolver.solve(chain, this._iteration)
         // results.forEach((q, key) => {
@@ -53,10 +50,7 @@ export class VrmIK {
       }
     })
     this._chains.forEach((chain) => {
-      if (
-        chain.effector.name === 'J_Bip_L_Hand' ||
-        chain.effector.name === 'J_Bip_R_Hand'
-      ) {
+      if (chain.effector?.name === 'J_Bip_L_Hand' || chain.effector?.name === 'J_Bip_R_Hand') {
         IKSolver.solve(chain, this._iteration)
         // const results = IKSolver.solve(chain, this._iteration)
         // results.forEach((q, key) => {
@@ -68,21 +62,13 @@ export class VrmIK {
     // return rotations
   }
 
-  private _createIKChain(
-    vrm: VRM,
-    chainConfig: IKSolver.ChainConfig,
-  ): IKSolver.IKChain {
+  private _createIKChain(vrm: VRM, chainConfig: IKSolver.ChainConfig): IKSolver.IKChain {
     const goal = new Object3D()
-    const effector = vrm.humanoid?.getBoneNode(
-      VRMSchema.HumanoidBoneName[chainConfig.effectorBoneName],
-    )!
+    const effector = vrm.humanoid?.getRawBoneNode(chainConfig.effectorBoneName)
     const joints = chainConfig.jointConfigs.map((jointConfig) => {
       return this._createJoint(vrm, jointConfig)
     })
-
-    effector.getWorldPosition(goal.position)
     vrm.scene.add(goal)
-
     return {
       goal: goal,
       effector: effector,
@@ -90,14 +76,9 @@ export class VrmIK {
     }
   }
 
-  private _createJoint(
-    vrm: VRM,
-    jointConfig: IKSolver.JointConfig,
-  ): IKSolver.Joint {
+  private _createJoint(vrm: VRM, jointConfig: IKSolver.JointConfig): IKSolver.Joint {
     return {
-      bone: vrm.humanoid?.getBoneNode(
-        VRMSchema.HumanoidBoneName[jointConfig.boneName],
-      ) as any,
+      bone: vrm.humanoid?.getRawBoneNode(jointConfig.boneName),
       order: jointConfig.order,
       rotationMin: jointConfig.rotationMin,
       rotationMax: jointConfig.rotationMax,

@@ -1,5 +1,6 @@
+import { VRMHumanBoneName } from '@pixiv/three-vrm'
 import { Quaternion } from 'three'
-import { HumanoidBoneNameKey, avatarPose } from 'types'
+import { avatarPose } from '@/types'
 
 export interface RotationFilter {
   get current(): Quaternion
@@ -7,9 +8,9 @@ export interface RotationFilter {
 }
 
 export interface MotionFilter {
-  push(q: Quaternion, key: HumanoidBoneNameKey): void
+  push(q: Quaternion, key: VRMHumanBoneName): void
   pushAll(pose: avatarPose): void
-  filteredRotation(key: HumanoidBoneNameKey): Quaternion
+  filteredRotation(key: VRMHumanBoneName): Quaternion
 }
 
 export class RotationQueue {

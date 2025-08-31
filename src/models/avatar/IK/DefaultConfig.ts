@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { IKConfig } from './IKSolver'
+import type { IKConfig } from './iKSolver'
 
 /*
 example
@@ -56,13 +56,13 @@ export const defaultIKConfig: IKConfig = {
     {
       jointConfigs: [
         {
-          boneName: 'LeftLowerArm',
+          boneName: 'leftLowerArm',
           order: 'YZX',
           rotationMin: new Vector3(0, -Math.PI, 0),
           rotationMax: new Vector3(0, -(0.1 / 180) * Math.PI, 0),
         },
         {
-          boneName: 'LeftUpperArm',
+          boneName: 'leftUpperArm',
           order: 'ZXY',
           rotationMin: new Vector3(-Math.PI / 2, -Math.PI, -Math.PI),
           rotationMax: new Vector3(Math.PI / 2, Math.PI, Math.PI),
@@ -78,13 +78,13 @@ export const defaultIKConfig: IKConfig = {
         //   rotationMax: new Vector3(0, (45 / 180) * Math.PI, 0),
         // },
       ],
-      effectorBoneName: 'LeftHand',
+      effectorBoneName: 'leftHand',
     },
     // Left Shoulder -> Left Lower Arm (Elbow)
     {
       jointConfigs: [
         {
-          boneName: 'LeftUpperArm',
+          boneName: 'leftUpperArm',
           order: 'ZXY',
           rotationMin: new Vector3(-Math.PI / 2, -Math.PI, -Math.PI),
           rotationMax: new Vector3(Math.PI / 2, Math.PI, Math.PI),
@@ -100,7 +100,7 @@ export const defaultIKConfig: IKConfig = {
         //   rotationMax: new Vector3(0, (45 / 180) * Math.PI, 0),
         // },
       ],
-      effectorBoneName: 'LeftLowerArm',
+      effectorBoneName: 'leftLowerArm',
     },
     // // Left Shoulder -> Hand Tips
     // {
@@ -144,19 +144,19 @@ export const defaultIKConfig: IKConfig = {
     {
       jointConfigs: [
         {
-          boneName: 'RightLowerArm',
+          boneName: 'rightLowerArm',
           order: 'YZX',
           rotationMin: new Vector3(0, (0.1 / 180) * Math.PI, 0),
           rotationMax: new Vector3(0, Math.PI, 0),
         },
         {
-          boneName: 'RightUpperArm',
+          boneName: 'rightUpperArm',
           order: 'ZXY',
           rotationMin: new Vector3(-Math.PI / 2, -Math.PI, -Math.PI),
           rotationMax: new Vector3(Math.PI / 2, Math.PI, Math.PI),
         },
         // {
-        //   boneName: 'RightShoulder',
+        //   boneName: 'rightShoulder',
         //   order: 'ZXY',
         //   rotationMin: new Vector3(0, -(45 / 180) * Math.PI, 0),
         //   rotationMax: new Vector3(
@@ -166,19 +166,19 @@ export const defaultIKConfig: IKConfig = {
         //   ),
         // },
       ],
-      effectorBoneName: 'RightHand',
+      effectorBoneName: 'rightHand',
     },
     // Right Shoulder -> Right Lower Arm (Elbow)
     {
       jointConfigs: [
         {
-          boneName: 'RightUpperArm',
+          boneName: 'rightUpperArm',
           order: 'ZXY',
           rotationMin: new Vector3(-Math.PI / 2, -Math.PI, -Math.PI),
           rotationMax: new Vector3(Math.PI / 2, Math.PI, Math.PI),
         },
         // {
-        //   boneName: 'RightShoulder',
+        //   boneName: 'rightShoulder',
         //   order: 'ZXY',
         //   rotationMin: new Vector3(0, -(45 / 180) * Math.PI, 0),
         //   rotationMax: new Vector3(
@@ -188,7 +188,7 @@ export const defaultIKConfig: IKConfig = {
         //   ),
         // },
       ],
-      effectorBoneName: 'RightLowerArm',
+      effectorBoneName: 'rightLowerArm',
     },
     // // Right Shoulder -> Hand Tips
     // {
