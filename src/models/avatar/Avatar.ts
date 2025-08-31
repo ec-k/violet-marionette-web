@@ -21,7 +21,7 @@ export class Avatar {
       setVRM: action,
       setAvatarSrc: action,
     })
-    this.setAvatarSrc('./first_loaded_avatar.vrm')
+    this.setAvatarSrc('./default_avatar.vrm')
     if (scene) this.scene = scene
     this.vrm = null
   }
