@@ -42,7 +42,7 @@ const createScene = (
     avatar.loadVRM(url)
   }
   avatar.setScene(sceneRef.current.viewer.scene)
-  loadVRM('./first_loaded_avatar.vrm')
+  loadVRM('./default_avatar.vrm')
   mainSceneViewer.current = mainScene.viewer
 }
 
