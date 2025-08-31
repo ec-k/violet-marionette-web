@@ -1,7 +1,7 @@
 import React from 'react'
 import { ThemeProvider } from '@mui/material'
 import theme from '@/styles/theme'
-import LeftWindow from '@/components/leftwindow/LeftWindow'
+import LeftWindow from '@/components/left-window/LeftWindow'
 import { uiStores } from '@/stores/uiStores'
 import { VRMSceneScreen } from '@/components/VRMSceneScreen'
 import { startMpActions, stopMpActions } from '@/models/mediapipeAction'

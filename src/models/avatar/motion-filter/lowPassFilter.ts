@@ -1,8 +1,8 @@
 import { Euler, Quaternion } from 'three'
 import { VRMHumanBoneName } from '@pixiv/three-vrm'
 import { avatarPose } from '@/types'
-import { RotationQueue } from './motion-filter'
-import type { MotionFilter, RotationFilter } from './motion-filter'
+import { RotationQueue } from './motionFilter'
+import type { MotionFilter, RotationFilter } from './motionFilter'
 
 interface RotRange {
   x: {
