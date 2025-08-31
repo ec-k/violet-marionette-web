@@ -1,7 +1,7 @@
 import React from 'react'
-import { CameraScreen } from '@/components/leftwindow/CameraScreen'
+import { CameraScreen } from '@/components/left-window/CameraScreen'
 import { Stack, Box, Switch, FormControlLabel, Button } from '@mui/material'
-import VMTextField from '@/components/leftwindow/VMTextField'
+import VMTextField from '@/components/left-window/VMTextField'
 import { purple } from '@mui/material/colors'
 import { trackingSettings } from '@/stores/userSettings'
 
