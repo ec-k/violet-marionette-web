@@ -67,10 +67,10 @@ class NetworkHandler {
   }
 
   private _checkConnection = () => {
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.send({ messageType: 'connectionCheck', data: 'ping' })
       const checkTimeDeadline = 1 * 1000 //[ms]
-      this._checkTimer = setTimeout(() => {
+      this._checkTimer = window.setTimeout(() => {
         this.connect()
         this._checkTimer = undefined
       }, checkTimeDeadline)
