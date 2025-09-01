@@ -12,6 +12,9 @@ import { MathUtils, Vector3 } from 'three'
 import { Avatar } from './avatar'
 import { trackingSettings } from '@/stores/userSettings'
 import type { ArmLandmarkPositions, Arms } from '@/types'
+import poseTaskUrl from '@/assets/mediapipe-models/pose_landmarker_full.task?url'
+import handTaskUrl from '@/assets/mediapipe-models/hand_landmarker.task?url'
+import faceTaskUrl from '@/assets/mediapipe-models/face_landmarker.task?url'
 
 const minDetectionConfidence = 0.7
 const minTrackingConfidence = 0.7
@@ -22,7 +25,7 @@ const vision = await FilesetResolver.forVisionTasks(
 const createPoseLandmarker = async () => {
   return await PoseLandmarker.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: '/models/pose_landmarker_full.task',
+      modelAssetPath: poseTaskUrl,
       delegate: 'GPU',
     },
     runningMode: 'VIDEO',
@@ -35,7 +38,7 @@ const createPoseLandmarker = async () => {
 const createFaceLandmarker = async () => {
   return await FaceLandmarker.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: '/models/face_landmarker.task',
+      modelAssetPath: faceTaskUrl,
       delegate: 'GPU',
     },
     runningMode: 'VIDEO',
@@ -48,7 +51,7 @@ const createFaceLandmarker = async () => {
 const createHandLandmarker = async () => {
   return await HandLandmarker.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: '/models/hand_landmarker.task',
+      modelAssetPath: handTaskUrl,
       delegate: 'GPU',
     },
     runningMode: 'VIDEO',
