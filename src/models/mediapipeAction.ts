@@ -123,6 +123,12 @@ export async function startMpActions(avatar: Avatar): Promise<void> {
 
               try {
                 // Since results.poselandmark[0] is the position of the face surface, manually adjust so that it is at the centre of the head.
+                if (
+                  !poseResult ||
+                  !poseResult.worldLandmarks ||
+                  poseResult.worldLandmarks.length == 0
+                )
+                  return
                 const detectedPerson = poseResult.worldLandmarks[0]
                 const face = toVector3(detectedPerson[0])
                 const mouthRight = toVector3(detectedPerson[10])
@@ -182,20 +188,26 @@ const setArmResults = (results: HolisticResult) => {
     else return undefined
   }
 
-  const lElbow = transformLandmark(results.poseLandmarks.worldLandmarks[0][13])
-  const rElbow = transformLandmark(results.poseLandmarks.worldLandmarks[0][14])
-  const lHand = transformLandmark(results.poseLandmarks.worldLandmarks[0][15])
-  const rHand = transformLandmark(results.poseLandmarks.worldLandmarks[0][16])
-  // Compensate for mis-estimating in depth positions of hands when the distance of hands getting close.
-  if (!!lHand && !!rHand) {
-    const len = Math.abs(lHand.x - rHand.x)
-    const adjAmount = 0.3
-    const adj = MathUtils.clamp(-len + adjAmount, 0, adjAmount)
-    lHand.z -= adj
-    rHand.z -= adj
+  let lElbow: Vector3 | undefined = undefined
+  let rElbow: Vector3 | undefined = undefined
+  let lHand: Vector3 | undefined = undefined
+  let rHand: Vector3 | undefined = undefined
+  if (results.poseLandmarks.worldLandmarks.length > 0) {
+    lElbow = transformLandmark(results.poseLandmarks.worldLandmarks[0][13])
+    rElbow = transformLandmark(results.poseLandmarks.worldLandmarks[0][14])
+    lHand = transformLandmark(results.poseLandmarks.worldLandmarks[0][15])
+    rHand = transformLandmark(results.poseLandmarks.worldLandmarks[0][16])
+    // Compensate for mis-estimating in depth positions of hands when the distance of hands getting close.
+    if (!!lHand && !!rHand) {
+      const len = Math.abs(lHand.x - rHand.x)
+      const adjAmount = 0.3
+      const adj = MathUtils.clamp(-len + adjAmount, 0, adjAmount)
+      lHand.z -= adj
+      rHand.z -= adj
+    }
+    transformResultsByCameraAngle(lHand)
+    transformResultsByCameraAngle(rHand)
   }
-  transformResultsByCameraAngle(lHand)
-  transformResultsByCameraAngle(rHand)
 
   const handedness = results.handLandmarks.handedness
   let leftHandLandmarks: NormalizedLandmark[] | undefined = undefined
