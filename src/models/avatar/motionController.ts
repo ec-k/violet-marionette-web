@@ -93,8 +93,7 @@ export class MotionController {
       const boneNode = vrm.humanoid?.getRawBoneNode(boneName)
       if (!boneNode) return
 
-      // boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 0.3)
-      boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 1)
+      boneNode.quaternion.slerp(this._motionFilter.filteredRotation(boneName), 0.3)
     })
     if (enabledIK) this._IK._solve()
   }
