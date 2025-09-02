@@ -60,7 +60,7 @@ export class IkTargetTracker {
     boneRoot: THREE.Vector3,
     effectorName: string,
     offset?: THREE.Vector3,
-    lerpAmount: number = 0.3,
+    lerpAmount: number = 0.2,
   ) {
     if (!ai_effector || !ai_root) return
 
