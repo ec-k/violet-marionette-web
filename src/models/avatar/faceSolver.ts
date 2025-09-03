@@ -11,7 +11,6 @@ class FaceSolver {
     blendshapes[0].categories.forEach((blendshape) => {
       const key = camelToPascal(blendshape.categoryName)
       const weight = blendshape.score
-      console.log(`${key}, ${weight}`)
       manager?.setValue(key, weight)
     })
   }
