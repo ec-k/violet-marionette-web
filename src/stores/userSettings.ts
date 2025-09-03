@@ -32,6 +32,7 @@ class NetworkSettings {
 class TrackingSettings {
   enableLeg: boolean = false
   enabledIK: boolean = true
+  isPerfectSyncEnabled: boolean = true
   sit: boolean = false
   private _cameraDepressionAngle: number = 20 // degree
   private _distanceToMonitor: number = 100 // [cm]
@@ -82,8 +83,7 @@ class TrackingSettings {
   setHeadRotCoef() {
     const inchToCmCoef = 2.54
     const theta_p = Math.atan(
-      (Math.sqrt(256 / 337) * this._monitorInch * inchToCmCoef) /
-        this._distanceToMonitor,
+      (Math.sqrt(256 / 337) * this._monitorInch * inchToCmCoef) / this._distanceToMonitor,
     )
     this._headRotCoef = this._theta_v / MathUtils.radToDeg(theta_p)
   }
@@ -91,8 +91,7 @@ class TrackingSettings {
   setHeadRotConversionThreshold() {
     const inchToCmCoef = 2.54
     this._headRotConversionThreshold = Math.atan(
-      (Math.sqrt(256 / 337) * this._monitorInch * inchToCmCoef) /
-        (2 * this._distanceToMonitor),
+      (Math.sqrt(256 / 337) * this._monitorInch * inchToCmCoef) / (2 * this._distanceToMonitor),
     )
   }
 }

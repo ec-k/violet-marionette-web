@@ -108,3 +108,7 @@ export const localPosToWorldPos = (localPos: Vector3, target: Object3D): void =>
     return
   }
 }
+
+export const camelToPascal = (str: string): string => {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

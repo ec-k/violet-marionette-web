@@ -4,8 +4,8 @@ import {
   FilesetResolver,
   HandLandmarker,
   PoseLandmarker,
+  type NormalizedLandmark,
 } from '@mediapipe/tasks-vision'
-import type { NormalizedLandmark } from '@mediapipe/tasks-vision'
 import { mediapipeLandmarks, type HolisticResult } from '@/stores/mpLandmarksObserver'
 import { uiStores } from '@/stores/uiStores'
 import { MathUtils, Vector3 } from 'three'
@@ -43,6 +43,7 @@ const createFaceLandmarker = async () => {
     },
     runningMode: 'VIDEO',
     numFaces: 1,
+    outputFaceBlendshapes: true,
     minFaceDetectionConfidence: minDetectionConfidence,
     minTrackingConfidence: minTrackingConfidence,
   })
@@ -159,7 +160,12 @@ export async function startMpActions(avatar: Avatar): Promise<void> {
 
               mediapipeLandmarks.setLandmarks(results)
 
-              avatar.pushPose(trackingSettings.enabledIK, offset.current, setArmResults(results))
+              avatar.pushPose(
+                trackingSettings.enabledIK,
+                offset.current,
+                setArmResults(results),
+                results.faceResults,
+              )
               // TODO: Integrate this into avatar.pushPose().
               if (videoElement && avatar.motionController && avatar.motionController.FK) {
                 avatar.motionController.FK.setRig(mediapipeLandmarks.resultLandmarks, videoElement)
