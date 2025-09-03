@@ -7,6 +7,7 @@ class FaceSolver {
     if (!vrm || result.faceBlendshapes.length === 0) return
     const manager = vrm.expressionManager
     const blendshapes = result.faceBlendshapes
+    manager?.resetValues()
     blendshapes[0].categories.forEach((blendshape) => {
       const key = camelToPascal(blendshape.categoryName)
       const weight = blendshape.score
