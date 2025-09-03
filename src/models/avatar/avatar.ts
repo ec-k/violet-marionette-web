@@ -7,6 +7,8 @@ import * as UI from './ui'
 import { mainSceneViewer } from '@/stores/scene'
 import { MotionController } from '@/models/avatar/motionController'
 import type { Arms } from '@/types'
+import type { FaceLandmarkerResult } from '@mediapipe/tasks-vision'
+import faceSolver from '@/models/avatar/faceSolver'
 
 export class Avatar {
   private scene: THREE.Scene | null = null
@@ -96,9 +98,15 @@ export class Avatar {
     }
   }
 
-  pushPose(enabledIK: boolean, offset: THREE.Vector3 | undefined, arms: Arms | undefined) {
+  pushPose(
+    enabledIK: boolean,
+    offset: THREE.Vector3 | undefined,
+    arms: Arms | undefined,
+    faceResult: FaceLandmarkerResult | undefined,
+  ) {
     if (!this.motionControllerInternal || !this.vrm || !arms) return
     this.motionControllerInternal.pushPose2Filter(this.vrm, enabledIK, offset, arms)
+    if (faceResult) faceSolver.applyPerfectSyncResult(this.vrm, faceResult)
   }
 
   updatePose(enabledIK: boolean) {
