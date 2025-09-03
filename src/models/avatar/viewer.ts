@@ -15,6 +15,7 @@ export class Viewer {
       antialias: true,
       alpha: true,
       canvas: canvas,
+      powerPreference: 'high-performance',
     })
     this._renderer.setPixelRatio(window.devicePixelRatio)
     this._renderer.setSize(window.innerWidth, window.innerHeight)
