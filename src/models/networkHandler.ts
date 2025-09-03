@@ -26,13 +26,22 @@ class NetworkHandler {
   }
 
   constructor() {
-    this.connect()
     if (Notification.permission !== 'granted') Notification.requestPermission()
   }
 
   connect() {
-    if (this._ws && this._ws.readyState === this._ws.OPEN) this._ws.close()
-    this._ws = new WebSocket(networkSettings.origin)
+    if (this._ws && this._ws.readyState === this._ws.OPEN) {
+      this._ws.close()
+      this._ws = undefined
+    }
+
+    try {
+      this._ws = new WebSocket(networkSettings.origin)
+    } catch (error) {
+      console.error('Failed to create WebSocket:', error)
+      throw new Error('WebSocket initialization failed: ' + (error as Error).message)
+    }
+
     this._checkConnection()
 
     if (this._ws) {
@@ -147,6 +156,7 @@ class NetworkHandler {
 
   SendPoseMessage(vrm: VRM) {
     if (!vrm.humanoid) return
+    if (!this._ws || this._ws.readyState !== this._ws.OPEN) this.connect()
     let data = ''
 
     Object.values(VRMHumanBoneName).forEach((boneName) => {
