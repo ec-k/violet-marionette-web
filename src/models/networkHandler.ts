@@ -20,6 +20,7 @@ class NetworkHandler {
   private _numberOfDigits = 7
   private _connectionCheckInterval = 5 * 1000 // [ms]
   private _checkTimer: number | undefined
+  private _isCheckEnabled: boolean = false
 
   get existWebsocket() {
     return !!this._ws
@@ -29,20 +30,40 @@ class NetworkHandler {
     if (Notification.permission !== 'granted') Notification.requestPermission()
   }
 
-  connect() {
-    if (this._ws && this._ws.readyState === this._ws.OPEN) {
+  set isCheckEnabled(enabled: boolean) {
+    if (this._isCheckEnabled === enabled) return
+
+    this._isCheckEnabled = enabled
+
+    if (enabled) this.connect()
+    else this.close()
+  }
+
+  private connect() {
+    if (
+      this._ws &&
+      (this._ws.readyState === this._ws.OPEN || this._ws.readyState === this._ws.OPEN)
+    )
+      return
+
+    if (this._ws && this._ws.readyState !== this._ws.CLOSED) {
       this._ws.close()
       this._ws = undefined
+    }
+
+    if (this._checkTimer) {
+      window.clearTimeout(this._checkTimer)
+      this._checkTimer = undefined
     }
 
     try {
       this._ws = new WebSocket(networkSettings.origin)
     } catch (error) {
       console.error('Failed to create WebSocket:', error)
-      throw new Error('WebSocket initialization failed: ' + (error as Error).message)
+      return
     }
 
-    this._checkConnection()
+    if (this._isCheckEnabled) this._checkConnection()
 
     if (this._ws) {
       this._ws.onmessage = (event: MessageEvent) => {
@@ -55,8 +76,13 @@ class NetworkHandler {
             break
           case 'connectionCheck':
             if (data === 'pong') {
-              if (this._checkTimer) clearTimeout(this._checkTimer)
-              this._checkConnection()
+              if (this._checkTimer) window.clearTimeout(this._checkTimer)
+
+              if (this._isCheckEnabled) this._checkConnection()
+              else {
+                this._checkTimer = undefined
+                this.close()
+              }
             }
             break
           case 'notification':
@@ -68,21 +94,67 @@ class NetworkHandler {
       }
       this._ws.onopen = () => {
         this._connectionCheckInterval = 30 * 1000
+        if (this._isCheckEnabled) this._checkConnection()
+        else this.close()
       }
       this._ws.onclose = () => {
         this._connectionCheckInterval = 5 * 1000
+        if (this._isCheckEnabled) this.connect()
+        else {
+          if (this._checkTimer) window.clearTimeout(this._checkTimer)
+          this._checkTimer = undefined
+          this._ws = undefined
+        }
+      }
+      this._ws.onerror = (event: Event) => {
+        console.error('WebSocket Error:', event)
+        if (this._isCheckEnabled) this.connect()
+        else this.close()
       }
     }
   }
 
-  private _checkConnection = () => {
+  private close() {
+    if (this._ws && this._ws.readyState === this._ws.OPEN) this._ws.close()
+    this._ws = undefined
+
+    if (this._checkTimer) {
+      window.clearTimeout(this._checkTimer)
+      this._checkTimer = undefined
+    }
+  }
+
+  private _checkConnection() {
+    if (!this._isCheckEnabled) {
+      if (this._checkTimer) window.clearTimeout(this._checkTimer)
+      this._checkTimer = undefined
+      return
+    }
+
+    if (this._checkTimer) {
+      window.clearTimeout(this._checkTimer)
+      this._checkTimer = undefined
+    }
+
     window.setTimeout(() => {
+      if (!this.existWebsocket) {
+        if (this._isCheckEnabled) this.connect()
+        return
+      }
+
       this.send({ messageType: 'connectionCheck', data: 'ping' })
       const checkTimeDeadline = 1 * 1000 //[ms]
-      this._checkTimer = window.setTimeout(() => {
-        this.connect()
-        this._checkTimer = undefined
-      }, checkTimeDeadline)
+
+      if (this._isCheckEnabled)
+        this._checkTimer = window.setTimeout(() => {
+          if (this._isCheckEnabled) {
+            console.warn('No pong received within deadline. Attempting to reconnect...')
+            this.connect()
+          } else this.close()
+        }, checkTimeDeadline)
+      else {
+        this.close()
+      }
     }, this._connectionCheckInterval)
   }
 
@@ -156,7 +228,7 @@ class NetworkHandler {
 
   SendPoseMessage(vrm: VRM) {
     if (!vrm.humanoid) return
-    if (!this._ws || this._ws.readyState !== this._ws.OPEN) this.connect()
+    if (!this._ws || this._ws.readyState !== this._ws.OPEN) return
     let data = ''
 
     Object.values(VRMHumanBoneName).forEach((boneName) => {
@@ -173,5 +245,6 @@ class NetworkHandler {
     this.send(message)
   }
 }
+
 const networkHandler = new NetworkHandler()
 export default networkHandler

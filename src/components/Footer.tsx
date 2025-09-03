@@ -11,6 +11,7 @@ import WifiOffIcon from '@mui/icons-material/WifiOff'
 import CircularProgress from '@mui/material/CircularProgress'
 import { autorun } from 'mobx'
 import type { IReactionDisposer } from 'mobx'
+import networkHandler from '@/models/networkHandler'
 
 type MediapipeState = 'stop' | 'loading' | 'active'
 
@@ -42,6 +43,7 @@ const Footer: React.FC = () => {
     uiStores.toggleStartTrack()
   }
   function toggleStartSendPose() {
+    networkHandler.isCheckEnabled = !startSendingMotion
     setStartSendingMotion(!startSendingMotion)
     uiStores.toggleStartSendPose()
   }
