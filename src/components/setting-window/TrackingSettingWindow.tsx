@@ -9,6 +9,9 @@ const TrackingSettingWindow: React.FC = () => {
   const [showVideo, setShowVideo] = React.useState<boolean>(false)
   const [enabledLeg, setActivatedLeg] = React.useState<boolean>(trackingSettings.enableLeg)
   const [enabledIK, setEnabledIK] = React.useState<boolean>(trackingSettings.enabledIK)
+  const [isPerfectSyncEnabled, setIsPerfectSyncEnabled] = React.useState<boolean>(
+    trackingSettings.isPerfectSyncEnabled,
+  )
   const cameraAngleInputRef = React.useRef<HTMLInputElement | null>(null)
   const [sit, setSit] = React.useState<boolean>(trackingSettings.sit)
   // const distanceToMonitorRef = React.useRef<HTMLInputElement | null>(null)
@@ -116,6 +119,20 @@ const TrackingSettingWindow: React.FC = () => {
             />
           }
           label="Use IK (arm)"
+          sx={{ color: purple[50] }}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              color="primary"
+              defaultChecked={isPerfectSyncEnabled}
+              onChange={() => {
+                trackingSettings.isPerfectSyncEnabled = !isPerfectSyncEnabled
+                setIsPerfectSyncEnabled(!isPerfectSyncEnabled)
+              }}
+            />
+          }
+          label="Is PerfectSync"
           sx={{ color: purple[50] }}
         />
         <FormControlLabel
