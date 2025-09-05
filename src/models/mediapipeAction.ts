@@ -218,12 +218,14 @@ const setArmResults = (results: HolisticResult) => {
   const handedness = results.handLandmarks.handedness
   let leftHandLandmarks: NormalizedLandmark[] | undefined = undefined
   let rightHandLandmarks: NormalizedLandmark[] | undefined = undefined
-  if (handedness && handedness[0] && handedness[0][0].categoryName === 'Left') {
-    leftHandLandmarks = results.handLandmarks.worldLandmarks[0]
-    rightHandLandmarks = results.handLandmarks.worldLandmarks[1]
-  } else {
-    leftHandLandmarks = results.handLandmarks.worldLandmarks[1]
-    rightHandLandmarks = results.handLandmarks.worldLandmarks[0]
+  if (handedness && results.handLandmarks.worldLandmarks) {
+    for (let i = 0; i < handedness.length; i++) {
+      if (handedness[i][0].categoryName === 'Left') {
+        leftHandLandmarks = results.handLandmarks.worldLandmarks[i]
+      } else if (handedness[i][0].categoryName === 'Right') {
+        rightHandLandmarks = results.handLandmarks.worldLandmarks[i]
+      }
+    }
   }
   let lMiddleProximal = undefined
   let lPinkyProximal = undefined
@@ -305,10 +307,10 @@ export function DrawResults(
       drawingUtils.drawConnectors(lm, FaceLandmarker.FACE_LANDMARKS_TESSELATION)
     }
   }
-  if (face && face.length === 478) {
+  if (face && face.length > 0 && face[0].length > 473) {
     // draw pupils
-    drawingUtils.drawLandmarks([face[0][468], face[0][468 + 5]], {
-      color: '#',
+    drawingUtils.drawLandmarks([face[0][468], face[0][473]], {
+      color: '#FFF',
       lineWidth: 2,
     })
   }
