@@ -119,7 +119,7 @@ export const VRMSceneScreen: React.FC = () => {
     return () => {
       for (const d of dispo) d()
     }
-  }, [sendPose])
+  }, [])
 
   return (
     <Div>

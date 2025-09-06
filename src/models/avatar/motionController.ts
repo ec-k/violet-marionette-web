@@ -16,6 +16,12 @@ export class MotionController {
   private _FK: VrmFK
   private _rotateHand: RotateHand
   private _motionFilter: MotionFilter
+  private _rotations: avatarPose
+  private _hands: aiRim
+  private _elbows: aiRim
+  private _wrists: aiRim
+  private _middleProximals: aiRim
+  private _pinkyProximals: aiRim
 
   constructor(vrm: VRM) {
     const flg = false // This variable is for smooth debugging.
@@ -24,6 +30,12 @@ export class MotionController {
     this._FK = new VrmFK()
     this._IK = new VrmIK(vrm)
     this._rotateHand = new RotateHand(vrm)
+    this._rotations = new avatarPose()
+    this._hands = { l: undefined, r: undefined }
+    this._elbows = { l: undefined, r: undefined }
+    this._wrists = { l: undefined, r: undefined }
+    this._middleProximals = { l: undefined, r: undefined }
+    this._pinkyProximals = { l: undefined, r: undefined }
   }
   get motionLPF() {
     return this._motionFilter
@@ -43,34 +55,36 @@ export class MotionController {
   ) {
     if (!armResults) return
     const rots = this._FK.pushPose(vrm, !enabledIK)
-    const rotations = rots ? rots : new avatarPose()
+    const rotations = rots ? rots : this._rotations
+    if (!rots) {
+      rotations.reset()
+    }
     if (enabledIK && !!this._IK && !!this._IK.ikTargetTracker) {
-      const hands: aiRim = {
-        l: armResults.l?.hand,
-        r: armResults.r?.hand,
-      }
-      const elbows: aiRim = {
-        l: armResults.l?.elbow,
-        r: armResults.r?.elbow,
-      }
-      const wrists: aiRim = {
-        l: armResults.l?.wrist,
-        r: armResults.r?.wrist,
-      }
-      const middleProximals: aiRim = {
-        l: armResults.l?.middleProximal,
-        r: armResults.r?.middleProximal,
-      }
-      const pinkyProximals: aiRim = {
-        l: armResults.l?.pinkyProximal,
-        r: armResults.r?.pinkyProximal,
-      }
-      this._IK.ikTargetTracker.trackTargets(hands, elbows, offset)
+      this._hands.l = armResults.l?.hand
+      this._hands.r = armResults.r?.hand
+
+      this._elbows.l = armResults.l?.elbow
+      this._elbows.r = armResults.r?.elbow
+
+      this._wrists.l = armResults.l?.wrist
+      this._wrists.r = armResults.r?.wrist
+
+      this._middleProximals.l = armResults.l?.middleProximal
+      this._middleProximals.r = armResults.r?.middleProximal
+
+      this._pinkyProximals.l = armResults.l?.pinkyProximal
+      this._pinkyProximals.r = armResults.r?.pinkyProximal
+
+      this._IK.ikTargetTracker.trackTargets(this._hands, this._elbows, offset)
       // const ikRots = this._IK.pushPose(hands, elbows, shoulders)
       // ikRots.forEach((q, key) => {
       //   rotations.set(key, q)
       // })
-      const handRotation = this._rotateHand.setHandTargets(wrists, middleProximals, pinkyProximals)
+      const handRotation = this._rotateHand.setHandTargets(
+        this._wrists,
+        this._middleProximals,
+        this._pinkyProximals,
+      )
       if (handRotation.l) rotations.set('leftHand', handRotation.l)
       if (handRotation.r) rotations.set('rightHand', handRotation.r)
     }

@@ -112,6 +112,12 @@ export class avatarPose {
   set(key: VRMHumanBoneName, q: Quaternion) {
     this._bones[key] = q
   }
+
+  reset() {
+    for (const key in this._bones) {
+      this._bones[key as VRMHumanBoneName].identity()
+    }
+  }
 }
 
 type rotations = {
