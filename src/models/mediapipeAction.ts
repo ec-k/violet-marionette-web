@@ -19,7 +19,7 @@ import faceTaskUrl from '@/assets/mediapipe-models/face_landmarker.task?url'
 const minDetectionConfidence = 0.7
 const minTrackingConfidence = 0.7
 const vision = await FilesetResolver.forVisionTasks(
-  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9/wasm',
 )
 
 const createPoseLandmarker = async () => {
