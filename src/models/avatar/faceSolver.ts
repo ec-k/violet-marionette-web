@@ -9,7 +9,7 @@ class FaceSolver {
     const blendshapes = result.faceBlendshapes
     blendshapes[0].categories.forEach((blendshape) => {
       const key = camelToPascal(blendshape.categoryName)
-      const weight = blendshape.score
+      const weight = blendshape.score * 0.7 // Suppress facial motion to make it natural
       manager?.setValue(key, weight)
     })
   }
