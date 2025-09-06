@@ -62,8 +62,45 @@ const createHandLandmarker = async () => {
   })
 }
 
+let poseLandmarker: PoseLandmarker | null = null
+let handLandmarker: HandLandmarker | null = null
+let faceLandmarker: FaceLandmarker | null = null
+
+// Load and warm up models
+export async function loadAndWarmupModels(): Promise<void> {
+  try {
+    console.log('MediaPipe models loading...')
+    poseLandmarker = await createPoseLandmarker()
+    handLandmarker = await createHandLandmarker()
+    faceLandmarker = await createFaceLandmarker()
+    console.log('MediaPipe models loaded. Performing warm-up...')
+
+    // Dummy detection for warm-up
+    const dummyCanvasElement = document.createElement('canvas')
+    dummyCanvasElement.width = 1
+    dummyCanvasElement.height = 1
+    const ctx = dummyCanvasElement.getContext('2d')
+    if (ctx) {
+      ctx.clearRect(0, 0, 1, 1) // Ensure it has content, even if just transparent
+    }
+
+    // Perform dummy detection
+    // Ensure landmarker objects are not null before calling detectForVideo
+    // Use slightly incrementing timestamps for dummy detections to avoid timestamp mismatch
+    if (poseLandmarker) poseLandmarker.detectForVideo(dummyCanvasElement, 1) // Start with 1
+    if (handLandmarker) handLandmarker.detectForVideo(dummyCanvasElement, 2) // Increment
+    if (faceLandmarker) faceLandmarker.detectForVideo(dummyCanvasElement, 3) // Increment
+
+    console.log('MediaPipe models warm-up complete.')
+  } catch (error) {
+    console.error('Failed to load or warm-up MediaPipe models:', error)
+    // Handle error appropriately, e.g., disable tracking features
+  }
+}
+
 const fps = 60
 const timeInterval = 1000 / fps
+let lastTimestampMs = 0
 let videoElement: HTMLVideoElement | undefined
 let isMediapipeActive: boolean = false
 
@@ -98,9 +135,6 @@ const offset: { current: Vector3 | undefined } = {
 }
 
 export async function startMpActions(avatar: Avatar): Promise<void> {
-  const poseLandmarker = await createPoseLandmarker()
-  const handLandmarker = await createHandLandmarker()
-  const faceLandmarker = await createFaceLandmarker()
   stopMpActions()
   const promise = new Promise<void>((resolve) => {
     navigator.mediaDevices
@@ -114,13 +148,14 @@ export async function startMpActions(avatar: Avatar): Promise<void> {
         }
 
         function timer() {
-          if (isMediapipeActive) {
+          if (isMediapipeActive && poseLandmarker && handLandmarker && faceLandmarker) {
             if (videoElement?.videoWidth && videoElement?.videoHeight) {
-              const currentTimeMs = videoElement.currentTime * 1000
+              // Use a monotonically increasing timestamp
+              lastTimestampMs += timeInterval // Increment by the expected frame interval
 
-              const poseResult = poseLandmarker.detectForVideo(videoElement, currentTimeMs)
-              const handResult = handLandmarker.detectForVideo(videoElement, currentTimeMs)
-              const faceResult = faceLandmarker.detectForVideo(videoElement, currentTimeMs)
+              const poseResult = poseLandmarker.detectForVideo(videoElement, lastTimestampMs)
+              const handResult = handLandmarker.detectForVideo(videoElement, lastTimestampMs + 1) // Slightly increment for each call within the same tick
+              const faceResult = faceLandmarker.detectForVideo(videoElement, lastTimestampMs + 2) // Slightly increment for each call within the same tick
 
               try {
                 // Since results.poselandmark[0] is the position of the face surface, manually adjust so that it is at the centre of the head.
