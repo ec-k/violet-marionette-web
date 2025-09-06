@@ -1,34 +1,22 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "start vite dev server",
-      "type": "shell",
-      "command": "pnpm run dev",
-      "isBackground": true,
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "group": "vite-dev-server"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "problemMatcher": {
-        "pattern": [
-          {
-            "regexp": ".*",
-            "file": 1,
-            "location": 2,
-            "message": 3
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Local:\\s+(http:\\/\\/localhost:[0-9]+)",
-          "endsPattern": "(ready in \\d+ms|finished in \\d+ms)"
-        }
-      }
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "pnpm: dev",
+			"type": "shell",
+			"command": "pnpm run dev",
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "vite",
+				"pattern": {
+					"regexp": ".*"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".*ready in.*",
+					"endsPattern": ".*"
+				}
+			}
+		}
+	]
 }

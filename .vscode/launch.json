@@ -1,46 +1,15 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "start vite dev server",
-      "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${webRoot}/src/*",
-        "webpack:///src/*": "${webRoot}/src/*",
-        "webpack:///*": "${webRoot}/*",
-        "/*": "${webRoot}/*",
-        "/src/*": "${webRoot}/src/*",
-        "/@vite/*": "${webRoot}/node_modules/@vitejs/*",
-        "/.vite/deps/*": "${webRoot}/node_modules/.vite/deps/*",
-        "file:///*": "${webRoot}/*"
-      },
-      "sourceMaps": true,
-      "trace": true,
-      "userDataDir": "${workspaceFolder}/.vscode/chrome",
-      "timeout": 30000
-    },
-    {
-      "type": "chrome",
-      "request": "attach",
-      "name": "Attach to Chrome",
-      "port": 9222,
-      "webRoot": "${workspaceFolder}",
-      "sourceMapPathOverrides": {
-        "webpack:///./src/*": "${webRoot}/src/*",
-        "webpack:///src/*": "${webRoot}/src/*",
-        "webpack:///*": "${webRoot}/*",
-        "/*": "${webRoot}/*",
-        "/src/*": "${webRoot}/src/*",
-        "/@vite/*": "${webRoot}/node_modules/@vitejs/*",
-        "/.vite/deps/*": "${webRoot}/node_modules/.vite/deps/*",
-        "file:///*": "${webRoot}/*"
-      },
-      "sourceMaps": true,
-      "trace": true
-    }
-  ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Chrome against localhost",
+			"type": "chrome",
+			"request": "launch",
+			"url": "http://localhost:5173",
+			"webRoot": "${workspaceFolder}",
+			"preLaunchTask": "pnpm: dev",
+			"userDataDir": "${workspaceFolder}/.vscode/chrome"
+		}
+	]
 }
+
