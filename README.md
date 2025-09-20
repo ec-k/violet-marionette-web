@@ -2,7 +2,7 @@
 
 Violet Marionette Web は，Resonite のアバターを Web カメラによるトラッキングで動かせるWebクライアントアプリです．
 
-![](resources/violetMarionette_usage.gif)
+![](docs/images/violet-marionette-web-key-visual.gif)
 
 ## 実行
 
